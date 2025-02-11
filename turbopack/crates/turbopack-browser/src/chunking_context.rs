@@ -578,6 +578,7 @@ impl ChunkingContext for BrowserChunkingContext {
             let input_availability_info = availability_info;
             let MakeChunkGroupResult {
                 chunks,
+                referenced_output_assets,
                 availability_info,
             } = make_chunk_group(
                 modules,
@@ -617,6 +618,8 @@ impl ChunkingContext for BrowserChunkingContext {
                 );
             }
 
+            assets.extend(referenced_output_assets);
+
             Ok(ChunkGroupResult {
                 assets: ResolvedVc::cell(assets),
                 availability_info,
@@ -646,6 +649,7 @@ impl ChunkingContext for BrowserChunkingContext {
 
             let MakeChunkGroupResult {
                 chunks,
+                referenced_output_assets,
                 availability_info,
             } = make_chunk_group(
                 entries,
@@ -691,6 +695,8 @@ impl ChunkingContext for BrowserChunkingContext {
                     .to_resolved()
                     .await?,
             );
+
+            assets.extend(referenced_output_assets);
 
             Ok(ChunkGroupResult {
                 assets: ResolvedVc::cell(assets),
