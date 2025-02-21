@@ -1962,7 +1962,7 @@ async fn emit_content(
             mappings,
             original_source_map
                 .iter()
-                .map(|map| map.generate_source_map())
+                .map(async |map| map.generate_source_map().final_read_hint().await)
                 .try_flat_join()
                 .await?,
             matches!(
