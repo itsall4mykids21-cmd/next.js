@@ -98,7 +98,6 @@ import { getDisableDevIndicatorMiddleware } from '../../next-devtools/server/dev
 import { getRestartDevServerMiddleware } from '../../next-devtools/server/restart-dev-server-middleware'
 import { backgroundLogCompilationEvents } from '../../shared/lib/turbopack/compilation-events'
 import { getSupportedBrowsers } from '../../build/utils'
-import { receiveBrowserLogsTurbopack } from './browser-logs/receive-logs'
 import { normalizePath } from '../../lib/normalize-path'
 import {
   devToolsConfigMiddleware,
@@ -815,21 +814,9 @@ export async function createHotReloaderTurbopack(
             case 'client-added-page':
               // TODO
               break
-            case 'browser-logs': {
-              if (nextConfig.experimental.browserDebugInfoInTerminal) {
-                await receiveBrowserLogsTurbopack({
-                  entries: parsedData.entries,
-                  router: parsedData.router,
-                  sourceType: parsedData.sourceType,
-                  project,
-                  projectPath,
-                  distDir,
-                  config: nextConfig.experimental.browserDebugInfoInTerminal,
-                })
-              }
+            case 'ping':
+              // Ping doesn't need additional handling in Turbopack.
               break
-            }
-
             default:
               // Might be a Turbopack message...
               if (!parsedData.type) {

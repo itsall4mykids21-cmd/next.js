@@ -188,6 +188,7 @@ import {
   trackPendingImport,
   trackPendingModules,
 } from './module-loading/track-module-loading.external'
+import EmptyError from '../../client/components/empty-error'
 import { isReactLargeShellError } from './react-large-shell-error'
 import type { GlobalErrorComponent } from '../../client/components/builtin/global-error'
 import { normalizeConventionFilePath } from './segment-explorer-path'
@@ -345,6 +346,22 @@ function createNotFoundLoaderTree(loaderTree: LoaderTree): LoaderTree {
     },
     // When global-not-found is present, skip layout from components
     hasGlobalNotFound ? components : {},
+  ]
+}
+
+function createErrorLoaderTree(): LoaderTree {
+  return [
+    '',
+    {
+      children: [
+        PAGE_SEGMENT_KEY,
+        {},
+        {
+          page: [() => () => <EmptyError />, ''],
+        },
+      ],
+    },
+    {},
   ]
 }
 
@@ -1499,7 +1516,12 @@ async function renderToHTMLOrFlightImpl(
     const renderResumeDataCache =
       renderOpts.renderResumeDataCache ?? postponedState?.renderResumeDataCache
 
-    const rootParams = getRootParams(loaderTree, ctx.getDynamicParamFromSegment)
+    let tree = loaderTree
+    if (pagePath === '/_error') {
+      tree = createErrorLoaderTree()
+    }
+
+    const rootParams = getRootParams(tree, ctx.getDynamicParamFromSegment)
     const requestStore = createRequestStoreForRender(
       req,
       res,
