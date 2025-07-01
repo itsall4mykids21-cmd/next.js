@@ -241,7 +241,7 @@ importers:
         specifier: 3.0.1
         version: 3.0.1
       babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.2
+        specifier: '*'
         version: 19.1.0-rc.2
       browserslist:
         specifier: 4.25.1
@@ -931,6 +931,9 @@ importers:
       '@swc/helpers':
         specifier: 0.5.15
         version: 0.5.15
+      babel-plugin-react-compiler:
+        specifier: 19.1.0-rc.2
+        version: 19.1.0-rc.2
       caniuse-lite:
         specifier: 1.0.30001579
         version: 1.0.30001579
@@ -1251,9 +1254,6 @@ importers:
       babel-loader:
         specifier: 10.0.0
         version: 10.0.0(@babel/core@7.26.10)(webpack@5.98.0(@swc/core@1.11.24(@swc/helpers@0.5.15))(esbuild@0.24.2))
-      babel-plugin-react-compiler:
-        specifier: 19.1.0-rc.2
-        version: 19.1.0-rc.2
       babel-plugin-transform-define:
         specifier: 2.0.0
         version: 2.0.0
