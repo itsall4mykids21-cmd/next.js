@@ -1959,7 +1959,247 @@
     "styles": ["normal"],
     "subsets": ["devanagari", "latin", "latin-ext"]
   },
+  "Bitcount": {
+    "weights": [
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "variable"
+    ],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "CRSV",
+        "min": 0,
+        "max": 1,
+        "defaultValue": 0.5
+      },
+      {
+        "tag": "ELSH",
+        "min": 0,
+        "max": 100,
+        "defaultValue": 0
+      },
+      {
+        "tag": "ELXP",
+        "min": 0,
+        "max": 100,
+        "defaultValue": 0
+      },
+      {
+        "tag": "slnt",
+        "min": -8,
+        "max": 0,
+        "defaultValue": 0
+      },
+      {
+        "tag": "wght",
+        "min": 100,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": ["latin", "latin-ext"]
+  },
   "Bitcount Grid Double": {
+    "weights": [
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "variable"
+    ],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "CRSV",
+        "min": 0,
+        "max": 1,
+        "defaultValue": 0.5
+      },
+      {
+        "tag": "ELSH",
+        "min": 0,
+        "max": 100,
+        "defaultValue": 0
+      },
+      {
+        "tag": "ELXP",
+        "min": 0,
+        "max": 100,
+        "defaultValue": 0
+      },
+      {
+        "tag": "slnt",
+        "min": -8,
+        "max": 0,
+        "defaultValue": 0
+      },
+      {
+        "tag": "wght",
+        "min": 100,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": ["latin", "latin-ext"]
+  },
+  "Bitcount Grid Single": {
+    "weights": [
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "variable"
+    ],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "CRSV",
+        "min": 0,
+        "max": 1,
+        "defaultValue": 0.5
+      },
+      {
+        "tag": "ELSH",
+        "min": 0,
+        "max": 100,
+        "defaultValue": 0
+      },
+      {
+        "tag": "ELXP",
+        "min": 0,
+        "max": 100,
+        "defaultValue": 0
+      },
+      {
+        "tag": "slnt",
+        "min": -8,
+        "max": 0,
+        "defaultValue": 0
+      },
+      {
+        "tag": "wght",
+        "min": 100,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": ["latin", "latin-ext"]
+  },
+  "Bitcount Prop Double": {
+    "weights": [
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "variable"
+    ],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "CRSV",
+        "min": 0,
+        "max": 1,
+        "defaultValue": 0.5
+      },
+      {
+        "tag": "ELSH",
+        "min": 0,
+        "max": 100,
+        "defaultValue": 0
+      },
+      {
+        "tag": "ELXP",
+        "min": 0,
+        "max": 100,
+        "defaultValue": 0
+      },
+      {
+        "tag": "slnt",
+        "min": -8,
+        "max": 0,
+        "defaultValue": 0
+      },
+      {
+        "tag": "wght",
+        "min": 100,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": ["latin", "latin-ext"]
+  },
+  "Bitcount Prop Single": {
+    "weights": [
+      "100",
+      "200",
+      "300",
+      "400",
+      "500",
+      "600",
+      "700",
+      "800",
+      "900",
+      "variable"
+    ],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "CRSV",
+        "min": 0,
+        "max": 1,
+        "defaultValue": 0.5
+      },
+      {
+        "tag": "ELSH",
+        "min": 0,
+        "max": 100,
+        "defaultValue": 0
+      },
+      {
+        "tag": "ELXP",
+        "min": 0,
+        "max": 100,
+        "defaultValue": 0
+      },
+      {
+        "tag": "slnt",
+        "min": -8,
+        "max": 0,
+        "defaultValue": 0
+      },
+      {
+        "tag": "wght",
+        "min": 100,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": ["latin", "latin-ext"]
+  },
+  "Bitcount Single": {
     "weights": [
       "100",
       "200",
@@ -5891,6 +6131,19 @@
     "weights": ["400"],
     "styles": ["normal", "italic"],
     "subsets": ["latin", "latin-ext"]
+  },
+  "Intel One Mono": {
+    "weights": ["300", "400", "500", "600", "700", "variable"],
+    "styles": ["normal", "italic"],
+    "axes": [
+      {
+        "tag": "wght",
+        "min": 300,
+        "max": 700,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": ["latin", "latin-ext", "symbols2", "vietnamese"]
   },
   "Inter": {
     "weights": [
@@ -16000,6 +16253,44 @@
     "weights": ["400", "700", "900"],
     "styles": ["normal"],
     "subsets": ["latin"]
+  },
+  "TikTok Sans": {
+    "weights": ["300", "400", "500", "600", "700", "800", "900", "variable"],
+    "styles": ["normal"],
+    "axes": [
+      {
+        "tag": "opsz",
+        "min": 12,
+        "max": 36,
+        "defaultValue": 14
+      },
+      {
+        "tag": "slnt",
+        "min": -6,
+        "max": 0,
+        "defaultValue": 0
+      },
+      {
+        "tag": "wdth",
+        "min": 75,
+        "max": 150,
+        "defaultValue": 100
+      },
+      {
+        "tag": "wght",
+        "min": 300,
+        "max": 900,
+        "defaultValue": 400
+      }
+    ],
+    "subsets": [
+      "cyrillic",
+      "cyrillic-ext",
+      "greek",
+      "latin",
+      "latin-ext",
+      "vietnamese"
+    ]
   },
   "Tillana": {
     "weights": ["400", "500", "600", "700", "800"],
