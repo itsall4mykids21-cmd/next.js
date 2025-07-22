@@ -319,7 +319,6 @@ export const configSchema: zod.ZodType<NextConfig> = z.lazy(() =>
       .strictObject({
         adapterPath: z.string().optional(),
         useSkewCookie: z.boolean().optional(),
-        nodeMiddleware: z.boolean().optional(),
         after: z.boolean().optional(),
         appDocumentPreloading: z.boolean().optional(),
         appNavFailHandling: z.boolean().optional(),
@@ -362,6 +361,7 @@ export const configSchema: zod.ZodType<NextConfig> = z.lazy(() =>
         dynamicOnHover: z.boolean().optional(),
         disableOptimizedLoading: z.boolean().optional(),
         disablePostcssPresetEnv: z.boolean().optional(),
+        cacheComponents: z.boolean().optional(),
         dynamicIO: z.boolean().optional(),
         inlineCss: z.boolean().optional(),
         esmExternals: z.union([z.boolean(), z.literal('loose')]).optional(),
@@ -413,7 +413,6 @@ export const configSchema: zod.ZodType<NextConfig> = z.lazy(() =>
             algorithm: z.enum(['sha256', 'sha384', 'sha512']).optional(),
           })
           .optional(),
-        strictNextHead: z.boolean().optional(),
         swcPlugins: z
           // The specific swc plugin's option is unknown, use z.any() here
           .array(z.tuple([z.string(), z.record(z.string(), z.any())]))
@@ -462,6 +461,7 @@ export const configSchema: zod.ZodType<NextConfig> = z.lazy(() =>
         turbopackSourceMaps: z.boolean().optional(),
         turbopackTreeShaking: z.boolean().optional(),
         turbopackRemoveUnusedExports: z.boolean().optional(),
+        turbopackScopeHoisting: z.boolean().optional(),
         optimizePackageImports: z.array(z.string()).optional(),
         optimizeServerReact: z.boolean().optional(),
         clientTraceMetadata: z.array(z.string()).optional(),
@@ -500,7 +500,17 @@ export const configSchema: zod.ZodType<NextConfig> = z.lazy(() =>
           .optional(),
         globalNotFound: z.boolean().optional(),
         devtoolSegmentExplorer: z.boolean().optional(),
-        devtoolNewPanelUI: z.boolean().optional(),
+        browserDebugInfoInTerminal: z
+          .union([
+            z.boolean(),
+            z.object({
+              depthLimit: z.number().int().positive().optional(),
+              edgeLimit: z.number().int().positive().optional(),
+              showSourceLocation: z.boolean().optional(),
+            }),
+          ])
+          .optional(),
+        optimizeRouterScrolling: z.boolean().optional(),
       })
       .optional(),
     exportPathMap: z

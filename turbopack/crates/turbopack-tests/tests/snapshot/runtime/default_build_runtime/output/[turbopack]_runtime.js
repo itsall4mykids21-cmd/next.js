@@ -13,6 +13,22 @@ const toStringTag = typeof Symbol !== 'undefined' && Symbol.toStringTag;
 function defineProp(obj, name, options) {
     if (!hasOwnProperty.call(obj, name)) Object.defineProperty(obj, name, options);
 }
+function getOverwrittenModule(moduleCache, id) {
+    let module = moduleCache[id];
+    if (!module) {
+        // This is invoked when a module is merged into another module, thus it wasn't invoked via
+        // instantiateModule and the cache entry wasn't created yet.
+        module = {
+            exports: {},
+            error: undefined,
+            loaded: false,
+            id,
+            namespaceObject: undefined
+        };
+        moduleCache[id] = module;
+    }
+    return module;
+}
 /**
  * Adds the getters to the exports object.
  */ function esm(exports, getters) {
@@ -41,7 +57,11 @@ function defineProp(obj, name, options) {
 }
 /**
  * Makes the module an ESM with exports
- */ function esmExport(module, exports, getters) {
+ */ function esmExport(module, exports, moduleCache, getters, id) {
+    if (id != null) {
+        module = getOverwrittenModule(moduleCache, id);
+        exports = module.exports;
+    }
     module.namespaceObject = module.exports;
     esm(exports, getters);
 }
@@ -74,16 +94,26 @@ function ensureDynamicExports(module, exports) {
 }
 /**
  * Dynamically exports properties from an object
- */ function dynamicExport(module, exports, object) {
+ */ function dynamicExport(module, exports, moduleCache, object, id) {
+    if (id != null) {
+        module = getOverwrittenModule(moduleCache, id);
+        exports = module.exports;
+    }
     ensureDynamicExports(module, exports);
     if (typeof object === 'object' && object !== null) {
         module[REEXPORTED_OBJECTS].push(object);
     }
 }
-function exportValue(module, value) {
+function exportValue(module, moduleCache, value, id) {
+    if (id != null) {
+        module = getOverwrittenModule(moduleCache, id);
+    }
     module.exports = value;
 }
-function exportNamespace(module, namespace) {
+function exportNamespace(module, moduleCache, namespace, id) {
+    if (id != null) {
+        module = getOverwrittenModule(moduleCache, id);
+    }
     module.exports = module.namespaceObject = namespace;
 }
 function createGetter(obj, key) {
@@ -460,12 +490,18 @@ const moduleCache = Object.create(null);
 }
 function loadChunk(chunkData, source) {
     if (typeof chunkData === 'string') {
-        return loadChunkPath(chunkData, source);
+        loadChunkPath(chunkData, source);
     } else {
-        return loadChunkPath(chunkData.path, source);
+        loadChunkPath(chunkData.path, source);
     }
 }
 const loadedChunks = new Set();
+const unsupportedLoadChunk = Promise.resolve(undefined);
+const loadedChunk = Promise.resolve(undefined);
+const chunkCache = new Map();
+function clearChunkCache() {
+    chunkCache.clear();
+}
 function loadChunkPath(chunkPath, source) {
     if (!isJs(chunkPath)) {
         // We only support loading JS chunks in Node.js.
@@ -480,7 +516,15 @@ function loadChunkPath(chunkPath, source) {
         const chunkModules = require(resolved);
         for (const [moduleId, moduleFactory] of Object.entries(chunkModules)){
             if (!moduleFactories[moduleId]) {
-                moduleFactories[moduleId] = moduleFactory;
+                if (Array.isArray(moduleFactory)) {
+                    const [moduleFactoryFn, otherIds] = moduleFactory;
+                    moduleFactories[moduleId] = moduleFactoryFn;
+                    for (const otherModuleId of otherIds){
+                        moduleFactories[otherModuleId] = moduleFactoryFn;
+                    }
+                } else {
+                    moduleFactories[moduleId] = moduleFactory;
+                }
             }
         }
         loadedChunks.add(chunkPath);
@@ -494,49 +538,55 @@ function loadChunkPath(chunkPath, source) {
         });
     }
 }
-async function loadChunkAsync(source, chunkData) {
+function loadChunkUncached(chunkPath) {
+    // resolve to an absolute path to simplify `require` handling
+    const resolved = path.resolve(RUNTIME_ROOT, chunkPath);
+    // TODO: consider switching to `import()` to enable concurrent chunk loading and async file io
+    // However this is incompatible with hot reloading (since `import` doesn't use the require cache)
+    const chunkModules = require(resolved);
+    for (const [moduleId, moduleFactory] of Object.entries(chunkModules)){
+        if (!moduleFactories[moduleId]) {
+            if (Array.isArray(moduleFactory)) {
+                const [moduleFactoryFn, otherIds] = moduleFactory;
+                moduleFactories[moduleId] = moduleFactoryFn;
+                for (const otherModuleId of otherIds){
+                    moduleFactories[otherModuleId] = moduleFactoryFn;
+                }
+            } else {
+                moduleFactories[moduleId] = moduleFactory;
+            }
+        }
+    }
+}
+function loadChunkAsync(source, chunkData) {
     const chunkPath = typeof chunkData === 'string' ? chunkData : chunkData.path;
     if (!isJs(chunkPath)) {
         // We only support loading JS chunks in Node.js.
         // This branch can be hit when trying to load a CSS chunk.
-        return;
+        return unsupportedLoadChunk;
     }
-    if (loadedChunks.has(chunkPath)) {
-        return;
-    }
-    const resolved = path.resolve(RUNTIME_ROOT, chunkPath);
-    try {
-        const contents = await fs.readFile(resolved, 'utf-8');
-        const localRequire = (id)=>{
-            let resolvedId = require.resolve(id, {
-                paths: [
-                    path.dirname(resolved)
-                ]
-            });
-            return require(resolvedId);
-        };
-        const module1 = {
-            exports: {}
-        };
-        (0, eval)('(function(module, exports, require, __dirname, __filename) {' + contents + '\n})' + '\n//# sourceURL=' + url.pathToFileURL(resolved))(module1, module1.exports, localRequire, path.dirname(resolved), resolved);
-        const chunkModules = module1.exports;
-        for (const [moduleId, moduleFactory] of Object.entries(chunkModules)){
-            if (!moduleFactories[moduleId]) {
-                moduleFactories[moduleId] = moduleFactory;
+    let entry = chunkCache.get(chunkPath);
+    if (entry === undefined) {
+        try {
+            // Load the chunk synchronously
+            loadChunkUncached(chunkPath);
+            entry = loadedChunk;
+        } catch (e) {
+            let errorMessage = `Failed to load chunk ${chunkPath}`;
+            if (source) {
+                errorMessage += ` from ${stringifySourceInfo(source)}`;
             }
+            // Cache the failure promise, future requests will also get this same rejection
+            entry = Promise.reject(new Error(errorMessage, {
+                cause: e
+            }));
         }
-        loadedChunks.add(chunkPath);
-    } catch (e) {
-        let errorMessage = `Failed to load chunk ${chunkPath}`;
-        if (source) {
-            errorMessage += ` from ${stringifySourceInfo(source)}`;
-        }
-        throw new Error(errorMessage, {
-            cause: e
-        });
+        chunkCache.set(chunkPath, entry);
     }
+    // TODO: Return an instrumented Promise that React can use instead of relying on referential equality.
+    return entry;
 }
-async function loadChunkAsyncByUrl(source, chunkUrl) {
+function loadChunkAsyncByUrl(source, chunkUrl) {
     const path1 = url.fileURLToPath(new URL(chunkUrl, RUNTIME_ROOT));
     return loadChunkAsync(source, path1);
 }
@@ -570,21 +620,6 @@ function instantiateModule(id, source) {
         }
         throw new Error(`Module ${id} was instantiated ${instantiationReason}, but the module factory is not available. It might have been deleted in an HMR update.`);
     }
-    let parents;
-    switch(source.type){
-        case 0:
-            parents = [];
-            break;
-        case 1:
-            // No need to add this module as a child of the parent module here, this
-            // has already been taken care of in `getOrInstantiateModuleFromParent`.
-            parents = [
-                source.parentId
-            ];
-            break;
-        default:
-            invariant(source, (source)=>`Unknown source type: ${source?.type}`);
-    }
     const module1 = {
         exports: {},
         error: undefined,
@@ -605,10 +640,10 @@ function instantiateModule(id, source) {
             y: externalImport,
             f: moduleContext,
             i: esmImport.bind(null, module1),
-            s: esmExport.bind(null, module1, module1.exports),
-            j: dynamicExport.bind(null, module1, module1.exports),
-            v: exportValue.bind(null, module1),
-            n: exportNamespace.bind(null, module1),
+            s: esmExport.bind(null, module1, module1.exports, moduleCache),
+            j: dynamicExport.bind(null, module1, module1.exports, moduleCache),
+            v: exportValue.bind(null, module1, moduleCache),
+            n: exportNamespace.bind(null, module1, moduleCache),
             m: module1,
             c: moduleCache,
             M: moduleFactories,
@@ -620,6 +655,7 @@ function instantiateModule(id, source) {
                 type: 1,
                 parentId: id
             }),
+            C: clearChunkCache,
             w: loadWebAssembly,
             u: loadWebAssemblyModule,
             P: resolveAbsolutePath,
@@ -683,3 +719,6 @@ module.exports = {
     getOrInstantiateRuntimeModule,
     loadChunk
 };
+
+
+//# sourceMappingURL=%5Bturbopack%5D_runtime.js.map

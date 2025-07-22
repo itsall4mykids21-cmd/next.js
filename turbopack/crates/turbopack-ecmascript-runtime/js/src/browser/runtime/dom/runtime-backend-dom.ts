@@ -94,7 +94,7 @@ const chunkResolvers: Map<ChunkUrl, ChunkResolver> = new Map()
      * Loads the given chunk, and returns a promise that resolves once the chunk
      * has been loaded.
      */
-    loadChunk(chunkUrl, source) {
+    loadChunkCached(chunkUrl, source) {
       return doLoadChunk(chunkUrl, source)
     },
   }
@@ -187,7 +187,8 @@ const chunkResolvers: Map<ChunkUrl, ChunkResolver> = new Map()
             // loaded instantly.
             resolver.resolve()
           }
-          document.body.appendChild(link)
+          // Append to the `head` for webpack compatibility.
+          document.head.appendChild(link)
         }
       } else if (isJs(chunkUrl)) {
         const previousScripts = document.querySelectorAll(
@@ -210,7 +211,8 @@ const chunkResolvers: Map<ChunkUrl, ChunkResolver> = new Map()
           script.onerror = () => {
             resolver.reject()
           }
-          document.body.appendChild(script)
+          // Append to the `head` for webpack compatibility.
+          document.head.appendChild(script)
         }
       } else {
         throw new Error(`can't infer type of chunk from URL ${chunkUrl}`)

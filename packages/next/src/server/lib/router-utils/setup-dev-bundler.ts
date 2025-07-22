@@ -80,9 +80,11 @@ import { store as consoleStore } from '../../../build/output/store'
 import {
   isPersistentCachingEnabled,
   ModuleBuildError,
-  TurbopackInternalError,
 } from '../../../shared/lib/turbopack/utils'
 import { getDefineEnv } from '../../../build/define-env'
+import { TurbopackInternalError } from '../../../shared/lib/turbopack/internal-error'
+import { normalizePath } from '../../../lib/normalize-path'
+import { JSON_CONTENT_TYPE_HEADER } from '../../../lib/constants'
 
 export type SetupOpts = {
   renderServer: LazyRenderServerInstance
@@ -158,7 +160,11 @@ export async function propagateServerField(
   await opts.renderServer?.instance?.propagateServerField(opts.dir, field, args)
 }
 
-async function startWatcher(opts: SetupOpts) {
+async function startWatcher(
+  opts: SetupOpts & {
+    isSrcDir: boolean
+  }
+) {
   const { nextConfig, appDir, pagesDir, dir, resetFetch } = opts
   const { useFileSystemPublicRoutes } = nextConfig
   const usingTypeScript = await verifyTypeScript(opts)
@@ -191,6 +197,7 @@ async function startWatcher(opts: SetupOpts) {
   const hotReloader: NextJsHotReloaderInterface = opts.turbo
     ? await createHotReloaderTurbopack(opts, serverFields, distDir, resetFetch)
     : new HotReloaderWebpack(opts.dir, {
+        isSrcDir: opts.isSrcDir,
         appDir,
         pagesDir,
         distDir,
@@ -659,6 +666,10 @@ async function startWatcher(opts: SetupOpts) {
             opts.fsChecker.rewrites.beforeFiles.length > 0 ||
             opts.fsChecker.rewrites.fallback.length > 0
 
+          const rootPath =
+            opts.nextConfig.turbopack?.root ||
+            opts.nextConfig.outputFileTracingRoot ||
+            opts.dir
           await hotReloader.turbopackProject.update({
             defineEnv: createDefineEnv({
               isTurbopack: true,
@@ -672,7 +683,10 @@ async function startWatcher(opts: SetupOpts) {
               // TODO: Implement
               middlewareMatchers: undefined,
               projectPath: opts.dir,
+              rewrites: opts.fsChecker.rewrites,
             }),
+            rootPath,
+            projectPath: normalizePath(path.relative(rootPath, dir)),
           })
         }
 
@@ -747,6 +761,7 @@ async function startWatcher(opts: SetupOpts) {
                   isNodeServer,
                   middlewareMatchers: undefined,
                   projectPath: opts.dir,
+                  rewrites: opts.fsChecker.rewrites,
                 })
 
                 Object.keys(plugin.definitions).forEach((key) => {
@@ -959,7 +974,7 @@ async function startWatcher(opts: SetupOpts) {
 
     if (parsedUrl.pathname?.includes(clientPagesManifestPath)) {
       res.statusCode = 200
-      res.setHeader('Content-Type', 'application/json; charset=utf-8')
+      res.setHeader('Content-Type', JSON_CONTENT_TYPE_HEADER)
       res.end(
         JSON.stringify({
           pages: prevSortedRoutes.filter(
@@ -975,7 +990,7 @@ async function startWatcher(opts: SetupOpts) {
       parsedUrl.pathname?.includes(devTurbopackMiddlewareManifestPath)
     ) {
       res.statusCode = 200
-      res.setHeader('Content-Type', 'application/json; charset=utf-8')
+      res.setHeader('Content-Type', JSON_CONTENT_TYPE_HEADER)
       res.end(JSON.stringify(serverFields.middleware?.matchers || []))
       return { finished: true }
     }
@@ -1026,7 +1041,10 @@ export async function setupDevBundler(opts: SetupOpts) {
     .relative(opts.dir, opts.pagesDir || opts.appDir || '')
     .startsWith('src')
 
-  const result = await startWatcher(opts)
+  const result = await startWatcher({
+    ...opts,
+    isSrcDir,
+  })
 
   opts.telemetry.record(
     eventCliSession(

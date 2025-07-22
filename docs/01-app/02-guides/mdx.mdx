@@ -70,8 +70,6 @@ const withMDX = createMDX({
 })
 ```
 
-> **Good to know**: [Turbopack](/docs/app/api-reference/turbopack) does not currently support the `extension` option and therefore does not support `.md` files.
-
 ## Add an `mdx-components.tsx` file
 
 Create an `mdx-components.tsx` (or `.js`) file in the root of your project to define global MDX Components. For example, at the same level as `pages` or `app`, or inside `src` if applicable.
@@ -729,8 +727,18 @@ const nextConfig = {
 
 const withMDX = createMDX({
   options: {
-    remarkPlugins: [],
-    rehypePlugins: [['rehype-katex', { strict: true, throwOnError: true }]],
+    remarkPlugins: [
+      // Without options
+      'remark-gfm',
+      // With options
+      ['remark-toc', { heading: 'The Table' }],
+    ],
+    rehypePlugins: [
+      // Without options
+      'rehype-slug',
+      // With options
+      ['rehype-katex', { strict: true, throwOnError: true }],
+    ],
   },
 })
 
@@ -739,7 +747,7 @@ export default withMDX(nextConfig)
 
 > **Good to know**:
 >
-> remark and rehype plugins without serializable options cannot be used yet with [Turbopack](/docs/app/api-reference/turbopack), due to [inability to pass JavaScript functions to Rust](https://github.com/vercel/next.js/issues/71819#issuecomment-2461802968)
+> remark and rehype plugins without serializable options cannot be used yet with [Turbopack](/docs/app/api-reference/turbopack), because JavaScript functions can't be passed to Rust.
 
 ## Remote MDX
 

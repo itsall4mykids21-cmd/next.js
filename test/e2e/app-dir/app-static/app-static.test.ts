@@ -907,8 +907,6 @@ describe('app-dir static/dynamic handling', () => {
          "variable-revalidate/encoding.rsc",
          "variable-revalidate/headers-instance.html",
          "variable-revalidate/headers-instance.rsc",
-         "variable-revalidate/post-method.html",
-         "variable-revalidate/post-method.rsc",
          "variable-revalidate/revalidate-3.html",
          "variable-revalidate/revalidate-3.rsc",
          "variable-revalidate/revalidate-360-isr.html",
@@ -2278,31 +2276,6 @@ describe('app-dir static/dynamic handling', () => {
            "initialRevalidateSeconds": 10,
            "srcRoute": "/variable-revalidate/headers-instance",
          },
-         "/variable-revalidate/post-method": {
-           "allowHeader": [
-             "host",
-             "x-matched-path",
-             "x-prerender-revalidate",
-             "x-prerender-revalidate-if-generated",
-             "x-next-revalidated-tags",
-             "x-next-revalidate-tag-token",
-           ],
-           "dataRoute": "/variable-revalidate/post-method.rsc",
-           "experimentalBypassFor": [
-             {
-               "key": "Next-Action",
-               "type": "header",
-             },
-             {
-               "key": "content-type",
-               "type": "header",
-               "value": "multipart/form-data;.*",
-             },
-           ],
-           "initialExpireSeconds": 31536000,
-           "initialRevalidateSeconds": 10,
-           "srcRoute": "/variable-revalidate/post-method",
-         },
          "/variable-revalidate/revalidate-3": {
            "allowHeader": [
              "host",
@@ -2790,27 +2763,51 @@ describe('app-dir static/dynamic handling', () => {
     for (let i = 0; i < 6; i++) {
       await waitFor(1000)
 
-      const timings = {
-        start: Date.now(),
-        startedStreaming: 0,
-      }
-
       res = await next.fetch(path)
 
-      // eslint-disable-next-line no-loop-func
-      await new Promise<void>((resolve) => {
-        res.body.on('data', () => {
-          if (!timings.startedStreaming) {
-            timings.startedStreaming = Date.now()
-          }
-        })
-
-        res.body.on('end', () => {
-          resolve()
-        })
+      let data: any
+      let startedStreaming: number = -1
+      res.body.on('data', () => {
+        if (startedStreaming === -1) {
+          startedStreaming = Date.now()
+        }
       })
+      if (res.headers.get('content-type').includes('application/json')) {
+        data = await res.json()
+      } else {
+        const html = await res.text()
+        const $ = cheerio.load(html)
+        const dataJSON = $('#data').text()
+        try {
+          data = JSON.parse(dataJSON)
+        } catch (cause) {
+          throw new Error(
+            `Failed to parse JSON from data-start attribute: "${dataJSON}"`,
+            { cause }
+          )
+        }
+      }
 
-      expect(timings.startedStreaming - timings.start).toBeLessThan(3000)
+      const startedResponding = +data.start
+      if (Number.isNaN(startedResponding)) {
+        throw new Error(
+          `Expected start to be a number. Received: "${data.start}"`
+        )
+      }
+      if (startedStreaming === -1) {
+        throw new Error(
+          'Expected startedStreaming to be set. This is a bug in the test.'
+        )
+      }
+
+      // We just want to ensure the response isn't blocked on revalidating the fetch.
+      // So we use the start time when route started processing not when we
+      // send off the response because that includes cold boots of the infra.
+      if (startedStreaming - startedResponding >= 3000) {
+        throw new Error(
+          `Response #${i} took too long to complete: ${startedStreaming - startedResponding}ms`
+        )
+      }
     }
   })
 
@@ -3451,10 +3448,12 @@ describe('app-dir static/dynamic handling', () => {
       const dataBody2 = $('#data-body2').text()
       const dataBody3 = $('#data-body3').text()
       const dataBody4 = $('#data-body4').text()
+      const dataBody5 = $('#data-body5').text()
 
       expect(dataBody1).not.toBe(dataBody2)
       expect(dataBody2).not.toBe(dataBody3)
       expect(dataBody3).not.toBe(dataBody4)
+      expect(dataBody4).not.toBe(dataBody5)
 
       const res2 = await fetchViaHTTP(
         next.url,
@@ -3469,6 +3468,8 @@ describe('app-dir static/dynamic handling', () => {
       expect($2('#data-body1').text()).toBe(dataBody1)
       expect($2('#data-body2').text()).toBe(dataBody2)
       expect($2('#data-body3').text()).toBe(dataBody3)
+      expect($2('#data-body4').text()).toBe(dataBody4)
+      expect($2('#data-body5').text()).toBe(dataBody5)
       return 'success'
     }, 'success')
   })

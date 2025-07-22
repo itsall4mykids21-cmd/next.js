@@ -36,6 +36,15 @@ export interface WorkStore {
 
   readonly isOnDemandRevalidate?: boolean
   readonly isBuildTimePrerendering?: boolean
+
+  /**
+   * This is true when:
+   * - source maps are generated
+   * - source maps are applied
+   * - minification is disabled
+   */
+  readonly hasReadableErrorStacks?: boolean
+
   readonly isRevalidate?: boolean
 
   forceDynamic?: boolean
@@ -97,7 +106,7 @@ export interface WorkStore {
   >
   readonly assetPrefix?: string
 
-  dynamicIOEnabled: boolean
+  cacheComponentsEnabled: boolean
   dev: boolean
 
   /**
