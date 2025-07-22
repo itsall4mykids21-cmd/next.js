@@ -1,5 +1,5 @@
 import Image from "next/image";
-import styles from "./Home.module.css";
+import styles from "./page.module.css";
 
 export default function Home() {
   return (
@@ -14,7 +14,7 @@ export default function Home() {
           priority
         />
         <div className={styles.intro}>
-<h1>To get started, edit the page.js file.</h1>
+          <h1>To get started, edit the page.js file.</h1>
           <p>
             Looking for a starting point or more instructions? Head over to{" "}
             <span>Template</span> or the <span>Learning</span> center.
@@ -34,7 +34,7 @@ export default function Home() {
               width={16}
               height={16}
             />
-            Deploy now
+            Deploy Now
           </a>
           <a
             className={styles.secondary}
