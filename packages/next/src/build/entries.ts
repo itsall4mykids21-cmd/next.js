@@ -312,7 +312,8 @@ export async function createPagesMapping({
       // So far we only render this in development to avoid conflicts in build.
       // TODO: remove this once /_error/page is available for next build.
       if (isDev) {
-        appPages['/_error/page'] = 'next/dist/client/components/empty-error'
+        appPages['/_error/page'] =
+          'next/dist/client/components/builtin/empty-error'
       }
       return appPages
     }

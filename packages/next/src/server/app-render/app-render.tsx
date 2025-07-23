@@ -188,7 +188,7 @@ import {
   trackPendingImport,
   trackPendingModules,
 } from './module-loading/track-module-loading.external'
-import EmptyError from '../../client/components/empty-error'
+import EmptyError from '../../client/components/builtin/empty-error'
 import { isReactLargeShellError } from './react-large-shell-error'
 import type { GlobalErrorComponent } from '../../client/components/builtin/global-error'
 import { normalizeConventionFilePath } from './segment-explorer-path'

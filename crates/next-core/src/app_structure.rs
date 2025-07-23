@@ -1489,7 +1489,7 @@ async fn directory_tree_to_entrypoints_internal_untraced(
                 &mut result,
                 app_not_found_page,
                 not_found_tree,
-                root_params
+                root_params,
             );
         }
 
@@ -1506,7 +1506,7 @@ async fn directory_tree_to_entrypoints_internal_untraced(
                         modules: AppDirModules {
                             page: Some(get_next_package(app_dir.clone())
                                 .await?
-                                .join("dist/client/components/empty-error.js".into())?),
+                                .join("dist/client/components/builtin/empty-error.js")?),
                             ..Default::default()
                         },
                         global_metadata,
@@ -1521,7 +1521,13 @@ async fn directory_tree_to_entrypoints_internal_untraced(
                 let app_error_page = app_page
                     .clone_push_str("_error")?
                     .complete(PageType::Page)?;
-                add_app_page(app_dir.clone(), &mut result, app_error_page, error_tree, root_params);
+                add_app_page(
+                    app_dir.clone(),
+                    &mut result,
+                    app_error_page,
+                    error_tree,
+                    root_params,
+                );
             }
         }
     }

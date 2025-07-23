@@ -1,4 +1,4 @@
-import { globalErrorStyles as styles } from './global-error-styles'
+import { globalErrorStyles as styles } from '../global-error-styles'
 
 export default function EmptyError() {
   return (
