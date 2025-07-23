@@ -25,35 +25,12 @@ function getFilesystemFrame(frame: StackFrame): StackFrame {
   return f
 }
 
-// If there's a cause of the error, will keep the new error message
-// but with the original stack trace.
-function decorateErrorWithCause(error: Error): Error {
+export function getServerError(error: Error, type: ErrorSourceType): Error {
   let message = error.message
-  let stack = error.stack
-  let curr: any = error
-  while (curr && isError(curr) && curr.cause) {
-    const cause = curr.cause
-    if (isError(cause)) {
-      if (cause.stack) {
-        // Append the stack trace of the cause to the current error
-        stack = `${stack}\nCaused by: ${cause.stack}`
-      }
-    }
-    curr = cause
+  // Retrieve the original error from the cause chain
+  while (isError(error.cause)) {
+    error = error.cause
   }
-  // Override the error message if there's new information
-  if (error.message !== message) {
-    error.message = message
-  }
-  if (error.stack !== stack) {
-    error.stack = stack
-  }
-  return error
-}
-
-export function getServerError(err: Error, type: ErrorSourceType): Error {
-  const error = decorateErrorWithCause(err)
-
   if (error.name === 'TurbopackInternalError') {
     // If this is an internal Turbopack error we shouldn't show internal details
     // to the user. These are written to a log file instead.
@@ -66,7 +43,7 @@ export function getServerError(err: Error, type: ErrorSourceType): Error {
 
   let n: Error
   try {
-    throw new Error(error.message)
+    throw new Error(message)
   } catch (e) {
     n = e as Error
   }
