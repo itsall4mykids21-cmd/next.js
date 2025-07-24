@@ -26,7 +26,9 @@ function getFilesystemFrame(frame: StackFrame): StackFrame {
 }
 
 export function getServerError(error: Error, type: ErrorSourceType): Error {
-  let message = error.message
+  const errMessage = error.message
+  const errorName = error.name
+
   // Retrieve the original error from the cause chain
   while (isError(error.cause)) {
     error = error.cause
@@ -43,12 +45,12 @@ export function getServerError(error: Error, type: ErrorSourceType): Error {
 
   let n: Error
   try {
-    throw new Error(message)
+    throw new Error(errMessage)
   } catch (e) {
     n = e as Error
   }
 
-  n.name = error.name
+  n.name = errorName
   try {
     n.stack = `${n.toString()}\n${parse(error.stack || '')
       .map(getFilesystemFrame)
