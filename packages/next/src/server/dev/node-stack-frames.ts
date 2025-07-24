@@ -28,10 +28,12 @@ function getFilesystemFrame(frame: StackFrame): StackFrame {
 export function getServerError(error: Error, type: ErrorSourceType): Error {
   const errMessage = error.message
   const errorName = error.name
+  let errorStack = error.stack
 
   // Retrieve the original error from the cause chain
   while (isError(error.cause)) {
     error = error.cause
+    errorStack = error.stack
   }
   if (error.name === 'TurbopackInternalError') {
     // If this is an internal Turbopack error we shouldn't show internal details
@@ -52,7 +54,7 @@ export function getServerError(error: Error, type: ErrorSourceType): Error {
 
   n.name = errorName
   try {
-    n.stack = `${n.toString()}\n${parse(error.stack || '')
+    n.stack = `${n.toString()}\n${parse(errorStack || '')
       .map(getFilesystemFrame)
       .map((f) => {
         let str = `    at ${f.methodName}`
@@ -70,7 +72,7 @@ export function getServerError(error: Error, type: ErrorSourceType): Error {
       })
       .join('\n')}`
   } catch {
-    n.stack = error.stack
+    n.stack = errorStack
   }
 
   decorateServerError(n, type)

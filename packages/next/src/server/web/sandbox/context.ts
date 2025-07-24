@@ -392,8 +392,7 @@ Learn More: https://nextjs.org/docs/messages/edge-dynamic-code-evaluation`),
             : __fetch(String(input), init)
 
         return await response.catch((err) => {
-          callingError.message = err.message
-          err.stack = callingError.stack
+          err.cause = callingError
           throw err
         })
       }
