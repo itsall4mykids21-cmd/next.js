@@ -95,6 +95,16 @@ export function normalizeMetadataRoute(page: string) {
   } else {
     suffix = getMetadataRouteSuffix(page)
   }
+
+  const { dir: _dir, name: _name, ext: _ext } = path.parse(page)
+  if (_ext) {
+    return path.posix.join(
+      _dir,
+      `${_name}${suffix ? `-${suffix}` : ''}${_ext}`,
+      '__static_file__'
+    )
+  }
+
   // Support both /<metadata-route.ext> and custom routes /<metadata-route>/route.ts.
   // If it's a metadata file route, we need to append /[id]/route to the page.
   if (!route.endsWith('/route')) {
