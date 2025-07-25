@@ -1,23 +1,22 @@
 import { nextTestSetup } from 'e2e-utils'
 
-describe('metadata-files-dynamic', () => {
+describe('metadata-files-static-output-static-route', () => {
   const { next } = nextTestSetup({
     files: __dirname,
   })
 
-  describe('dynamic page', () => {
-    it('should have correct link tags for dynamic page', async () => {
-      const $ = await next.render$('/dynamic/123')
-      const links = $('link')
-        .not('[href*="/_next/static"]')
-        .map((_, el) => ({
-          href: new URL($(el).attr('href'), 'http://n').pathname,
-          rel: $(el).attr('rel'),
-          type: $(el).attr('type') || '',
-        }))
-        .get()
+  it('should have correct link tags for static page', async () => {
+    const $ = await next.render$('/static')
+    const links = $('link')
+      .not('[href*="/_next/static"]')
+      .map((_, el) => ({
+        href: new URL($(el).attr('href'), 'http://n').pathname,
+        rel: $(el).attr('rel'),
+        type: $(el).attr('type') || '',
+      }))
+      .get()
 
-      expect(links).toMatchInlineSnapshot(`
+    expect(links).toMatchInlineSnapshot(`
      [
        {
          "href": "/manifest.json",
@@ -30,285 +29,74 @@ describe('metadata-files-dynamic', () => {
          "type": "image/x-icon",
        },
        {
-         "href": "/dynamic/123/icon.png",
+         "href": "/static/icon.png",
          "rel": "icon",
          "type": "image/png",
        },
        {
-         "href": "/dynamic/123/apple-icon.png",
+         "href": "/static/apple-icon.png",
          "rel": "apple-touch-icon",
          "type": "image/png",
        },
      ]
     `)
-    })
-
-    it('should serve static files when requested to its route for dynamic page', async () => {
-      const [
-        appleIconRes,
-        iconRes,
-        opengraphImageRes,
-        twitterImageRes,
-        sitemapRes,
-      ] = await Promise.all([
-        next.fetch('/dynamic/123/apple-icon.png'),
-        next.fetch('/dynamic/123/icon.png'),
-        next.fetch('/dynamic/123/opengraph-image.png'),
-        next.fetch('/dynamic/123/twitter-image.png'),
-        next.fetch('/dynamic/123/sitemap.xml'),
-      ])
-
-      // Compare response content with actual files
-      const [
-        actualAppleIcon,
-        actualIcon,
-        actualOpengraphImage,
-        actualTwitterImage,
-        actualSitemap,
-      ] = await Promise.all([
-        next.readFileBuffer('app/dynamic/[id]/apple-icon.png'),
-        next.readFileBuffer('app/dynamic/[id]/icon.png'),
-        next.readFileBuffer('app/dynamic/[id]/opengraph-image.png'),
-        next.readFileBuffer('app/dynamic/[id]/twitter-image.png'),
-        next.readFile('app/dynamic/[id]/sitemap.xml'),
-      ])
-
-      expect({
-        appleIcon: Buffer.compare(
-          Buffer.from(await appleIconRes.arrayBuffer()),
-          actualAppleIcon
-        ),
-        icon: Buffer.compare(
-          Buffer.from(await iconRes.arrayBuffer()),
-          actualIcon
-        ),
-        opengraphImage: Buffer.compare(
-          Buffer.from(await opengraphImageRes.arrayBuffer()),
-          actualOpengraphImage
-        ),
-        twitterImage: Buffer.compare(
-          Buffer.from(await twitterImageRes.arrayBuffer()),
-          actualTwitterImage
-        ),
-        sitemap: await sitemapRes.text(),
-      }).toEqual({
-        // Buffer comparison returns 0 for equal
-        appleIcon: 0,
-        icon: 0,
-        opengraphImage: 0,
-        twitterImage: 0,
-        sitemap: actualSitemap,
-      })
-    })
   })
 
-  describe('dynamic catch-all page', () => {
-    it('should have correct link tags for dynamic catch-all page', async () => {
-      const $ = await next.render$('/dynamic/catch-all/123')
-      const links = $('link')
-        .not('[href*="/_next/static"]')
-        .map((_, el) => ({
-          href: new URL($(el).attr('href'), 'http://n').pathname,
-          rel: $(el).attr('rel'),
-          type: $(el).attr('type') || '',
-        }))
-        .get()
+  it('should serve static files when requested to its route for static page', async () => {
+    const [
+      appleIconRes,
+      iconRes,
+      opengraphImageRes,
+      twitterImageRes,
+      sitemapRes,
+    ] = await Promise.all([
+      next.fetch('/static/apple-icon.png'),
+      next.fetch('/static/icon.png'),
+      next.fetch('/static/opengraph-image.png'),
+      next.fetch('/static/twitter-image.png'),
+      next.fetch('/static/sitemap.xml'),
+    ])
 
-      expect(links).toMatchInlineSnapshot(`
-     [
-       {
-         "href": "/manifest.json",
-         "rel": "manifest",
-         "type": "",
-       },
-       {
-         "href": "/favicon.ico",
-         "rel": "icon",
-         "type": "image/x-icon",
-       },
-       {
-         "href": "/dynamic/catch-all/123/icon.png",
-         "rel": "icon",
-         "type": "image/png",
-       },
-       {
-         "href": "/dynamic/catch-all/123/apple-icon.png",
-         "rel": "apple-touch-icon",
-         "type": "image/png",
-       },
-     ]
-    `)
-    })
+    // Compare response content with actual files
+    const [
+      actualAppleIcon,
+      actualIcon,
+      actualOpengraphImage,
+      actualTwitterImage,
+      actualSitemap,
+    ] = await Promise.all([
+      next.readFileBuffer('app/static/apple-icon.png'),
+      next.readFileBuffer('app/static/icon.png'),
+      next.readFileBuffer('app/static/opengraph-image.png'),
+      next.readFileBuffer('app/static/twitter-image.png'),
+      next.readFile('app/static/sitemap.xml'),
+    ])
 
-    it('should serve static files when requested to its route for dynamic catch-all page', async () => {
-      const [
-        appleIconRes,
-        iconRes,
-        opengraphImageRes,
-        twitterImageRes,
-        sitemapRes,
-      ] = await Promise.all([
-        next.fetch('/dynamic/catch-all/123/apple-icon.png'),
-        next.fetch('/dynamic/catch-all/123/icon.png'),
-        next.fetch('/dynamic/catch-all/123/opengraph-image.png'),
-        next.fetch('/dynamic/catch-all/123/twitter-image.png'),
-        next.fetch('/dynamic/catch-all/123/sitemap.xml'),
-      ])
-
-      // Compare response content with actual files
-      const [
-        actualAppleIcon,
-        actualIcon,
-        actualOpengraphImage,
-        actualTwitterImage,
-        actualSitemap,
-      ] = await Promise.all([
-        next.readFileBuffer(
-          'app/dynamic/catch-all/[...catch-all]/apple-icon.png'
-        ),
-        next.readFileBuffer('app/dynamic/catch-all/[...catch-all]/icon.png'),
-        next.readFileBuffer(
-          'app/dynamic/catch-all/[...catch-all]/opengraph-image.png'
-        ),
-        next.readFileBuffer(
-          'app/dynamic/catch-all/[...catch-all]/twitter-image.png'
-        ),
-        next.readFile('app/dynamic/catch-all/[...catch-all]/sitemap.xml'),
-      ])
-
-      expect({
-        appleIcon: Buffer.compare(
-          Buffer.from(await appleIconRes.arrayBuffer()),
-          actualAppleIcon
-        ),
-        icon: Buffer.compare(
-          Buffer.from(await iconRes.arrayBuffer()),
-          actualIcon
-        ),
-        opengraphImage: Buffer.compare(
-          Buffer.from(await opengraphImageRes.arrayBuffer()),
-          actualOpengraphImage
-        ),
-        twitterImage: Buffer.compare(
-          Buffer.from(await twitterImageRes.arrayBuffer()),
-          actualTwitterImage
-        ),
-        sitemap: await sitemapRes.text(),
-      }).toEqual({
-        // Buffer comparison returns 0 for equal
-        appleIcon: 0,
-        icon: 0,
-        opengraphImage: 0,
-        twitterImage: 0,
-        sitemap: actualSitemap,
-      })
-    })
-  })
-
-  describe('dynamic optional catch-all page', () => {
-    it('should have correct link tags for dynamic optional catch-all page', async () => {
-      const $ = await next.render$('/dynamic/optional-catch-all/123')
-      const links = $('link')
-        .not('[href*="/_next/static"]')
-        .map((_, el) => ({
-          href: new URL($(el).attr('href'), 'http://n').pathname,
-          rel: $(el).attr('rel'),
-          type: $(el).attr('type') || '',
-        }))
-        .get()
-
-      expect(links).toMatchInlineSnapshot(`
-     [
-       {
-         "href": "/manifest.json",
-         "rel": "manifest",
-         "type": "",
-       },
-       {
-         "href": "/favicon.ico",
-         "rel": "icon",
-         "type": "image/x-icon",
-       },
-       {
-         "href": "/dynamic/optional-catch-all/123/icon.png",
-         "rel": "icon",
-         "type": "image/png",
-       },
-       {
-         "href": "/dynamic/optional-catch-all/123/apple-icon.png",
-         "rel": "apple-touch-icon",
-         "type": "image/png",
-       },
-     ]
-    `)
-    })
-
-    it('should serve static files when requested to its route for dynamic optional catch-all page', async () => {
-      const [
-        appleIconRes,
-        iconRes,
-        opengraphImageRes,
-        twitterImageRes,
-        sitemapRes,
-      ] = await Promise.all([
-        next.fetch('/dynamic/optional-catch-all/123/apple-icon.png'),
-        next.fetch('/dynamic/optional-catch-all/123/icon.png'),
-        next.fetch('/dynamic/optional-catch-all/123/opengraph-image.png'),
-        next.fetch('/dynamic/optional-catch-all/123/twitter-image.png'),
-        next.fetch('/dynamic/optional-catch-all/123/sitemap.xml'),
-      ])
-
-      // Compare response content with actual files
-      const [
-        actualAppleIcon,
-        actualIcon,
-        actualOpengraphImage,
-        actualTwitterImage,
-        actualSitemap,
-      ] = await Promise.all([
-        next.readFileBuffer(
-          'app/dynamic/optional-catch-all/[[...optional-catch-all]]/apple-icon.png'
-        ),
-        next.readFileBuffer(
-          'app/dynamic/optional-catch-all/[[...optional-catch-all]]/icon.png'
-        ),
-        next.readFileBuffer(
-          'app/dynamic/optional-catch-all/[[...optional-catch-all]]/opengraph-image.png'
-        ),
-        next.readFileBuffer(
-          'app/dynamic/optional-catch-all/[[...optional-catch-all]]/twitter-image.png'
-        ),
-        next.readFile(
-          'app/dynamic/optional-catch-all/[[...optional-catch-all]]/sitemap.xml'
-        ),
-      ])
-
-      expect({
-        appleIcon: Buffer.compare(
-          Buffer.from(await appleIconRes.arrayBuffer()),
-          actualAppleIcon
-        ),
-        icon: Buffer.compare(
-          Buffer.from(await iconRes.arrayBuffer()),
-          actualIcon
-        ),
-        opengraphImage: Buffer.compare(
-          Buffer.from(await opengraphImageRes.arrayBuffer()),
-          actualOpengraphImage
-        ),
-        twitterImage: Buffer.compare(
-          Buffer.from(await twitterImageRes.arrayBuffer()),
-          actualTwitterImage
-        ),
-        sitemap: await sitemapRes.text(),
-      }).toEqual({
-        // Buffer comparison returns 0 for equal
-        appleIcon: 0,
-        icon: 0,
-        opengraphImage: 0,
-        twitterImage: 0,
-        sitemap: actualSitemap,
-      })
+    expect({
+      appleIcon: Buffer.compare(
+        Buffer.from(await appleIconRes.arrayBuffer()),
+        actualAppleIcon
+      ),
+      icon: Buffer.compare(
+        Buffer.from(await iconRes.arrayBuffer()),
+        actualIcon
+      ),
+      opengraphImage: Buffer.compare(
+        Buffer.from(await opengraphImageRes.arrayBuffer()),
+        actualOpengraphImage
+      ),
+      twitterImage: Buffer.compare(
+        Buffer.from(await twitterImageRes.arrayBuffer()),
+        actualTwitterImage
+      ),
+      sitemap: await sitemapRes.text(),
+    }).toEqual({
+      // Buffer comparison returns 0 for equal
+      appleIcon: 0,
+      icon: 0,
+      opengraphImage: 0,
+      twitterImage: 0,
+      sitemap: actualSitemap,
     })
   })
 })

@@ -1,6 +1,6 @@
 import { nextTestSetup } from 'e2e-utils'
 
-describe('metadata-files-root', () => {
+describe('metadata-files-static-output-root-route', () => {
   const { next } = nextTestSetup({
     files: __dirname,
   })
