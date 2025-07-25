@@ -17,30 +17,103 @@ describe('metadata-files-static-output-dynamic-route', () => {
         }))
         .get()
 
-      expect(links).toMatchInlineSnapshot(`
-     [
+      const metas = $('meta')
+        .map((_, el) => ({
+          name: $(el).attr('name'),
+          content: $(el).attr('content'),
+          property: $(el).attr('property'),
+        }))
+        .get()
+        .filter((meta) => meta.content)
+
+      expect({ links, metas }).toMatchInlineSnapshot(`
        {
-         "href": "/manifest.json",
-         "rel": "manifest",
-         "type": "",
-       },
-       {
-         "href": "/favicon.ico",
-         "rel": "icon",
-         "type": "image/x-icon",
-       },
-       {
-         "href": "/dynamic/123/icon.png",
-         "rel": "icon",
-         "type": "image/png",
-       },
-       {
-         "href": "/dynamic/123/apple-icon.png",
-         "rel": "apple-touch-icon",
-         "type": "image/png",
-       },
-     ]
-    `)
+         "links": [
+           {
+             "href": "/manifest.json",
+             "rel": "manifest",
+             "type": "",
+           },
+           {
+             "href": "/favicon.ico",
+             "rel": "icon",
+             "type": "image/x-icon",
+           },
+           {
+             "href": "/dynamic/123/icon.png",
+             "rel": "icon",
+             "type": "image/png",
+           },
+           {
+             "href": "/dynamic/123/apple-icon.png",
+             "rel": "apple-touch-icon",
+             "type": "image/png",
+           },
+         ],
+         "metas": [
+           {
+             "content": "width=device-width, initial-scale=1",
+             "name": "viewport",
+             "property": undefined,
+           },
+           {
+             "content": "image/png",
+             "name": undefined,
+             "property": "og:image:type",
+           },
+           {
+             "content": "16",
+             "name": undefined,
+             "property": "og:image:width",
+           },
+           {
+             "content": "16",
+             "name": undefined,
+             "property": "og:image:height",
+           },
+           {
+             "content": "About Next.js",
+             "name": undefined,
+             "property": "og:image:alt",
+           },
+           {
+             "content": "http://localhost:62552/dynamic/123/opengraph-image.png?603d046c9a6fdfbb",
+             "name": undefined,
+             "property": "og:image",
+           },
+           {
+             "content": "summary_large_image",
+             "name": "twitter:card",
+             "property": undefined,
+           },
+           {
+             "content": "image/png",
+             "name": "twitter:image:type",
+             "property": undefined,
+           },
+           {
+             "content": "16",
+             "name": "twitter:image:width",
+             "property": undefined,
+           },
+           {
+             "content": "16",
+             "name": "twitter:image:height",
+             "property": undefined,
+           },
+           {
+             "content": "About Next.js",
+             "name": "twitter:image:alt",
+             "property": undefined,
+           },
+           {
+             "content": "http://localhost:62552/dynamic/123/twitter-image.png?603d046c9a6fdfbb",
+             "name": "twitter:image",
+             "property": undefined,
+           },
+         ],
+       }
+      `)
     })
 
     it('should serve static files when requested to its route for dynamic page', async () => {
@@ -115,29 +188,29 @@ describe('metadata-files-static-output-dynamic-route', () => {
         .get()
 
       expect(links).toMatchInlineSnapshot(`
-     [
-       {
-         "href": "/manifest.json",
-         "rel": "manifest",
-         "type": "",
-       },
-       {
-         "href": "/favicon.ico",
-         "rel": "icon",
-         "type": "image/x-icon",
-       },
-       {
-         "href": "/dynamic/catch-all/123/icon.png",
-         "rel": "icon",
-         "type": "image/png",
-       },
-       {
-         "href": "/dynamic/catch-all/123/apple-icon.png",
-         "rel": "apple-touch-icon",
-         "type": "image/png",
-       },
-     ]
-    `)
+            [
+              {
+                "href": "/manifest.json",
+                "rel": "manifest",
+                "type": "",
+              },
+              {
+                "href": "/favicon.ico",
+                "rel": "icon",
+                "type": "image/x-icon",
+              },
+              {
+                "href": "/dynamic/catch-all/123/icon.png",
+                "rel": "icon",
+                "type": "image/png",
+              },
+              {
+                "href": "/dynamic/catch-all/123/apple-icon.png",
+                "rel": "apple-touch-icon",
+                "type": "image/png",
+              },
+            ]
+          `)
     })
 
     it('should serve static files when requested to its route for dynamic catch-all page', async () => {
@@ -218,29 +291,29 @@ describe('metadata-files-static-output-dynamic-route', () => {
         .get()
 
       expect(links).toMatchInlineSnapshot(`
-     [
-       {
-         "href": "/manifest.json",
-         "rel": "manifest",
-         "type": "",
-       },
-       {
-         "href": "/favicon.ico",
-         "rel": "icon",
-         "type": "image/x-icon",
-       },
-       {
-         "href": "/dynamic/optional-catch-all/123/icon.png",
-         "rel": "icon",
-         "type": "image/png",
-       },
-       {
-         "href": "/dynamic/optional-catch-all/123/apple-icon.png",
-         "rel": "apple-touch-icon",
-         "type": "image/png",
-       },
-     ]
-    `)
+            [
+              {
+                "href": "/manifest.json",
+                "rel": "manifest",
+                "type": "",
+              },
+              {
+                "href": "/favicon.ico",
+                "rel": "icon",
+                "type": "image/x-icon",
+              },
+              {
+                "href": "/dynamic/optional-catch-all/123/icon.png",
+                "rel": "icon",
+                "type": "image/png",
+              },
+              {
+                "href": "/dynamic/optional-catch-all/123/apple-icon.png",
+                "rel": "apple-touch-icon",
+                "type": "image/png",
+              },
+            ]
+          `)
     })
 
     it('should serve static files when requested to its route for dynamic optional catch-all page', async () => {

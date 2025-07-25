@@ -42,19 +42,37 @@ describe('metadata-files-static-output-root-route', () => {
       }))
       .get()
 
-    expect(links).toMatchInlineSnapshot(`
-     [
-       {
-         "href": "/manifest.json",
-         "rel": "manifest",
-         "type": "",
-       },
-       {
-         "href": "/favicon.ico",
-         "rel": "icon",
-         "type": "image/x-icon",
-       },
-     ]
+    const metas = $('meta')
+      .map((_, el) => ({
+        name: $(el).attr('name'),
+        content: $(el).attr('content'),
+        property: $(el).attr('property'),
+      }))
+      .get()
+      .filter((meta) => meta.content)
+
+    expect({ links, metas }).toMatchInlineSnapshot(`
+     {
+       "links": [
+         {
+           "href": "/manifest.json",
+           "rel": "manifest",
+           "type": "",
+         },
+         {
+           "href": "/favicon.ico",
+           "rel": "icon",
+           "type": "image/x-icon",
+         },
+       ],
+       "metas": [
+         {
+           "content": "width=device-width, initial-scale=1",
+           "name": "viewport",
+           "property": undefined,
+         },
+       ],
+     }
     `)
   })
 
