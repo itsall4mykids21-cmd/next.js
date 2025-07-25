@@ -31,10 +31,31 @@ describe('metadata-files-root', () => {
     `)
   })
 
-  it('should have correct link tags in the HTML', async () => {
+  it('should have correct link tags for root page', async () => {
     const $ = await next.render$('/')
-    expect($('link[rel="icon"]').attr('href')).toBe('/favicon.ico')
-    expect($('link[rel="manifest"]').attr('href')).toBe('/manifest.json')
+    const links = $('link')
+      .not('[href*="/_next/static"]')
+      .map((_, el) => ({
+        href: new URL($(el).attr('href'), 'http://n').pathname,
+        rel: $(el).attr('rel'),
+        type: $(el).attr('type') || '',
+      }))
+      .get()
+
+    expect(links).toMatchInlineSnapshot(`
+     [
+       {
+         "href": "/manifest.json",
+         "rel": "manifest",
+         "type": "",
+       },
+       {
+         "href": "/favicon.ico",
+         "rel": "icon",
+         "type": "image/x-icon",
+       },
+     ]
+    `)
   })
 
   it('should serve static files when requested to its route', async () => {
@@ -54,19 +75,19 @@ describe('metadata-files-root', () => {
         next.readFile('app/sitemap.xml'),
       ])
 
-    expect([
-      Buffer.compare(
+    expect({
+      favicon: Buffer.compare(
         Buffer.from(await faviconRes.arrayBuffer()),
         actualFavicon
       ),
-      await manifestRes.text(),
-      await robotsRes.text(),
-      await sitemapRes.text(),
-    ]).toEqual([
-      0, // Buffer comparison returns 0 for equal
-      actualManifest,
-      actualRobots,
-      actualSitemap,
-    ])
+      manifest: await manifestRes.text(),
+      robots: await robotsRes.text(),
+      sitemap: await sitemapRes.text(),
+    }).toEqual({
+      favicon: 0, // Buffer comparison returns 0 for equal
+      manifest: actualManifest,
+      robots: actualRobots,
+      sitemap: actualSitemap,
+    })
   })
 })
