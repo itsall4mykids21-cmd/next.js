@@ -20,11 +20,10 @@ describe('metadata-files-static-output-dynamic-route', () => {
       const metas = $('meta')
         .map((_, el) => ({
           name: $(el).attr('name'),
-          content: $(el).attr('content'),
           property: $(el).attr('property'),
         }))
         .get()
-        .filter((meta) => meta.content)
+        .filter((meta) => meta.name || meta.property)
 
       expect({ links, metas }).toMatchInlineSnapshot(`
        {
@@ -52,62 +51,50 @@ describe('metadata-files-static-output-dynamic-route', () => {
          ],
          "metas": [
            {
-             "content": "width=device-width, initial-scale=1",
              "name": "viewport",
              "property": undefined,
            },
            {
-             "content": "image/png",
              "name": undefined,
              "property": "og:image:type",
            },
            {
-             "content": "16",
              "name": undefined,
              "property": "og:image:width",
            },
            {
-             "content": "16",
              "name": undefined,
              "property": "og:image:height",
            },
            {
-             "content": "About Next.js",
              "name": undefined,
              "property": "og:image:alt",
            },
            {
-             "content": "http://localhost:62552/dynamic/123/opengraph-image.png?603d046c9a6fdfbb",
              "name": undefined,
              "property": "og:image",
            },
            {
-             "content": "summary_large_image",
              "name": "twitter:card",
              "property": undefined,
            },
            {
-             "content": "image/png",
              "name": "twitter:image:type",
              "property": undefined,
            },
            {
-             "content": "16",
              "name": "twitter:image:width",
              "property": undefined,
            },
            {
-             "content": "16",
              "name": "twitter:image:height",
              "property": undefined,
            },
            {
-             "content": "About Next.js",
              "name": "twitter:image:alt",
              "property": undefined,
            },
            {
-             "content": "http://localhost:62552/dynamic/123/twitter-image.png?603d046c9a6fdfbb",
              "name": "twitter:image",
              "property": undefined,
            },

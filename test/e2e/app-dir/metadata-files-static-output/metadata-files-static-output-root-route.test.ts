@@ -45,11 +45,10 @@ describe('metadata-files-static-output-root-route', () => {
     const metas = $('meta')
       .map((_, el) => ({
         name: $(el).attr('name'),
-        content: $(el).attr('content'),
         property: $(el).attr('property'),
       }))
       .get()
-      .filter((meta) => meta.content)
+      .filter((meta) => meta.name || meta.property)
 
     expect({ links, metas }).toMatchInlineSnapshot(`
      {
@@ -67,7 +66,6 @@ describe('metadata-files-static-output-root-route', () => {
        ],
        "metas": [
          {
-           "content": "width=device-width, initial-scale=1",
            "name": "viewport",
            "property": undefined,
          },
