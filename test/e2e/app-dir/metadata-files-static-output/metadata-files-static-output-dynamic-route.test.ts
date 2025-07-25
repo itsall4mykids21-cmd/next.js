@@ -7,23 +7,25 @@ describe('metadata-files-static-output-dynamic-route', () => {
 
   describe('dynamic page', () => {
     it('should have correct link tags for dynamic page', async () => {
-      const $ = await next.render$('/dynamic/123')
-      const links = $('link')
-        .not('[href*="/_next/static"]')
-        .map((_, el) => ({
-          href: new URL($(el).attr('href'), 'http://n').pathname,
-          rel: $(el).attr('rel'),
-          type: $(el).attr('type') || '',
-        }))
-        .get()
+      const browser = await next.browser('/dynamic/123')
+      const links = await browser.eval(() => {
+        return Array.from(document.querySelectorAll('link'))
+          .filter((el) => !el.href.includes('/_next/static'))
+          .map((el) => ({
+            href: new URL(el.href, window.location.origin).pathname,
+            rel: el.rel,
+            type: el.type || '',
+          }))
+      })
 
-      const metas = $('meta')
-        .map((_, el) => ({
-          name: $(el).attr('name'),
-          property: $(el).attr('property'),
-        }))
-        .get()
-        .filter((meta) => meta.name || meta.property)
+      const metas = await browser.eval(() => {
+        return Array.from(document.querySelectorAll('meta'))
+          .map((el) => ({
+            name: el.getAttribute('name'),
+            property: el.getAttribute('property'),
+          }))
+          .filter((meta) => meta.name || meta.property)
+      })
 
       expect({ links, metas }).toMatchInlineSnapshot(`
        {
