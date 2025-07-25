@@ -574,7 +574,6 @@ export async function createPagesMapping({
   const isAppRoute = pagesType === 'app'
   const pages: MappedPages = {}
   const promises = pagePaths.map<Promise<void>>(async (pagePath) => {
-    console.log({ pagePath })
     // Do not process .d.ts files as routes
     if (pagePath.endsWith('.d.ts') && pageExtensions.includes('ts')) {
       return
@@ -604,8 +603,9 @@ export async function createPagesMapping({
 
     let route = pagesType === 'app' ? normalizeMetadataRoute(pageKey) : pageKey
 
-    if (route.endsWith('/__static_file__')) {
-      console.log('entries', { route, normalizedPath })
+    if (route.endsWith('/__static_metadata_file__')) {
+      // These files will be copied under {distDir}/static/metadata/...
+      // and served as static files on requests.
       return
     }
 
@@ -701,18 +701,21 @@ export async function copyMetadataStaticFiles({
   if (pagesType !== PAGE_TYPES.APP) {
     return
   }
-
-  const serverDir = join(distDir, 'server')
   const promises = pagePaths.map<Promise<void>>(async (pagePath) => {
     const pageKey = getPageFromPath(pagePath, pageExtensions)
     const route = normalizeMetadataRoute(pageKey)
 
-    if (!route.endsWith('/__static_file__')) {
+    if (!route.endsWith('/__static_metadata_file__')) {
       return
     }
 
     const filePath = join(appDir, pagePath)
-    const targetPath = join(serverDir, 'app', pagePath)
+    const targetPath = join(
+      distDir,
+      'static',
+      'metadata',
+      normalizeAppPath(route.replace('/__static_metadata_file__', ''))
+    )
 
     await mkdir(dirname(targetPath), { recursive: true })
     await copyFile(filePath, targetPath)

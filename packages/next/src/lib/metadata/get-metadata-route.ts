@@ -25,7 +25,7 @@ import {
  * /sitemap -> /sitemap
  * /(post)/sitemap -> /sitemap
  */
-function getMetadataRouteSuffix(page: string) {
+export function getMetadataRouteSuffix(page: string) {
   // Remove the last segment and get the parent pathname
   // e.g. /parent/a/b/c -> /parent/a/b
   // e.g. /parent/opengraph-image -> /parent
@@ -76,8 +76,8 @@ export function fillMetadataSegment(
 /**
  * Map metadata page key to the corresponding route
  *
- * static file page key:    /app/robots.txt -> /robots.xml -> /robots.txt/route
- * dynamic route page key:  /app/robots.tsx -> /robots -> /robots.txt/route
+ * static file page key:    /robots.txt -> /robots.txt/__static_metadata_file__
+ * dynamic route page key:  /robots -> /robots.txt/route
  *
  * @param page
  * @returns
@@ -86,6 +86,22 @@ export function normalizeMetadataRoute(page: string) {
   if (!isMetadataPage(page)) {
     return page
   }
+
+  // If there is an extension, it's a static file, for dynamic files' page key,
+  // they won't have an extension. Files with '/__static_metadata_file__' suffix
+  // will be excluded from the build entries, but instead will be copied to
+  // {distDir}/static/metadata/... and served as static files on requests.
+  if (path.extname(page)) {
+    const { dir, name, ext } = path.parse(page)
+    const suffix = getMetadataRouteSuffix(page)
+
+    return path.posix.join(
+      dir,
+      `${name}${suffix ? `-${suffix}` : ''}${ext}`,
+      '__static_metadata_file__'
+    )
+  }
+
   let route = page
   let suffix = ''
   if (page === '/robots') {
@@ -94,15 +110,6 @@ export function normalizeMetadataRoute(page: string) {
     route += '.webmanifest'
   } else {
     suffix = getMetadataRouteSuffix(page)
-  }
-
-  const { dir: _dir, name: _name, ext: _ext } = path.parse(page)
-  if (_ext) {
-    return path.posix.join(
-      _dir,
-      `${_name}${suffix ? `-${suffix}` : ''}${_ext}`,
-      '__static_file__'
-    )
   }
 
   // Support both /<metadata-route.ext> and custom routes /<metadata-route>/route.ts.

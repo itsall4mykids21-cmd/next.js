@@ -48,6 +48,7 @@ import {
 import { getSelectedParams } from '../../../client/components/router-reducer/compute-changed-path'
 import { isInterceptionRouteRewrite } from '../../../lib/generate-interception-routes-rewrites'
 import { parseAndValidateFlightRouterState } from '../../app-render/parse-and-validate-flight-router-state'
+import { isMetadataStaticFile } from '../../../lib/metadata/is-metadata-route'
 
 const debug = setupDebug('next:router-server:resolve-routes')
 
@@ -255,14 +256,15 @@ export function getResolveRoutes(
     async function checkTrue() {
       const pathname = parsedUrl.pathname || '/'
 
-      console.log('checkTrue init', { pathname })
-
       if (checkLocaleApi(pathname)) {
         return
       }
       if (!invokedOutputs?.has(pathname)) {
-        console.log('invokedOutputs', { pathname })
-        const output = await fsChecker.getItem(pathname)
+        const output = await fsChecker.getItem(
+          isMetadataStaticFile(pathname)
+            ? '/_next/static/metadata' + pathname
+            : pathname
+        )
 
         if (output) {
           if (
@@ -294,14 +296,28 @@ export function getResolveRoutes(
         if (invokedOutputs?.has(route.page)) {
           continue
         }
-        const params = route.match(localeResult.pathname)
+
+        const isMetadataStatic = isMetadataStaticFile(localeResult.pathname)
+
+        const params = route.match(
+          isMetadataStatic
+            ? // If the request is metadata file, it would have one more segment
+              // after the param. E.g., /[id]/sitemap.xml has another "sitemap.xml",
+              // so won't match the /[id] route segment.
+              path.dirname(localeResult.pathname)
+            : localeResult.pathname
+        )
 
         if (params) {
-          console.log('checkTrue params', {
-            pathname: addPathPrefix(route.page, config.basePath || ''),
-          })
           const pageOutput = await fsChecker.getItem(
-            addPathPrefix(route.page, config.basePath || '')
+            isMetadataStatic
+              ? addPathPrefix(
+                  // `route.page` has up until the segments, so add the filename.
+                  // e.g. /[id] -> /[id]/sitemap.xml
+                  route.page + '/' + path.basename(localeResult.pathname),
+                  '/_next/static/metadata'
+                )
+              : addPathPrefix(route.page, config.basePath || '')
           )
 
           // i18n locales aren't matched for app dir
@@ -451,7 +467,6 @@ export function getResolveRoutes(
           if (invokedOutputs?.has(pathname) || checkLocaleApi(pathname)) {
             return
           }
-          console.log('check_fs', { pathname })
           const output = await fsChecker.getItem(pathname)
 
           if (
