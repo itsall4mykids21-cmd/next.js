@@ -8,6 +8,7 @@ describe('metadata-files-static-output-dynamic-route', () => {
   describe('dynamic page', () => {
     it('should have correct link tags for dynamic page', async () => {
       const browser = await next.browser('/dynamic/123')
+
       const links = await browser.eval(() => {
         return Array.from(document.querySelectorAll('link'))
           .filter((el) => !el.href.includes('/_next/static'))
@@ -31,11 +32,6 @@ describe('metadata-files-static-output-dynamic-route', () => {
        {
          "links": [
            {
-             "href": "/manifest.json",
-             "rel": "manifest",
-             "type": "",
-           },
-           {
              "href": "/favicon.ico",
              "rel": "icon",
              "type": "image/x-icon",
@@ -50,55 +46,60 @@ describe('metadata-files-static-output-dynamic-route', () => {
              "rel": "apple-touch-icon",
              "type": "image/png",
            },
+           {
+             "href": "/manifest.json",
+             "rel": "manifest",
+             "type": "",
+           },
          ],
          "metas": [
            {
              "name": "viewport",
-             "property": undefined,
+             "property": null,
            },
            {
-             "name": undefined,
+             "name": null,
              "property": "og:image:type",
            },
            {
-             "name": undefined,
+             "name": null,
              "property": "og:image:width",
            },
            {
-             "name": undefined,
+             "name": null,
              "property": "og:image:height",
            },
            {
-             "name": undefined,
+             "name": null,
              "property": "og:image:alt",
            },
            {
-             "name": undefined,
+             "name": null,
              "property": "og:image",
            },
            {
              "name": "twitter:card",
-             "property": undefined,
+             "property": null,
            },
            {
              "name": "twitter:image:type",
-             "property": undefined,
+             "property": null,
            },
            {
              "name": "twitter:image:width",
-             "property": undefined,
+             "property": null,
            },
            {
              "name": "twitter:image:height",
-             "property": undefined,
+             "property": null,
            },
            {
              "name": "twitter:image:alt",
-             "property": undefined,
+             "property": null,
            },
            {
              "name": "twitter:image",
-             "property": undefined,
+             "property": null,
            },
          ],
        }
@@ -166,40 +167,103 @@ describe('metadata-files-static-output-dynamic-route', () => {
 
   describe('dynamic catch-all page', () => {
     it('should have correct link tags for dynamic catch-all page', async () => {
-      const $ = await next.render$('/dynamic/catch-all/123')
-      const links = $('link')
-        .not('[href*="/_next/static"]')
-        .map((_, el) => ({
-          href: new URL($(el).attr('href'), 'http://n').pathname,
-          rel: $(el).attr('rel'),
-          type: $(el).attr('type') || '',
-        }))
-        .get()
+      const browser = await next.browser('/dynamic/catch-all/123')
 
-      expect(links).toMatchInlineSnapshot(`
-            [
-              {
-                "href": "/manifest.json",
-                "rel": "manifest",
-                "type": "",
-              },
-              {
-                "href": "/favicon.ico",
-                "rel": "icon",
-                "type": "image/x-icon",
-              },
-              {
-                "href": "/dynamic/catch-all/123/icon.png",
-                "rel": "icon",
-                "type": "image/png",
-              },
-              {
-                "href": "/dynamic/catch-all/123/apple-icon.png",
-                "rel": "apple-touch-icon",
-                "type": "image/png",
-              },
-            ]
-          `)
+      const links = await browser.eval(() => {
+        return Array.from(document.querySelectorAll('link'))
+          .filter((el) => !el.href.includes('/_next/static'))
+          .map((el) => ({
+            href: new URL(el.href, window.location.origin).pathname,
+            rel: el.rel,
+            type: el.type || '',
+          }))
+      })
+
+      const metas = await browser.eval(() => {
+        return Array.from(document.querySelectorAll('meta'))
+          .map((el) => ({
+            name: el.getAttribute('name'),
+            property: el.getAttribute('property'),
+          }))
+          .filter((meta) => meta.name || meta.property)
+      })
+
+      expect({ links, metas }).toMatchInlineSnapshot(`
+       {
+         "links": [
+           {
+             "href": "/favicon.ico",
+             "rel": "icon",
+             "type": "image/x-icon",
+           },
+           {
+             "href": "/dynamic/catch-all/123/icon.png",
+             "rel": "icon",
+             "type": "image/png",
+           },
+           {
+             "href": "/dynamic/catch-all/123/apple-icon.png",
+             "rel": "apple-touch-icon",
+             "type": "image/png",
+           },
+           {
+             "href": "/manifest.json",
+             "rel": "manifest",
+             "type": "",
+           },
+         ],
+         "metas": [
+           {
+             "name": "viewport",
+             "property": null,
+           },
+           {
+             "name": null,
+             "property": "og:image:type",
+           },
+           {
+             "name": null,
+             "property": "og:image:width",
+           },
+           {
+             "name": null,
+             "property": "og:image:height",
+           },
+           {
+             "name": null,
+             "property": "og:image:alt",
+           },
+           {
+             "name": null,
+             "property": "og:image",
+           },
+           {
+             "name": "twitter:card",
+             "property": null,
+           },
+           {
+             "name": "twitter:image:type",
+             "property": null,
+           },
+           {
+             "name": "twitter:image:width",
+             "property": null,
+           },
+           {
+             "name": "twitter:image:height",
+             "property": null,
+           },
+           {
+             "name": "twitter:image:alt",
+             "property": null,
+           },
+           {
+             "name": "twitter:image",
+             "property": null,
+           },
+         ],
+       }
+      `)
     })
 
     it('should serve static files when requested to its route for dynamic catch-all page', async () => {
@@ -269,40 +333,103 @@ describe('metadata-files-static-output-dynamic-route', () => {
 
   describe('dynamic optional catch-all page', () => {
     it('should have correct link tags for dynamic optional catch-all page', async () => {
-      const $ = await next.render$('/dynamic/optional-catch-all/123')
-      const links = $('link')
-        .not('[href*="/_next/static"]')
-        .map((_, el) => ({
-          href: new URL($(el).attr('href'), 'http://n').pathname,
-          rel: $(el).attr('rel'),
-          type: $(el).attr('type') || '',
-        }))
-        .get()
+      const browser = await next.browser('/dynamic/optional-catch-all/123')
 
-      expect(links).toMatchInlineSnapshot(`
-            [
-              {
-                "href": "/manifest.json",
-                "rel": "manifest",
-                "type": "",
-              },
-              {
-                "href": "/favicon.ico",
-                "rel": "icon",
-                "type": "image/x-icon",
-              },
-              {
-                "href": "/dynamic/optional-catch-all/123/icon.png",
-                "rel": "icon",
-                "type": "image/png",
-              },
-              {
-                "href": "/dynamic/optional-catch-all/123/apple-icon.png",
-                "rel": "apple-touch-icon",
-                "type": "image/png",
-              },
-            ]
-          `)
+      const links = await browser.eval(() => {
+        return Array.from(document.querySelectorAll('link'))
+          .filter((el) => !el.href.includes('/_next/static'))
+          .map((el) => ({
+            href: new URL(el.href, window.location.origin).pathname,
+            rel: el.rel,
+            type: el.type || '',
+          }))
+      })
+
+      const metas = await browser.eval(() => {
+        return Array.from(document.querySelectorAll('meta'))
+          .map((el) => ({
+            name: el.getAttribute('name'),
+            property: el.getAttribute('property'),
+          }))
+          .filter((meta) => meta.name || meta.property)
+      })
+
+      expect({ links, metas }).toMatchInlineSnapshot(`
+       {
+         "links": [
+           {
+             "href": "/favicon.ico",
+             "rel": "icon",
+             "type": "image/x-icon",
+           },
+           {
+             "href": "/dynamic/optional-catch-all/123/icon.png",
+             "rel": "icon",
+             "type": "image/png",
+           },
+           {
+             "href": "/dynamic/optional-catch-all/123/apple-icon.png",
+             "rel": "apple-touch-icon",
+             "type": "image/png",
+           },
+           {
+             "href": "/manifest.json",
+             "rel": "manifest",
+             "type": "",
+           },
+         ],
+         "metas": [
+           {
+             "name": "viewport",
+             "property": null,
+           },
+           {
+             "name": null,
+             "property": "og:image:type",
+           },
+           {
+             "name": null,
+             "property": "og:image:width",
+           },
+           {
+             "name": null,
+             "property": "og:image:height",
+           },
+           {
+             "name": null,
+             "property": "og:image:alt",
+           },
+           {
+             "name": null,
+             "property": "og:image",
+           },
+           {
+             "name": "twitter:card",
+             "property": null,
+           },
+           {
+             "name": "twitter:image:type",
+             "property": null,
+           },
+           {
+             "name": "twitter:image:width",
+             "property": null,
+           },
+           {
+             "name": "twitter:image:height",
+             "property": null,
+           },
+           {
+             "name": "twitter:image:alt",
+             "property": null,
+           },
+           {
+             "name": "twitter:image",
+             "property": null,
+           },
+         ],
+       }
+      `)
     })
 
     it('should serve static files when requested to its route for dynamic optional catch-all page', async () => {

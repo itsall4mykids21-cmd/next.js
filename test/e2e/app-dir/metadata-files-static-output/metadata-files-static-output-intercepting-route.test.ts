@@ -14,7 +14,6 @@ describe('metadata-files-static-output-intercepting-route', () => {
       'window.location.pathname === "/intercept-me"'
     )
 
-    // Extract links and metas from the browser after navigation
     const links = await browser.eval(() => {
       return Array.from(document.querySelectorAll('link'))
         .filter((el) => !el.href.includes('/_next/static'))

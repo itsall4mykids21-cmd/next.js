@@ -8,6 +8,7 @@ describe('metadata-files-static-output-parallel-route', () => {
 
   it('should have correct link tags for parallel slot page', async () => {
     const browser = await next.browser('/parallel')
+
     const links = await browser.eval(() => {
       return Array.from(document.querySelectorAll('link'))
         .filter((el) => !el.href.includes('/_next/static'))
@@ -54,51 +55,51 @@ describe('metadata-files-static-output-parallel-route', () => {
        "metas": [
          {
            "name": "viewport",
-           "property": undefined,
+           "property": null,
          },
          {
-           "name": undefined,
+           "name": null,
            "property": "og:image:type",
          },
          {
-           "name": undefined,
+           "name": null,
            "property": "og:image:width",
          },
          {
-           "name": undefined,
+           "name": null,
            "property": "og:image:height",
          },
          {
-           "name": undefined,
+           "name": null,
            "property": "og:image:alt",
          },
          {
-           "name": undefined,
+           "name": null,
            "property": "og:image",
          },
          {
            "name": "twitter:card",
-           "property": undefined,
+           "property": null,
          },
          {
            "name": "twitter:image:type",
-           "property": undefined,
+           "property": null,
          },
          {
            "name": "twitter:image:width",
-           "property": undefined,
+           "property": null,
          },
          {
            "name": "twitter:image:height",
-           "property": undefined,
+           "property": null,
          },
          {
            "name": "twitter:image:alt",
-           "property": undefined,
+           "property": null,
          },
          {
            "name": "twitter:image",
-           "property": undefined,
+           "property": null,
          },
        ],
      }

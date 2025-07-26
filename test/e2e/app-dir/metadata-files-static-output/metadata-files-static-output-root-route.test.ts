@@ -21,7 +21,8 @@ describe('metadata-files-static-output-root-route', () => {
        "/dynamic/[id]/page",
        "/dynamic/catch-all/[...catch-all]/page",
        "/dynamic/optional-catch-all/[[...optional-catch-all]]/page",
-       "/intercepting/(..)static/page",
+       "/intercept-me/page",
+       "/intercepting/(..)intercept-me/page",
        "/intercepting/page",
        "/page",
        "/parallel/@parallel/page",
@@ -33,6 +34,7 @@ describe('metadata-files-static-output-root-route', () => {
 
   it('should have correct link tags for root page', async () => {
     const browser = await next.browser('/')
+
     const links = await browser.eval(() => {
       return Array.from(document.querySelectorAll('link'))
         .filter((el) => !el.href.includes('/_next/static'))
@@ -69,7 +71,7 @@ describe('metadata-files-static-output-root-route', () => {
        "metas": [
          {
            "name": "viewport",
-           "property": undefined,
+           "property": null,
          },
        ],
      }
