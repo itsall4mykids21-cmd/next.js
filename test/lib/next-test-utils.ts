@@ -1870,3 +1870,48 @@ export function normalizeManifest<T>(
     )
   )
 }
+
+export async function getMetadataHeadTags(browser: Playwright) {
+  const links = await browser.eval(() => {
+    return Array.from(document.querySelectorAll('link'))
+      .filter((el) => !el.href.includes('/_next/static'))
+      .map((el) => ({
+        href: new URL(el.href, window.location.origin).pathname,
+        rel: el.rel,
+        type: el.type,
+      }))
+      .sort((a, b) => a.href.localeCompare(b.href))
+  })
+
+  const metas = await browser.eval(() => {
+    return Array.from(document.querySelectorAll('meta'))
+      .filter((meta) => meta.name || meta.hasAttribute('property'))
+      .map((el) => {
+        // The port may differ between tests, so replace
+        // with a placeholder.
+        const content = el.content.replace(
+          /http:\/\/localhost:\d+/g,
+          'http://localhost:$PORT'
+        )
+        return {
+          ...(el.name ? { name: el.name } : {}),
+          ...(el.hasAttribute('property')
+            ? { property: el.getAttribute('property') || '' }
+            : {}),
+          content,
+        }
+      })
+      .sort((a, b) => {
+        // name attributes first, then property attributes
+        if (a.name && !b.name) return -1
+        if (!a.name && b.name) return 1
+
+        // Within same type, sort lexically by the attribute value
+        const aValue = a.name || a.property || ''
+        const bValue = b.name || b.property || ''
+        return aValue.localeCompare(bValue)
+      })
+  })
+
+  return { links, metas }
+}

@@ -1,4 +1,5 @@
 import { nextTestSetup } from 'e2e-utils'
+import { getMetadataHeadTags } from 'next-test-utils'
 
 describe('metadata-files-static-output-root-route', () => {
   const { next } = nextTestSetup({
@@ -35,43 +36,24 @@ describe('metadata-files-static-output-root-route', () => {
   it('should have correct link tags for root page', async () => {
     const browser = await next.browser('/')
 
-    const links = await browser.eval(() => {
-      return Array.from(document.querySelectorAll('link'))
-        .filter((el) => !el.href.includes('/_next/static'))
-        .map((el) => ({
-          href: new URL(el.href, window.location.origin).pathname,
-          rel: el.rel,
-          type: el.type || '',
-        }))
-    })
-
-    const metas = await browser.eval(() => {
-      return Array.from(document.querySelectorAll('meta'))
-        .map((el) => ({
-          name: el.getAttribute('name'),
-          property: el.getAttribute('property'),
-        }))
-        .filter((meta) => meta.name || meta.property)
-    })
-
-    expect({ links, metas }).toMatchInlineSnapshot(`
+    expect(await getMetadataHeadTags(browser)).toMatchInlineSnapshot(`
      {
        "links": [
-         {
-           "href": "/manifest.json",
-           "rel": "manifest",
-           "type": "",
-         },
          {
            "href": "/favicon.ico",
            "rel": "icon",
            "type": "image/x-icon",
          },
+         {
+           "href": "/manifest.json",
+           "rel": "manifest",
+           "type": "",
+         },
        ],
        "metas": [
          {
+           "content": "width=device-width, initial-scale=1",
            "name": "viewport",
-           "property": null,
          },
        ],
      }

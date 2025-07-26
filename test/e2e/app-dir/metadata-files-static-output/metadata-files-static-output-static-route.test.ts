@@ -1,4 +1,5 @@
 import { nextTestSetup } from 'e2e-utils'
+import { getMetadataHeadTags } from 'next-test-utils'
 
 describe('metadata-files-static-output-static-route', () => {
   const { next } = nextTestSetup({
@@ -8,97 +9,78 @@ describe('metadata-files-static-output-static-route', () => {
   it('should have correct link tags for static page', async () => {
     const browser = await next.browser('/static')
 
-    const links = await browser.eval(() => {
-      return Array.from(document.querySelectorAll('link'))
-        .filter((el) => !el.href.includes('/_next/static'))
-        .map((el) => ({
-          href: new URL(el.href, window.location.origin).pathname,
-          rel: el.rel,
-          type: el.type || '',
-        }))
-    })
-
-    const metas = await browser.eval(() => {
-      return Array.from(document.querySelectorAll('meta'))
-        .map((el) => ({
-          name: el.getAttribute('name'),
-          property: el.getAttribute('property'),
-        }))
-        .filter((meta) => meta.name || meta.property)
-    })
-
-    expect({ links, metas }).toMatchInlineSnapshot(`
+    expect(await getMetadataHeadTags(browser)).toMatchInlineSnapshot(`
      {
        "links": [
-         {
-           "href": "/manifest.json",
-           "rel": "manifest",
-           "type": "",
-         },
          {
            "href": "/favicon.ico",
            "rel": "icon",
            "type": "image/x-icon",
          },
          {
-           "href": "/static/icon.png",
-           "rel": "icon",
-           "type": "image/png",
+           "href": "/manifest.json",
+           "rel": "manifest",
+           "type": "",
          },
          {
            "href": "/static/apple-icon.png",
            "rel": "apple-touch-icon",
            "type": "image/png",
          },
+         {
+           "href": "/static/icon.png",
+           "rel": "icon",
+           "type": "image/png",
+         },
        ],
        "metas": [
          {
+           "content": "summary_large_image",
+           "name": "twitter:card",
+         },
+         {
+           "content": "http://localhost:$PORT/static/twitter-image.png?603d046c9a6fdfbb",
+           "name": "twitter:image",
+         },
+         {
+           "content": "About Next.js",
+           "name": "twitter:image:alt",
+         },
+         {
+           "content": "16",
+           "name": "twitter:image:height",
+         },
+         {
+           "content": "image/png",
+           "name": "twitter:image:type",
+         },
+         {
+           "content": "16",
+           "name": "twitter:image:width",
+         },
+         {
+           "content": "width=device-width, initial-scale=1",
            "name": "viewport",
-           "property": null,
          },
          {
-           "name": null,
-           "property": "og:image:type",
-         },
-         {
-           "name": null,
-           "property": "og:image:width",
-         },
-         {
-           "name": null,
-           "property": "og:image:height",
-         },
-         {
-           "name": null,
-           "property": "og:image:alt",
-         },
-         {
-           "name": null,
+           "content": "http://localhost:$PORT/static/opengraph-image.png?603d046c9a6fdfbb",
            "property": "og:image",
          },
          {
-           "name": "twitter:card",
-           "property": null,
+           "content": "About Next.js",
+           "property": "og:image:alt",
          },
          {
-           "name": "twitter:image:type",
-           "property": null,
+           "content": "16",
+           "property": "og:image:height",
          },
          {
-           "name": "twitter:image:width",
-           "property": null,
+           "content": "image/png",
+           "property": "og:image:type",
          },
          {
-           "name": "twitter:image:height",
-           "property": null,
-         },
-         {
-           "name": "twitter:image:alt",
-           "property": null,
-         },
-         {
-           "name": "twitter:image",
-           "property": null,
+           "content": "16",
+           "property": "og:image:width",
          },
        ],
      }
