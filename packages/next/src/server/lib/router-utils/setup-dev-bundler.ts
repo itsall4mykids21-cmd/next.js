@@ -34,6 +34,7 @@ import { getSortedRoutes } from '../../../shared/lib/router/utils'
 import {
   getStaticInfoIncludingLayouts,
   sortByPageExts,
+  copyMetadataStaticFiles,
 } from '../../../build/entries'
 import { verifyTypeScriptSetup } from '../../../lib/verify-typescript-setup'
 import { verifyPartytownSetup } from '../../../lib/verify-partytown-setup'
@@ -410,6 +411,55 @@ async function startWatcher(
           continue
         }
 
+        // Handle metadata files first, before the page file filtering
+        if (
+          appDir &&
+          validFileMatcher.isMetadataFile(fileName) &&
+          meta?.accuracy !== undefined
+        ) {
+          const relativePath = path.relative(appDir, fileName)
+          const targetPath = path.join(
+            distDir,
+            'static',
+            'metadata',
+            relativePath.replace(/\\/g, '/')
+          )
+          const targetExists = fs.existsSync(targetPath)
+
+          console.log('🔍 Found metadata file:', {
+            fileName,
+            relativePath,
+            watchTimeChange,
+            targetPath,
+            targetExists,
+            metaTimestamp: meta?.timestamp,
+          })
+
+          // Copy if file changed OR if target doesn't exist (first run)
+          if (watchTimeChange || !targetExists) {
+            console.log('📝 Copying metadata file:', fileName)
+            try {
+              await copyMetadataStaticFiles({
+                appDir,
+                pagesType: PAGE_TYPES.APP,
+                pagePaths: [relativePath],
+                distDir,
+                pageExtensions: nextConfig.pageExtensions,
+              })
+              console.log('✅ Successfully copied metadata file:', relativePath)
+            } catch (error) {
+              console.log('❌ Failed to copy metadata file:', error)
+              Log.warn('Failed to copy metadata static file:', error)
+            }
+          } else {
+            console.log(
+              '⏭️  Skipping metadata file (no change, target exists):',
+              fileName
+            )
+          }
+        }
+
+        // Original filtering logic for page files
         if (
           meta?.accuracy === undefined ||
           !validFileMatcher.isPageFile(fileName)
