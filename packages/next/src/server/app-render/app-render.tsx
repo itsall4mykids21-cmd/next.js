@@ -80,10 +80,7 @@ import {
   isUserLandError,
   getDigestForWellKnownError,
 } from './create-error-handler'
-import {
-  getShortDynamicParamType,
-  dynamicParamTypes,
-} from './get-short-dynamic-param-type'
+import { dynamicParamTypes } from './get-short-dynamic-param-type'
 import { getSegmentParam } from './get-segment-param'
 import { getScriptNonceFromHeader } from './get-script-nonce-from-header'
 import { parseAndValidateFlightRouterState } from './parse-and-validate-flight-router-state'
@@ -143,7 +140,6 @@ import {
 } from '../client-component-renderer-logger'
 import { createServerModuleMap } from './action-utils'
 import { isNodeNextRequest } from '../base-http/helpers'
-import { parseParameter } from '../../shared/lib/router/utils/route-regex'
 import { parseRelativeUrl } from '../../shared/lib/router/utils/parse-relative-url'
 import AppRouter from '../../client/components/app-router'
 import type { ServerComponentsHmrCache } from '../response-cache'
@@ -195,16 +191,20 @@ import {
 import { isReactLargeShellError } from './react-large-shell-error'
 import type { GlobalErrorComponent } from '../../client/components/builtin/global-error'
 import { normalizeConventionFilePath } from './segment-explorer-path'
+import { getRequestMeta } from '../request-meta'
+import { getDynamicParam } from '../../shared/lib/router/utils/get-dynamic-param'
 
 export type GetDynamicParamFromSegment = (
   // [slug] / [[slug]] / [...slug]
   segment: string
-) => {
+) => DynamicParam | null
+
+export type DynamicParam = {
   param: string
   value: string | string[] | null
   treeSegment: Segment
   type: DynamicParamTypesShort
-} | null
+}
 
 export type GenerateFlight = typeof generateDynamicFlightRenderResult
 
@@ -282,28 +282,23 @@ function parseRequestHeaders(
 
   // dev warmup requests are treated as prefetch RSC requests
   const isPrefetchRequest =
-    isDevWarmupRequest ||
-    headers[NEXT_ROUTER_PREFETCH_HEADER.toLowerCase()] !== undefined
+    isDevWarmupRequest || headers[NEXT_ROUTER_PREFETCH_HEADER] !== undefined
 
-  const isHmrRefresh =
-    headers[NEXT_HMR_REFRESH_HEADER.toLowerCase()] !== undefined
+  const isHmrRefresh = headers[NEXT_HMR_REFRESH_HEADER] !== undefined
 
   // dev warmup requests are treated as prefetch RSC requests
-  const isRSCRequest =
-    isDevWarmupRequest || headers[RSC_HEADER.toLowerCase()] !== undefined
+  const isRSCRequest = isDevWarmupRequest || headers[RSC_HEADER] !== undefined
 
   const shouldProvideFlightRouterState =
     isRSCRequest && (!isPrefetchRequest || !options.isRoutePPREnabled)
 
   const flightRouterState = shouldProvideFlightRouterState
-    ? parseAndValidateFlightRouterState(
-        headers[NEXT_ROUTER_STATE_TREE_HEADER.toLowerCase()]
-      )
+    ? parseAndValidateFlightRouterState(headers[NEXT_ROUTER_STATE_TREE_HEADER])
     : undefined
 
   // Checks if this is a prefetch of the Route Tree by the Segment Cache
   const isRouteTreePrefetchRequest =
-    headers[NEXT_ROUTER_SEGMENT_PREFETCH_HEADER.toLowerCase()] === '/_tree'
+    headers[NEXT_ROUTER_SEGMENT_PREFETCH_HEADER] === '/_tree'
 
   const csp =
     headers['content-security-policy'] ||
@@ -364,70 +359,15 @@ function makeGetDynamicParamFromSegment(
     if (!segmentParam) {
       return null
     }
-
-    const key = segmentParam.param
-
-    let value = params[key]
-
-    if (fallbackRouteParams && fallbackRouteParams.has(segmentParam.param)) {
-      value = fallbackRouteParams.get(segmentParam.param)
-    } else if (Array.isArray(value)) {
-      value = value.map((i) => encodeURIComponent(i))
-    } else if (typeof value === 'string') {
-      value = encodeURIComponent(value)
-    }
-
-    if (!value) {
-      const isCatchall = segmentParam.type === 'catchall'
-      const isOptionalCatchall = segmentParam.type === 'optional-catchall'
-
-      if (isCatchall || isOptionalCatchall) {
-        const dynamicParamType = dynamicParamTypes[segmentParam.type]
-        // handle the case where an optional catchall does not have a value,
-        // e.g. `/dashboard/[[...slug]]` when requesting `/dashboard`
-        if (isOptionalCatchall) {
-          return {
-            param: key,
-            value: null,
-            type: dynamicParamType,
-            treeSegment: [key, '', dynamicParamType],
-          }
-        }
-
-        // handle the case where a catchall or optional catchall does not have a value,
-        // e.g. `/foo/bar/hello` and `@slot/[...catchall]` or `@slot/[[...catchall]]` is matched
-        value = pagePath
-          .split('/')
-          // remove the first empty string
-          .slice(1)
-          // replace any dynamic params with the actual values
-          .flatMap((pathSegment) => {
-            const param = parseParameter(pathSegment)
-            // if the segment matches a param, return the param value
-            // otherwise, it's a static segment, so just return that
-            return params[param.key] ?? param.key
-          })
-
-        return {
-          param: key,
-          value,
-          type: dynamicParamType,
-          // This value always has to be a string.
-          treeSegment: [key, value.join('/'), dynamicParamType],
-        }
-      }
-    }
-
-    const type = getShortDynamicParamType(segmentParam.type)
-
-    return {
-      param: key,
-      // The value that is passed to user code.
-      value: value,
-      // The value that is rendered in the router tree.
-      treeSegment: [key, Array.isArray(value) ? value.join('/') : value, type],
-      type: type,
-    }
+    const segmentKey = segmentParam.param
+    const dynamicParamType = dynamicParamTypes[segmentParam.type]
+    return getDynamicParam(
+      params,
+      segmentKey,
+      dynamicParamType,
+      pagePath,
+      fallbackRouteParams
+    )
   }
 }
 
@@ -454,7 +394,7 @@ function NonIndex({
 /**
  * This is used by server actions & client-side navigations to generate RSC data from a client-side request.
  * This function is only called on "dynamic" requests (ie, there wasn't already a static response).
- * It uses request headers (namely `Next-Router-State-Tree`) to determine where to start rendering.
+ * It uses request headers (namely `next-router-state-tree`) to determine where to start rendering.
  */
 async function generateDynamicRSCPayload(
   ctx: AppRenderContext,
@@ -627,13 +567,17 @@ async function generateDynamicFlightRenderResult(
     const [resolveValidation, validationOutlet] = createValidationOutlet()
     RSCPayload._validation = validationOutlet
 
+    const devValidatingFallbackParams =
+      getRequestMeta(req, 'devValidatingFallbackParams') || null
+
     spawnDynamicValidationInDev(
       resolveValidation,
       ctx.componentMod.tree,
       ctx,
       false,
       ctx.clientReferenceManifest,
-      requestStore
+      requestStore,
+      devValidatingFallbackParams
     )
   }
 
@@ -732,6 +676,10 @@ async function warmupDevRender(
     renderResumeDataCache: null,
     hmrRefreshHash: req.cookies[NEXT_HMR_REFRESH_HASH_COOKIE],
     captureOwnerStack: ComponentMod.captureOwnerStack,
+    // warmup is a dev only feature and no fallback params are used in the
+    // primary render which is static. We only use a prerender store here to
+    // allow the warmup to halt on Request data APIs and fetches.
+    fallbackRouteParams: null,
   }
 
   const rscPayload = await workUnitAsyncStorage.run(
@@ -1192,7 +1140,8 @@ async function renderToHTMLOrFlightImpl(
   requestEndedState: { ended?: boolean },
   postponedState: PostponedState | null,
   serverComponentsHmrCache: ServerComponentsHmrCache | undefined,
-  sharedContext: AppSharedContext
+  sharedContext: AppSharedContext,
+  fallbackRouteParams: FallbackRouteParams | null
 ) {
   const isNotFoundPath = pagePath === '/404'
   if (isNotFoundPath) {
@@ -1356,7 +1305,7 @@ async function renderToHTMLOrFlightImpl(
     nonce,
   } = parsedRequestHeaders
 
-  const { isStaticGeneration, fallbackRouteParams } = workStore
+  const { isStaticGeneration } = workStore
 
   /**
    * The metadata items array created in next-app-loader with all relevant information
@@ -1440,7 +1389,8 @@ async function renderToHTMLOrFlightImpl(
       res,
       ctx,
       metadata,
-      loaderTree
+      loaderTree,
+      fallbackRouteParams
     )
 
     // If we're debugging partial prerendering, print all the dynamic API accesses
@@ -1756,7 +1706,6 @@ export const renderToHTMLOrFlight: AppPageRender = (
 
   const workStore = createWorkStore({
     page: renderOpts.routeModule.definition.page,
-    fallbackRouteParams,
     renderOpts,
     requestEndedState,
     // @TODO move to workUnitStore of type Request
@@ -1781,7 +1730,8 @@ export const renderToHTMLOrFlight: AppPageRender = (
     requestEndedState,
     postponedState,
     serverComponentsHmrCache,
-    sharedContext
+    sharedContext,
+    fallbackRouteParams
   )
 }
 
@@ -1941,13 +1891,17 @@ async function renderToStream(
         }
       )
 
+      const devValidatingFallbackParams =
+        getRequestMeta(req, 'devValidatingFallbackParams') || null
+
       spawnDynamicValidationInDev(
         resolveValidation,
         tree,
         ctx,
         res.statusCode === 404,
         clientReferenceManifest,
-        requestStore
+        requestStore,
+        devValidatingFallbackParams
       )
 
       reactServerResult = new ReactServerResult(reactServerStream)
@@ -2298,7 +2252,8 @@ async function spawnDynamicValidationInDev(
   ctx: AppRenderContext,
   isNotFound: boolean,
   clientReferenceManifest: NonNullable<RenderOpts['clientReferenceManifest']>,
-  requestStore: RequestStore
+  requestStore: RequestStore,
+  fallbackRouteParams: FallbackRouteParams | null
 ): Promise<void> {
   const {
     componentMod: ComponentMod,
@@ -2363,6 +2318,7 @@ async function spawnDynamicValidationInDev(
     type: 'prerender',
     phase: 'render',
     rootParams,
+    fallbackRouteParams,
     implicitTags,
     renderSignal: initialServerRenderController.signal,
     controller: initialServerPrerenderController,
@@ -2494,6 +2450,7 @@ async function spawnDynamicValidationInDev(
       type: 'prerender-client',
       phase: 'render',
       rootParams,
+      fallbackRouteParams,
       implicitTags,
       renderSignal: initialClientRenderController.signal,
       controller: initialClientPrerenderController,
@@ -2602,6 +2559,7 @@ async function spawnDynamicValidationInDev(
     type: 'prerender',
     phase: 'render',
     rootParams,
+    fallbackRouteParams,
     implicitTags,
     renderSignal: finalServerRenderController.signal,
     controller: finalServerReactController,
@@ -2689,6 +2647,7 @@ async function spawnDynamicValidationInDev(
     type: 'prerender-client',
     phase: 'render',
     rootParams,
+    fallbackRouteParams,
     implicitTags,
     renderSignal: finalClientRenderController.signal,
     controller: finalClientReactController,
@@ -2851,7 +2810,8 @@ async function prerenderToStream(
   res: BaseNextResponse,
   ctx: AppRenderContext,
   metadata: AppPageRenderResultMetadata,
-  tree: LoaderTree
+  tree: LoaderTree,
+  fallbackRouteParams: FallbackRouteParams | null
 ): Promise<PrerenderToStreamResult> {
   // When prerendering formState is always null. We still include it
   // because some shared APIs expect a formState value and this is slightly
@@ -2889,7 +2849,6 @@ async function prerenderToStream(
   assertClientReferenceManifest(clientReferenceManifest)
 
   const rootParams = getRootParams(tree, getDynamicParamFromSegment)
-  const fallbackRouteParams = workStore.fallbackRouteParams
 
   const { ServerInsertedHTMLProvider, renderServerInsertedHTML } =
     createServerInsertedHTML()
@@ -3057,6 +3016,7 @@ async function prerenderToStream(
         type: 'prerender',
         phase: 'render',
         rootParams,
+        fallbackRouteParams,
         implicitTags,
         renderSignal: initialServerRenderController.signal,
         controller: initialServerPrerenderController,
@@ -3181,6 +3141,7 @@ async function prerenderToStream(
           type: 'prerender-client',
           phase: 'render',
           rootParams,
+          fallbackRouteParams,
           implicitTags,
           renderSignal: initialClientRenderController.signal,
           controller: initialClientPrerenderController,
@@ -3289,6 +3250,7 @@ async function prerenderToStream(
         type: 'prerender',
         phase: 'render',
         rootParams,
+        fallbackRouteParams,
         implicitTags,
         renderSignal: finalServerRenderController.signal,
         controller: finalServerReactController,
@@ -3381,6 +3343,7 @@ async function prerenderToStream(
         type: 'prerender-client',
         phase: 'render',
         rootParams,
+        fallbackRouteParams,
         implicitTags,
         renderSignal: finalClientRenderController.signal,
         controller: finalClientReactController,
@@ -3506,7 +3469,7 @@ async function prerenderToStream(
       // move the fallback route params out of the flight router state, we need
       // to always perform a dynamic resume after the static prerender.
       const hasFallbackRouteParams =
-        workStore.fallbackRouteParams && workStore.fallbackRouteParams.size > 0
+        fallbackRouteParams && fallbackRouteParams.size > 0
 
       if (serverIsDynamic || hasFallbackRouteParams) {
         // Dynamic case
@@ -3624,6 +3587,7 @@ async function prerenderToStream(
         type: 'prerender-ppr',
         phase: 'render',
         rootParams,
+        fallbackRouteParams,
         implicitTags,
         dynamicTracking,
         revalidate: INFINITE_CACHE,
@@ -3658,6 +3622,7 @@ async function prerenderToStream(
         type: 'prerender-ppr',
         phase: 'render',
         rootParams,
+        fallbackRouteParams,
         implicitTags,
         dynamicTracking,
         revalidate: INFINITE_CACHE,
@@ -4175,9 +4140,9 @@ const getGlobalErrorStyles = async (
   }
   if (ctx.renderOpts.dev) {
     const dir =
-      process.env.NEXT_RUNTIME === 'edge'
-        ? process.env.__NEXT_EDGE_PROJECT_DIR!
-        : ctx.renderOpts.dir || ''
+      (process.env.NEXT_RUNTIME === 'edge'
+        ? process.env.__NEXT_EDGE_PROJECT_DIR
+        : ctx.renderOpts.dir) || ''
 
     const globalErrorModulePath = normalizeConventionFilePath(
       dir,
