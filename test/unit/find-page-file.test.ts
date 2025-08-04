@@ -73,15 +73,39 @@ describe('createPageFileMatcher', () => {
     it('should determine top level metadata routes', () => {
       const pageExtensions = ['tsx', 'ts', 'jsx', 'js']
       const fileMatcher = createValidFileMatcher(pageExtensions, 'app')
-      expect(fileMatcher.isMetadataFile('app/route.js')).toBe(false)
-      expect(fileMatcher.isMetadataFile('app/page.js')).toBe(false)
-      expect(fileMatcher.isMetadataFile('pages/index.js')).toBe(false)
+      expect(fileMatcher.isMetadataRouteFile('app/route.js')).toBe(false)
+      expect(fileMatcher.isMetadataRouteFile('app/page.js')).toBe(false)
+      expect(fileMatcher.isMetadataRouteFile('pages/index.js')).toBe(false)
 
-      expect(fileMatcher.isMetadataFile('app/robots.txt')).toBe(true)
-      expect(fileMatcher.isMetadataFile('app/path/robots.txt')).toBe(false)
+      expect(fileMatcher.isMetadataRouteFile('app/robots.txt/route.js')).toBe(
+        true
+      )
+      expect(
+        fileMatcher.isMetadataRouteFile('app/path/robots.txt/route.js')
+      ).toBe(false)
 
-      expect(fileMatcher.isMetadataFile('app/sitemap.xml')).toBe(true)
-      expect(fileMatcher.isMetadataFile('app/path/sitemap.xml')).toBe(true)
+      expect(fileMatcher.isMetadataRouteFile('app/sitemap.xml/route.js')).toBe(
+        true
+      )
+      expect(
+        fileMatcher.isMetadataRouteFile('app/path/sitemap.xml/route.js')
+      ).toBe(true)
+    })
+  })
+
+  describe('isMetadataStaticFile', () => {
+    it('should determine top level static metadata files', () => {
+      const pageExtensions = ['tsx', 'ts', 'jsx', 'js']
+      const fileMatcher = createValidFileMatcher(pageExtensions, 'app')
+
+      expect(fileMatcher.isMetadataStaticFile('app/robots.txt')).toBe(true)
+      expect(fileMatcher.isMetadataStaticFile('app/path/robots.txt')).toBe(
+        false
+      )
+      expect(fileMatcher.isMetadataStaticFile('app/sitemap.xml')).toBe(true)
+      expect(fileMatcher.isMetadataStaticFile('app/path/sitemap.xml')).toBe(
+        true
+      )
     })
   })
 })
