@@ -10,7 +10,6 @@ describe('metadata-files-dev-hmr', () => {
   })
 
   if (!isNextDev || skipped) {
-    it('should skip this test in production', () => {})
     return
   }
 

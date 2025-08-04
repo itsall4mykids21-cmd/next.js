@@ -1872,39 +1872,61 @@ export function normalizeManifest<T>(
 }
 
 export async function getMetadataHeadTags(browser: Playwright) {
-  const links = await browser.eval(() => {
-    return Array.from(document.querySelectorAll('link'))
+  return await browser.eval(() => {
+    const metadataFiles = [
+      '/favicon.ico',
+      '/manifest.',
+      '/robots.txt',
+      '/sitemap.xml',
+      '/icon',
+      '/apple-icon',
+      '/opengraph-image',
+      '/twitter-image',
+    ]
+    const metadataAttrs = [
+      'og:',
+      'twitter:',
+      'viewport',
+      'description',
+      'keywords',
+      'robots',
+    ]
+
+    const links = Array.from(document.querySelectorAll('link'))
       .filter((el) => !el.href.includes('/_next/static'))
+      .filter((el) => {
+        const pathname = new URL(el.href, window.location.origin).pathname
+        return metadataFiles.some((file) => pathname.includes(file))
+      })
       .map((el) => ({
         href: new URL(el.href, window.location.origin).pathname,
         rel: el.rel,
         type: el.type,
       }))
       .sort((a, b) => a.href.localeCompare(b.href))
-  })
 
-  const metas = await browser.eval(() => {
-    return Array.from(document.querySelectorAll('meta'))
+    const metas = Array.from(document.querySelectorAll('meta'))
       .filter((meta) => meta.name || meta.hasAttribute('property'))
-      .map((el) => {
-        return {
-          ...(el.name ? { name: el.name } : {}),
-          ...(el.hasAttribute('property')
-            ? { property: el.getAttribute('property') || '' }
-            : {}),
-        }
+      .filter((meta) => {
+        const attr = meta.name || meta.getAttribute('property') || ''
+        return metadataAttrs.some(
+          (prefix) => attr.startsWith(prefix) || attr === prefix.slice(0, -1)
+        )
       })
+      .map((el) => ({
+        ...(el.name && { name: el.name }),
+        ...(el.hasAttribute('property') && {
+          property: el.getAttribute('property'),
+        }),
+      }))
       .sort((a, b) => {
-        // name attributes first, then property attributes
         if (a.name && !b.name) return -1
         if (!a.name && b.name) return 1
-
-        // Within same type, sort lexically by the attribute value
-        const aValue = a.name || a.property || ''
-        const bValue = b.name || b.property || ''
-        return aValue.localeCompare(bValue)
+        return (a.name || a.property || '').localeCompare(
+          b.name || b.property || ''
+        )
       })
-  })
 
-  return { links, metas }
+    return { links, metas }
+  })
 }
