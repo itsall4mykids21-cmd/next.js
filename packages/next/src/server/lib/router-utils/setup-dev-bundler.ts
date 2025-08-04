@@ -339,6 +339,7 @@ async function startWatcher(
       },
     })
     const fileWatchTimes = new Map()
+    const previousMetadataFiles = new Set<string>()
     let enabledTypeScript = usingTypeScript
     let previousClientRouterFilters: any
     let previousConflictingPagePaths: Set<string> = new Set()
@@ -362,6 +363,7 @@ async function startWatcher(
       const appRoutes: Array<{ route: string; filePath: string }> = []
       const layoutRoutes: Array<{ route: string; filePath: string }> = []
       const slots: Array<{ name: string; parent: string }> = []
+      const currentMetadataFiles = new Set<string>()
 
       let envChange = false
       let tsconfigChange = false
@@ -411,33 +413,13 @@ async function startWatcher(
           continue
         }
 
-        // Handle metadata files first, before the page file filtering
-        if (
-          appDir &&
-          validFileMatcher.isMetadataFile(fileName) &&
-          meta?.accuracy !== undefined
-        ) {
-          const relativePath = path.relative(appDir, fileName)
-          const targetPath = path.join(
-            distDir,
-            'static',
-            'metadata',
-            relativePath.replace(/\\/g, '/')
-          )
-          const targetExists = fs.existsSync(targetPath)
+        // Handle metadata files (before page file filtering)
+        if (appDir && validFileMatcher.isMetadataFile(fileName)) {
+          currentMetadataFiles.add(fileName)
 
-          console.log('🔍 Found metadata file:', {
-            fileName,
-            relativePath,
-            watchTimeChange,
-            targetPath,
-            targetExists,
-            metaTimestamp: meta?.timestamp,
-          })
-
-          // Copy if file changed OR if target doesn't exist (first run)
-          if (watchTimeChange || !targetExists) {
-            console.log('📝 Copying metadata file:', fileName)
+          // File exists (either new or changed)
+          if (watchTimeChange) {
+            const relativePath = path.relative(appDir, fileName)
             try {
               await copyMetadataStaticFiles({
                 appDir,
@@ -446,17 +428,15 @@ async function startWatcher(
                 distDir,
                 pageExtensions: nextConfig.pageExtensions,
               })
-              console.log('✅ Successfully copied metadata file:', relativePath)
             } catch (error) {
-              console.log('❌ Failed to copy metadata file:', error)
-              Log.warn('Failed to copy metadata static file:', error)
+              Log.error(
+                `Failed to copy metadata file ${relativePath}: ${error instanceof Error ? error.message : String(error)}`
+              )
             }
-          } else {
-            console.log(
-              '⏭️  Skipping metadata file (no change, target exists):',
-              fileName
-            )
           }
+
+          // Skip page processing for metadata files
+          continue
         }
 
         // Original filtering logic for page files
@@ -1102,6 +1082,39 @@ async function startWatcher(
           })
         }
         prevSortedRoutes = sortedRoutes
+
+        // Handle deleted metadata files
+        if (appDir && previousMetadataFiles.size > 0) {
+          for (const previousFile of previousMetadataFiles) {
+            if (!currentMetadataFiles.has(previousFile)) {
+              const relativePath = path.relative(appDir, previousFile)
+              const targetPath = path.join(
+                distDir,
+                'static',
+                'metadata',
+                relativePath.replace(/\\/g, '/')
+              )
+
+              try {
+                // Check if target file exists before attempting to delete
+                if (fs.existsSync(targetPath)) {
+                  await fs.promises.unlink(targetPath)
+                }
+              } catch (error) {
+                // Actual filesystem error during deletion - report it clearly
+                Log.error(
+                  `Failed to remove metadata file ${relativePath}: ${error instanceof Error ? error.message : String(error)}`
+                )
+              }
+            }
+          }
+
+          // Update known metadata files for next iteration
+          previousMetadataFiles.clear()
+          for (const file of currentMetadataFiles) {
+            previousMetadataFiles.add(file)
+          }
+        }
 
         if (usingTypeScript) {
           const routeTypesManifest = await createRouteTypesManifest({
