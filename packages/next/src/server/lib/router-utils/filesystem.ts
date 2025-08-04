@@ -440,7 +440,6 @@ export async function setupFsCheck(opts: {
     },
 
     async getItem(itemPath: string): Promise<FsOutput | null> {
-      console.log('getItem', { itemPath })
       const originalItemPath = itemPath
       const itemKey = originalItemPath
       const lruResult = getItemsLru?.get(itemKey)
@@ -691,8 +690,6 @@ export async function setupFsCheck(opts: {
             itemsRoot,
             itemPath: curItemPath,
           }
-
-          console.log({ curItemPath })
 
           getItemsLru?.set(itemKey, itemResult)
           return itemResult
