@@ -37,6 +37,8 @@ export const expectedWhenTrailingSlashTrue = [
     ? [expect.stringMatching(/_next\/static\/media\/favicon\.[0-9a-f]+\.ico/)]
     : []),
   expect.stringMatching(/_next\/static\/media\/test\.[0-9a-f]+\.png/),
+  '_next/static/metadata/favicon.ico',
+  '_next/static/metadata/robots.txt',
   '_next/static/test-build-id/_buildManifest.js',
   ...(process.env.IS_TURBOPACK_TEST
     ? ['_next/static/test-build-id/_clientMiddlewareManifest.json']
@@ -54,12 +56,10 @@ export const expectedWhenTrailingSlashTrue = [
   'api/txt',
   'client/index.html',
   'client/index.txt',
-  'favicon.ico',
   'image-import/index.html',
   'image-import/index.txt',
   'index.html',
   'index.txt',
-  'robots.txt',
 ]
 
 const expectedWhenTrailingSlashFalse = [
