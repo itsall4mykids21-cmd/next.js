@@ -35,51 +35,39 @@ describe('metadata-files-static-output-static-route', () => {
        ],
        "metas": [
          {
-           "content": "summary_large_image",
            "name": "twitter:card",
          },
          {
-           "content": "http://localhost:$PORT/static/twitter-image.png?603d046c9a6fdfbb",
            "name": "twitter:image",
          },
          {
-           "content": "About Next.js",
            "name": "twitter:image:alt",
          },
          {
-           "content": "16",
            "name": "twitter:image:height",
          },
          {
-           "content": "image/png",
            "name": "twitter:image:type",
          },
          {
-           "content": "16",
            "name": "twitter:image:width",
          },
          {
-           "content": "width=device-width, initial-scale=1",
            "name": "viewport",
          },
          {
-           "content": "http://localhost:$PORT/static/opengraph-image.png?603d046c9a6fdfbb",
            "property": "og:image",
          },
          {
-           "content": "About Next.js",
            "property": "og:image:alt",
          },
          {
-           "content": "16",
            "property": "og:image:height",
          },
          {
-           "content": "image/png",
            "property": "og:image:type",
          },
          {
-           "content": "16",
            "property": "og:image:width",
          },
        ],

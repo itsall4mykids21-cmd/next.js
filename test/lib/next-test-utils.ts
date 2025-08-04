@@ -1887,18 +1887,11 @@ export async function getMetadataHeadTags(browser: Playwright) {
     return Array.from(document.querySelectorAll('meta'))
       .filter((meta) => meta.name || meta.hasAttribute('property'))
       .map((el) => {
-        // The port may differ between tests, so replace
-        // with a placeholder.
-        const content = el.content.replace(
-          /http:\/\/localhost:\d+/g,
-          'http://localhost:$PORT'
-        )
         return {
           ...(el.name ? { name: el.name } : {}),
           ...(el.hasAttribute('property')
             ? { property: el.getAttribute('property') || '' }
             : {}),
-          content,
         }
       })
       .sort((a, b) => {

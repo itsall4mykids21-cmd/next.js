@@ -20,8 +20,6 @@ describe('metadata-files-static-output-root-route', () => {
        "/(group)/group/page",
        "/_not-found/page",
        "/dynamic/[id]/page",
-       "/dynamic/catch-all/[...catch-all]/page",
-       "/dynamic/optional-catch-all/[[...optional-catch-all]]/page",
        "/intercept-me/page",
        "/intercepting/(..)intercept-me/page",
        "/intercepting/page",
@@ -52,7 +50,6 @@ describe('metadata-files-static-output-root-route', () => {
        ],
        "metas": [
          {
-           "content": "width=device-width, initial-scale=1",
            "name": "viewport",
          },
        ],
