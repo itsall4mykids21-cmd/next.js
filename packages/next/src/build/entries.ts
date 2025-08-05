@@ -12,8 +12,8 @@ import type {
 import type { LoadedEnvFiles } from '@next/env'
 import type { AppLoaderOptions } from './webpack/loaders/next-app-loader'
 
-import { posix, join, dirname, extname, normalize } from 'path'
-import { copyFile, mkdir } from 'fs/promises'
+import { posix, join, dirname, extname, normalize, parse } from 'path'
+import { copyFile, mkdir, readFile } from 'fs/promises'
 import { stringify } from 'querystring'
 import fs from 'fs'
 import {
@@ -716,6 +716,32 @@ export async function copyMetadataStaticFiles({
       'metadata',
       normalizeAppPath(route.replace('/__static_metadata_file__', ''))
     )
+
+    const filename = parse(filePath).name
+    const isTwitterImage = filename === 'twitter-image'
+    const isOpenGraphImage = filename === 'opengraph-image'
+
+    if (isTwitterImage || isOpenGraphImage) {
+      const imgName = isTwitterImage ? 'Twitter' : 'Open Graph'
+      // Twitter image file size limit is 5MB.
+      // General Open Graph image file size limit is 8MB.
+      // x-ref: https://developer.x.com/en/docs/x-for-websites/cards/overview/summary
+      // x-ref(facebook): https://developers.facebook.com/docs/sharing/webmasters/images
+      const fileSizeLimit = isTwitterImage ? 5 : 8
+
+      const buffer = Buffer.from(
+        (await readFile(filePath)).toString('base64'),
+        'base64'
+      )
+      const fileSizeInMB = buffer.byteLength / 1024 / 1024
+      if (fileSizeInMB > 5) {
+        throw new Error(
+          `File size for ${imgName} image ${JSON.stringify(filePath)} exceeds ${fileSizeLimit}MB. ` +
+            `(Current: ${fileSizeInMB.toFixed(2)}MB)\n` +
+            'Read more: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image#image-files-jpg-png-gif'
+        )
+      }
+    }
 
     await mkdir(dirname(targetPath), { recursive: true })
     await copyFile(filePath, targetPath)
