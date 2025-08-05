@@ -13,7 +13,7 @@ import type { LoadedEnvFiles } from '@next/env'
 import type { AppLoaderOptions } from './webpack/loaders/next-app-loader'
 
 import { posix, join, dirname, extname, normalize, parse } from 'path'
-import { copyFile, mkdir, readFile } from 'fs/promises'
+import { copyFile, mkdir, stat } from 'fs/promises'
 import { stringify } from 'querystring'
 import fs from 'fs'
 import {
@@ -728,15 +728,11 @@ export async function copyMetadataStaticFiles({
       // x-ref: https://developer.x.com/en/docs/x-for-websites/cards/overview/summary
       // x-ref(facebook): https://developers.facebook.com/docs/sharing/webmasters/images
       const fileSizeLimit = isTwitterImage ? 5 : 8
+      const fileSizeInMB = (await stat(filePath)).size / (1024 * 1024)
 
-      const buffer = Buffer.from(
-        (await readFile(filePath)).toString('base64'),
-        'base64'
-      )
-      const fileSizeInMB = buffer.byteLength / 1024 / 1024
       if (fileSizeInMB > fileSizeLimit) {
         throw new Error(
-          `File size for ${imgName} image ${filePath} exceeds ${fileSizeLimit}MB. ` +
+          `File size for ${imgName} image "${filePath}" exceeds ${fileSizeLimit}MB. ` +
             `(Current: ${fileSizeInMB.toFixed(2)}MB)\n` +
             'Read more: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image#image-files-jpg-png-gif'
         )
