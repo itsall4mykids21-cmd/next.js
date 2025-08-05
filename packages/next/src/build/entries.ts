@@ -734,7 +734,7 @@ export async function copyMetadataStaticFiles({
         'base64'
       )
       const fileSizeInMB = buffer.byteLength / 1024 / 1024
-      if (fileSizeInMB > 5) {
+      if (fileSizeInMB > fileSizeLimit) {
         throw new Error(
           `File size for ${imgName} image ${filePath} exceeds ${fileSizeLimit}MB. ` +
             `(Current: ${fileSizeInMB.toFixed(2)}MB)\n` +
