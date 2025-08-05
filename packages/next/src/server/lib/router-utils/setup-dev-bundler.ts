@@ -414,7 +414,7 @@ async function startWatcher(
         }
 
         // Handle metadata files (before page file filtering)
-        if (appDir && validFileMatcher.isMetadataStaticFile(fileName)) {
+        if (appDir && validFileMatcher.isMetadataRouteStaticFile(fileName)) {
           currentMetadataFiles.add(fileName)
 
           // File exists (either new or changed)

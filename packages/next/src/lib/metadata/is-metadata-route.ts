@@ -44,8 +44,7 @@ export const getExtensionRegexString = (
   return `(?:\\.(${staticExtensions.join('|')})|(\\.(${dynamicExtensions.join('|')})))`
 }
 
-// TODO: isMetadataRouteFile should not include static extensions, but this should match them.
-export function isMetadataStaticFile(pathname: string) {
+export function isMetadataRouteStaticFile(pathname: string) {
   return isMetadataRouteFile(pathname, [], false)
 }
 

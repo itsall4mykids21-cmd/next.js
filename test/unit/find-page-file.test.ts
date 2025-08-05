@@ -70,41 +70,44 @@ describe('createPageFileMatcher', () => {
   })
 
   describe('isMetadataRouteFile', () => {
-    it('should determine top level metadata routes', () => {
+    it('should determine top level metadata files', () => {
       const pageExtensions = ['tsx', 'ts', 'jsx', 'js']
       const fileMatcher = createValidFileMatcher(pageExtensions, 'app')
       expect(fileMatcher.isMetadataRouteFile('app/route.js')).toBe(false)
       expect(fileMatcher.isMetadataRouteFile('app/page.js')).toBe(false)
       expect(fileMatcher.isMetadataRouteFile('pages/index.js')).toBe(false)
 
-      expect(fileMatcher.isMetadataRouteFile('app/robots.txt/route.js')).toBe(
-        true
-      )
-      expect(
-        fileMatcher.isMetadataRouteFile('app/path/robots.txt/route.js')
-      ).toBe(false)
+      expect(fileMatcher.isMetadataRouteFile('app/robots.txt')).toBe(true)
+      expect(fileMatcher.isMetadataRouteFile('app/path/robots.txt')).toBe(false)
 
-      expect(fileMatcher.isMetadataRouteFile('app/sitemap.xml/route.js')).toBe(
-        true
-      )
-      expect(
-        fileMatcher.isMetadataRouteFile('app/path/sitemap.xml/route.js')
-      ).toBe(true)
+      expect(fileMatcher.isMetadataRouteFile('app/sitemap.xml')).toBe(true)
+      expect(fileMatcher.isMetadataRouteFile('app/path/sitemap.xml')).toBe(true)
+    })
+
+    it('should determine metadata API files', () => {
+      const pageExtensions = ['tsx', 'ts', 'jsx', 'js']
+      const fileMatcher = createValidFileMatcher(pageExtensions, 'app')
+      expect(fileMatcher.isMetadataRouteFile('app/robots.js')).toBe(true)
+      expect(fileMatcher.isMetadataRouteFile('app/path/robots.js')).toBe(false)
+
+      expect(fileMatcher.isMetadataRouteFile('app/sitemap.js')).toBe(true)
+      expect(fileMatcher.isMetadataRouteFile('app/path/sitemap.js')).toBe(true)
     })
   })
 
-  describe('isMetadataStaticFile', () => {
+  describe('isMetadataRouteStaticFile', () => {
     it('should determine top level static metadata files', () => {
       const pageExtensions = ['tsx', 'ts', 'jsx', 'js']
       const fileMatcher = createValidFileMatcher(pageExtensions, 'app')
 
-      expect(fileMatcher.isMetadataStaticFile('app/robots.txt')).toBe(true)
-      expect(fileMatcher.isMetadataStaticFile('app/path/robots.txt')).toBe(
-        false
-      )
-      expect(fileMatcher.isMetadataStaticFile('app/sitemap.xml')).toBe(true)
-      expect(fileMatcher.isMetadataStaticFile('app/path/sitemap.xml')).toBe(
+      expect(fileMatcher.isMetadataRouteStaticFile('app/robots.txt')).toBe(true)
+      expect(fileMatcher.isMetadataRouteStaticFile('app/robots.js')).toBe(false)
+
+      expect(fileMatcher.isMetadataRouteStaticFile('app/sitemap.xml')).toBe(
         true
+      )
+      expect(fileMatcher.isMetadataRouteStaticFile('app/sitemap.js')).toBe(
+        false
       )
     })
   })

@@ -7,7 +7,7 @@ import { warn } from '../../build/output/log'
 import { cyan } from '../../lib/picocolors'
 import {
   isMetadataRouteFile as _isMetadataRouteFile,
-  isMetadataStaticFile as _isMetadataStaticFile,
+  isMetadataRouteStaticFile as _isMetadataRouteStaticFile,
 } from '../../lib/metadata/is-metadata-route'
 import type { PageExtensions } from '../../build/page-extensions-type'
 
@@ -130,12 +130,12 @@ export function createValidFileMatcher(
     return _isMetadataRouteFile(appDirRelativePath, pageExtensions, true)
   }
 
-  function isMetadataStaticFile(filePath: string) {
+  function isMetadataRouteStaticFile(filePath: string) {
     const appDirRelativePath = appDirPath
       ? filePath.replace(appDirPath, '')
       : filePath
 
-    return _isMetadataStaticFile(appDirRelativePath)
+    return _isMetadataRouteStaticFile(appDirRelativePath)
   }
 
   // Determine if the file is leaf node page file or route file under layouts,
@@ -181,7 +181,7 @@ export function createValidFileMatcher(
     isAppLayoutPage,
     isAppDefaultPage,
     isMetadataRouteFile,
-    isMetadataStaticFile,
+    isMetadataRouteStaticFile,
     isRootNotFound,
   }
 }
