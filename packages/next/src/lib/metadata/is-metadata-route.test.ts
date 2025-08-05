@@ -3,6 +3,7 @@ import {
   isMetadataRouteFile,
   isMetadataRoute,
   isMetadataPage,
+  isMetadataRouteStaticFile,
 } from './is-metadata-route'
 
 describe('getExtensionRegexString', () => {
@@ -108,6 +109,24 @@ describe('isMetadataRouteFile', () => {
         isMetadataRouteFile('/foo/icon.tsx', ['js', 'jsx', 'tsx', 'ts'], true)
       ).toBe(true)
     })
+  })
+})
+
+describe('isMetadataRouteStaticFile', () => {
+  it('should match static metadata route files', () => {
+    expect(isMetadataRouteStaticFile('/robots.txt')).toBe(true)
+    expect(isMetadataRouteStaticFile('/sitemap.xml')).toBe(true)
+  })
+
+  it('should not match dynamic metadata routes', () => {
+    expect(isMetadataRouteStaticFile('/foo/icon.js')).toBe(false)
+    expect(isMetadataRouteStaticFile('/foo/icon.ts')).toBe(false)
+    expect(isMetadataRouteStaticFile('/foo/icon.tsx')).toBe(false)
+  })
+
+  it('should not match without extension', () => {
+    expect(isMetadataRouteStaticFile('/robots')).toBe(false)
+    expect(isMetadataRouteStaticFile('/sitemap')).toBe(false)
   })
 })
 
