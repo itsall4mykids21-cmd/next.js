@@ -2,20 +2,21 @@ import { nextTestSetup } from 'e2e-utils'
 import { getMetadataHeadTags } from 'next-test-utils'
 
 describe('metadata-files-static-output-root-route', () => {
-  const { next } = nextTestSetup({
+  const { next, isNextDev } = nextTestSetup({
     files: __dirname,
   })
 
-  it('should not generate routes for metadata files', async () => {
-    const appPathRoutesManifest: Record<string, string> = await next.readJSON(
-      '.next/app-path-routes-manifest.json'
-    )
+  if (!isNextDev) {
+    it('should not generate routes for metadata files', async () => {
+      const appPathRoutesManifest: Record<string, string> = await next.readJSON(
+        '.next/app-path-routes-manifest.json'
+      )
 
-    // Previously, metadata files were generated as routes even though the user
-    // provided a static file. So, the manifest used to include "/sitemap.xml/route",
-    // "/robots.txt/route", etc. This is still true for generated metadata files
-    // e.g. `sitemap.ts` or `robots.ts`.
-    expect(Object.keys(appPathRoutesManifest).sort()).toMatchInlineSnapshot(`
+      // Previously, metadata files were generated as routes even though the user
+      // provided a static file. So, the manifest used to include "/sitemap.xml/route",
+      // "/robots.txt/route", etc. This is still true for generated metadata files
+      // e.g. `sitemap.ts` or `robots.ts`.
+      expect(Object.keys(appPathRoutesManifest).sort()).toMatchInlineSnapshot(`
      [
        "/(group)/group/page",
        "/_not-found/page",
@@ -29,7 +30,8 @@ describe('metadata-files-static-output-root-route', () => {
        "/static/page",
      ]
     `)
-  })
+    })
+  }
 
   it('should have correct link tags for root page', async () => {
     const browser = await next.browser('/')
