@@ -118,6 +118,11 @@ describe('isMetadataRouteStaticFile', () => {
     expect(isMetadataRouteStaticFile('/sitemap.xml')).toBe(true)
   })
 
+  it('should match file with suffix', () => {
+    expect(isMetadataRouteStaticFile('/opengraph-image-xxxxxx.png')).toBe(true)
+    expect(isMetadataRouteStaticFile('/twitter-image-yyyyyy.png')).toBe(true)
+  })
+
   it('should not match dynamic metadata routes', () => {
     expect(isMetadataRouteStaticFile('/foo/icon.js')).toBe(false)
     expect(isMetadataRouteStaticFile('/foo/icon.ts')).toBe(false)
