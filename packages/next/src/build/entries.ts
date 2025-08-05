@@ -736,7 +736,7 @@ export async function copyMetadataStaticFiles({
       const fileSizeInMB = buffer.byteLength / 1024 / 1024
       if (fileSizeInMB > 5) {
         throw new Error(
-          `File size for ${imgName} image ${JSON.stringify(filePath)} exceeds ${fileSizeLimit}MB. ` +
+          `File size for ${imgName} image ${filePath} exceeds ${fileSizeLimit}MB. ` +
             `(Current: ${fileSizeInMB.toFixed(2)}MB)\n` +
             'Read more: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image#image-files-jpg-png-gif'
         )
