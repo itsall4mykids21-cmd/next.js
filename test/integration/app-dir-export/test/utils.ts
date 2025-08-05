@@ -69,6 +69,8 @@ const expectedWhenTrailingSlashFalse = [
     ? [expect.stringMatching(/_next\/static\/media\/favicon\.[0-9a-f]+\.ico/)]
     : []),
   expect.stringMatching(/_next\/static\/media\/test\.[0-9a-f]+\.png/),
+  '_next/static/metadata/favicon.ico',
+  '_next/static/metadata/robots.txt',
   '_next/static/test-build-id/_buildManifest.js',
   ...(process.env.IS_TURBOPACK_TEST
     ? ['_next/static/test-build-id/_clientMiddlewareManifest.json']
@@ -86,12 +88,10 @@ const expectedWhenTrailingSlashFalse = [
   'api/txt',
   'client.html',
   'client.txt',
-  'favicon.ico',
   'image-import.html',
   'image-import.txt',
   'index.html',
   'index.txt',
-  'robots.txt',
 ]
 
 export async function getFiles(cwd = exportDir) {
