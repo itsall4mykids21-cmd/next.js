@@ -781,5 +781,5 @@
   "780": "Invariant: failed to find parent dynamic route for notFound route %s",
   "781": "No LRU node to remove",
   "782": "Failed to find the root directory of the project. This is a bug in Next.js.",
-  "783": "File size for %s image %s exceeds %sMB. (Current: %sMB)\\nRead more: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image#image-files-jpg-png-gif"
+  "783": "File size for %s image \"%s\" exceeds %sMB. (Current: %sMB)\\nRead more: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image#image-files-jpg-png-gif"
 }
