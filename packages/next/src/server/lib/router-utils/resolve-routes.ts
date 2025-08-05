@@ -316,7 +316,9 @@ export function getResolveRoutes(
               ? addPathPrefix(
                   // `route.page` has up until the segments, so add the filename.
                   // e.g. /[id] -> /[id]/sitemap.xml
-                  route.page + '/' + path.basename(localeResult.pathname),
+                  route.page +
+                    (route.page.endsWith('/') ? '' : '/') +
+                    path.basename(localeResult.pathname),
                   '/_next/static/metadata'
                 )
               : addPathPrefix(route.page, config.basePath || '')
