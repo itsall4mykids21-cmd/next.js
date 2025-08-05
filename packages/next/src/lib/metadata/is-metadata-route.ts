@@ -45,7 +45,7 @@ export const getExtensionRegexString = (
 }
 
 export function isMetadataRouteStaticFile(pathname: string) {
-  return isMetadataRouteFile(pathname, [], false)
+  return isMetadataRouteFile(pathname, [], true)
 }
 
 /**
