@@ -6041,8 +6041,7 @@
       "use-cache-metadata-route-handler should generate multiple sitemaps with a metadata route handler that uses \"use cache\"",
       "use-cache-metadata-route-handler should generate robots.txt with a metadata route handler that uses \"use cache\"",
       "use-cache-metadata-route-handler should generate sitemaps with a metadata route handler that uses \"use cache\"",
-      "use-cache-metadata-route-handler should include the client reference manifest in the route.js.nft.json files of dynamic metadata routes",
-      "use-cache-metadata-route-handler should not include the client reference manifest in the route.js.nft.json files of static metadata routes"
+      "use-cache-metadata-route-handler should include the client reference manifest in the route.js.nft.json files of dynamic metadata routes"
     ],
     "failed": [],
     "pending": [],

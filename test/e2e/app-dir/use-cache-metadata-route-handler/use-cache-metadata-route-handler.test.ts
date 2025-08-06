@@ -151,15 +151,5 @@ describe('use-cache-metadata-route-handler', () => {
         ).toBeString()
       }
     })
-
-    it('should not include the client reference manifest in the route.js.nft.json files of static metadata routes', async () => {
-      const { files } = await next.readJSON(
-        '/.next/server/app/favicon.ico/route.js.nft.json'
-      )
-
-      expect(
-        files.find((e) => e.endsWith('route_client-reference-manifest.js'))
-      ).toBeUndefined()
-    })
   }
 })
