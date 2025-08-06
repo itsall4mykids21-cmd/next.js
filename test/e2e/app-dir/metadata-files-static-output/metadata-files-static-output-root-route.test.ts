@@ -2,7 +2,7 @@ import { nextTestSetup } from 'e2e-utils'
 import { getMetadataHeadTags } from 'next-test-utils'
 
 describe('metadata-files-static-output-root-route', () => {
-  const { next, isNextDev } = nextTestSetup({
+  const { next, isNextDev, isNextDeploy } = nextTestSetup({
     files: __dirname,
   })
 
@@ -59,36 +59,39 @@ describe('metadata-files-static-output-root-route', () => {
     `)
   })
 
-  it('should serve static files when requested to its route', async () => {
-    const [faviconRes, manifestRes, robotsRes, sitemapRes] = await Promise.all([
-      next.fetch('/favicon.ico'),
-      next.fetch('/manifest.json'),
-      next.fetch('/robots.txt'),
-      next.fetch('/sitemap.xml'),
-    ])
+  if (!isNextDeploy) {
+    it('should serve static files when requested to its route', async () => {
+      const [faviconRes, manifestRes, robotsRes, sitemapRes] =
+        await Promise.all([
+          next.fetch('/favicon.ico'),
+          next.fetch('/manifest.json'),
+          next.fetch('/robots.txt'),
+          next.fetch('/sitemap.xml'),
+        ])
 
-    // Compare response content with actual files
-    const [actualFavicon, actualManifest, actualRobots, actualSitemap] =
-      await Promise.all([
-        next.readFileBuffer('app/favicon.ico'),
-        next.readFile('app/manifest.json'),
-        next.readFile('app/robots.txt'),
-        next.readFile('app/sitemap.xml'),
-      ])
+      // Compare response content with actual files
+      const [actualFavicon, actualManifest, actualRobots, actualSitemap] =
+        await Promise.all([
+          next.readFileBuffer('app/favicon.ico'),
+          next.readFile('app/manifest.json'),
+          next.readFile('app/robots.txt'),
+          next.readFile('app/sitemap.xml'),
+        ])
 
-    expect({
-      favicon: Buffer.compare(
-        Buffer.from(await faviconRes.arrayBuffer()),
-        actualFavicon
-      ),
-      manifest: await manifestRes.text(),
-      robots: await robotsRes.text(),
-      sitemap: await sitemapRes.text(),
-    }).toEqual({
-      favicon: 0, // Buffer comparison returns 0 for equal
-      manifest: actualManifest,
-      robots: actualRobots,
-      sitemap: actualSitemap,
+      expect({
+        favicon: Buffer.compare(
+          Buffer.from(await faviconRes.arrayBuffer()),
+          actualFavicon
+        ),
+        manifest: await manifestRes.text(),
+        robots: await robotsRes.text(),
+        sitemap: await sitemapRes.text(),
+      }).toEqual({
+        favicon: 0, // Buffer comparison returns 0 for equal
+        manifest: actualManifest,
+        robots: actualRobots,
+        sitemap: actualSitemap,
+      })
     })
-  })
+  }
 })
