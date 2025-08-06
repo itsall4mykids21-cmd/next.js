@@ -2,36 +2,9 @@ import { nextTestSetup } from 'e2e-utils'
 import { getMetadataHeadTags } from 'next-test-utils'
 
 describe('metadata-files-static-output-root-route', () => {
-  const { next, isNextDev, isNextDeploy } = nextTestSetup({
+  const { next, isNextStart } = nextTestSetup({
     files: __dirname,
   })
-
-  if (!isNextDev && !isNextDeploy) {
-    it('should not generate routes for metadata files', async () => {
-      const appPathRoutesManifest: Record<string, string> = await next.readJSON(
-        '.next/app-path-routes-manifest.json'
-      )
-
-      // Previously, metadata files were generated as routes even though the user
-      // provided a static file. So, the manifest used to include "/sitemap.xml/route",
-      // "/robots.txt/route", etc. This is still true for generated metadata files
-      // e.g. `sitemap.ts` or `robots.ts`.
-      expect(Object.keys(appPathRoutesManifest).sort()).toMatchInlineSnapshot(`
-     [
-       "/(group)/group/page",
-       "/_not-found/page",
-       "/dynamic/[id]/page",
-       "/intercept-me/page",
-       "/intercepting/(..)intercept-me/page",
-       "/intercepting/page",
-       "/page",
-       "/parallel/@parallel/page",
-       "/parallel/page",
-       "/static/page",
-     ]
-    `)
-    })
-  }
 
   it('should have correct link tags for root page', async () => {
     const browser = await next.browser('/')
@@ -59,7 +32,32 @@ describe('metadata-files-static-output-root-route', () => {
     `)
   })
 
-  if (!isNextDeploy) {
+  if (isNextStart) {
+    it('should not generate routes for metadata files', async () => {
+      const appPathRoutesManifest: Record<string, string> = await next.readJSON(
+        '.next/app-path-routes-manifest.json'
+      )
+
+      // Previously, metadata files were generated as routes even though the user
+      // provided a static file. So, the manifest used to include "/sitemap.xml/route",
+      // "/robots.txt/route", etc. This is still true for generated metadata files
+      // e.g. `sitemap.ts` or `robots.ts`.
+      expect(Object.keys(appPathRoutesManifest).sort()).toMatchInlineSnapshot(`
+     [
+       "/(group)/group/page",
+       "/_not-found/page",
+       "/dynamic/[id]/page",
+       "/intercept-me/page",
+       "/intercepting/(..)intercept-me/page",
+       "/intercepting/page",
+       "/page",
+       "/parallel/@parallel/page",
+       "/parallel/page",
+       "/static/page",
+     ]
+    `)
+    })
+
     it('should serve static files when requested to its route', async () => {
       const [faviconRes, manifestRes, robotsRes, sitemapRes] =
         await Promise.all([

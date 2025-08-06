@@ -3,7 +3,7 @@ import { getMetadataHeadTags } from 'next-test-utils'
 import { getMetadataRouteSuffix } from 'next/dist/lib/metadata/get-metadata-route'
 
 describe('metadata-files-static-output-parallel-route', () => {
-  const { next, isNextDeploy } = nextTestSetup({
+  const { next, isNextStart } = nextTestSetup({
     files: __dirname,
   })
 
@@ -76,7 +76,7 @@ describe('metadata-files-static-output-parallel-route', () => {
     `)
   })
 
-  if (!isNextDeploy) {
+  if (isNextStart) {
     it('should serve static files when requested to its route for parallel slot page', async () => {
       const suffix = getMetadataRouteSuffix('/parallel/@parallel/n')
 

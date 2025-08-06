@@ -2,7 +2,7 @@ import { nextTestSetup } from 'e2e-utils'
 import { getMetadataHeadTags } from 'next-test-utils'
 
 describe('metadata-files-static-output-intercepting-route', () => {
-  const { next, isNextDeploy } = nextTestSetup({
+  const { next, isNextStart } = nextTestSetup({
     files: __dirname,
   })
 
@@ -81,7 +81,7 @@ describe('metadata-files-static-output-intercepting-route', () => {
     `)
   })
 
-  if (!isNextDeploy) {
+  if (isNextStart) {
     it('should serve static files when requested to its route for intercepting page', async () => {
       const [
         appleIconRes,
