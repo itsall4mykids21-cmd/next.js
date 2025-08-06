@@ -59,6 +59,7 @@ import {
   handleChromeDevtoolsWorkspaceRequest,
   isChromeDevtoolsWorkspaceUrl,
 } from './chrome-devtools-workspace'
+import { isMetadataRouteStaticFile } from '../../lib/metadata/is-metadata-route'
 
 const debug = setupDebug('next:router-server:main')
 const isNextFont = (pathname: string | null) =>
@@ -473,7 +474,11 @@ export async function initialize(opts: {
           !res.getHeader('cache-control') &&
           matchedOutput.type === 'nextStaticFolder'
         ) {
-          if (opts.dev && !isNextFont(parsedUrl.pathname)) {
+          if (
+            opts.dev &&
+            !isNextFont(parsedUrl.pathname) &&
+            !isMetadataRouteStaticFile(parsedUrl.pathname || '')
+          ) {
             res.setHeader('Cache-Control', 'no-store, must-revalidate')
           } else {
             res.setHeader(
