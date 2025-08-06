@@ -822,6 +822,18 @@ impl AppProject {
             app_entrypoints
                 .await?
                 .iter()
+                .filter_map(|(pathname, app_entrypoint)| {
+                    // Skip static metadata files - they should be served as static files, not
+                    // routes They will be copied to _next/static/metadata/...
+                    // via copyMetadataStaticFiles()
+                    match app_entrypoint {
+                        AppEntrypoint::AppMetadata {
+                            metadata: MetadataItem::Static { .. },
+                            ..
+                        } => None,
+                        _ => Some((pathname, app_entrypoint)),
+                    }
+                })
                 .map(|(pathname, app_entrypoint)| async {
                     Ok((
                         pathname.to_string().into(),
