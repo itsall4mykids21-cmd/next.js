@@ -6,7 +6,7 @@ describe('metadata-files-static-output-root-route', () => {
     files: __dirname,
   })
 
-  if (!isNextDev) {
+  if (!isNextDev && !isNextDeploy) {
     it('should not generate routes for metadata files', async () => {
       const appPathRoutesManifest: Record<string, string> = await next.readJSON(
         '.next/app-path-routes-manifest.json'
