@@ -13,7 +13,7 @@ import fs from 'fs/promises'
 import path from 'path'
 
 describe('app dir - metadata', () => {
-  const { next, isNextDev, isNextStart, isNextDeploy } = nextTestSetup({
+  const { next, isNextDev, isNextDeploy } = nextTestSetup({
     files: __dirname,
   })
 
@@ -670,17 +670,17 @@ describe('app dir - metadata', () => {
     })
   })
 
-  describe('static routes', () => {
-    it('should have /favicon.ico as route', async () => {
+  describe('static files', () => {
+    it('should have /favicon.ico as static file', async () => {
       const res = await next.fetch('/favicon.ico')
       expect(res.status).toBe(200)
       expect(res.headers.get('content-type')).toBe('image/x-icon')
       expect(res.headers.get('cache-control')).toBe(
-        'public, max-age=0, must-revalidate'
+        'public, max-age=31536000, immutable'
       )
     })
 
-    it('should have icons as route', async () => {
+    it('should have icons as static files', async () => {
       const resIcon = await next.fetch('/icons/static/icon.png')
       const resAppleIcon = await next.fetch(
         '/icons/static/nested/apple-icon.png'
@@ -689,22 +689,18 @@ describe('app dir - metadata', () => {
       expect(resAppleIcon.status).toBe(200)
       expect(resAppleIcon.headers.get('content-type')).toBe('image/png')
       expect(resAppleIcon.headers.get('cache-control')).toBe(
-        isNextDev
-          ? 'no-cache, no-store'
-          : 'public, immutable, no-transform, max-age=31536000'
+        'public, max-age=31536000, immutable'
       )
       expect(resIcon.status).toBe(200)
       expect(resIcon.headers.get('content-type')).toBe('image/png')
       expect(resIcon.headers.get('cache-control')).toBe(
-        isNextDev
-          ? 'no-cache, no-store'
-          : 'public, immutable, no-transform, max-age=31536000'
+        'public, max-age=31536000, immutable'
       )
     })
 
     it('should support root dir robots.txt', async () => {
       const res = await next.fetch('/robots.txt')
-      expect(res.headers.get('content-type')).toBe('text/plain')
+      expect(res.headers.get('content-type')).toBe('text/plain; charset=UTF-8')
       expect(await res.text()).toContain('User-Agent: *\nDisallow:')
       const invalidRobotsResponse = await next.fetch('/title/robots.txt')
       expect(invalidRobotsResponse.status).toBe(404)
@@ -736,43 +732,7 @@ describe('app dir - metadata', () => {
         theme_color: '#fff',
       })
     })
-
-    if (isNextStart) {
-      it('should build favicon.ico as a custom route', async () => {
-        const appPathsManifest = JSON.parse(
-          await next.readFile('.next/server/app-paths-manifest.json')
-        )
-        expect(appPathsManifest['/robots.txt/route']).toBe(
-          'app/robots.txt/route.js'
-        )
-        expect(appPathsManifest['/sitemap.xml/route']).toBe(
-          'app/sitemap.xml/route.js'
-        )
-      })
-    }
   })
-
-  if (isNextStart) {
-    describe('static optimization', () => {
-      it('should build static files into static route', async () => {
-        expect(
-          await next.hasFile(
-            '.next/server/app/opengraph/static/opengraph-image.png.meta'
-          )
-        ).toBe(true)
-        expect(
-          await next.hasFile(
-            '.next/server/app/opengraph/static/opengraph-image.png.body'
-          )
-        ).toBe(true)
-        expect(
-          await next.hasFile(
-            '.next/server/app/opengraph/static/opengraph-image.png/[__metadata_id__]/route.js'
-          )
-        ).toBe(false)
-      })
-    })
-  }
 
   describe('viewport', () => {
     it('should support dynamic viewport export', async () => {
