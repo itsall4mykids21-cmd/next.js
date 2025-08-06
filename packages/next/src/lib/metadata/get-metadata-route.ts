@@ -1,4 +1,4 @@
-import { isMetadataPage } from './is-metadata-route'
+import { isMetadataPage, isMetadataRouteStaticFile } from './is-metadata-route'
 import path from '../../shared/lib/isomorphic/path'
 import { interpolateDynamicPath } from '../../server/server-utils'
 import { getNamedRouteRegex } from '../../shared/lib/router/utils/route-regex'
@@ -91,7 +91,7 @@ export function normalizeMetadataRoute(page: string) {
   // they won't have an extension. Files with '/__static_metadata_file__' suffix
   // will be excluded from the build entries, but instead will be copied to
   // {distDir}/static/metadata/... and served as static files on requests.
-  if (path.extname(page)) {
+  if (isMetadataRouteStaticFile(page)) {
     const { dir, name, ext } = path.parse(page)
     const suffix = getMetadataRouteSuffix(page)
 
