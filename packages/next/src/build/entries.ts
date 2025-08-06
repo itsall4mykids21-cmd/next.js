@@ -731,8 +731,14 @@ export async function copyMetadataStaticFiles({
       const fileSizeInMB = (await stat(filePath)).size / (1024 * 1024)
 
       if (fileSizeInMB > fileSizeLimit) {
+        // In Turbopack, the path is simplified as [project]/..., so match for consistency.
+        const turbopackStyleFilePath = filePath.replace(appDir, '[project]/app')
+        const imgPath = process.env.TURBOPACK
+          ? turbopackStyleFilePath
+          : filePath
+
         throw new Error(
-          `File size for ${imgName} image "${filePath}" exceeds ${fileSizeLimit}MB. ` +
+          `File size for ${imgName} image "${imgPath}" exceeds ${fileSizeLimit}MB. ` +
             `(Current: ${fileSizeInMB.toFixed(2)}MB)\n` +
             'Read more: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image#image-files-jpg-png-gif'
         )
