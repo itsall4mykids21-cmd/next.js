@@ -174,22 +174,18 @@ async fn apply_module_type(
                         ))
                     }
                     Some(TreeShakingMode::ReexportsOnly) => {
-                        if let Some(part) = part {
-                            match part {
-                                ModulePart::Evaluation => {
-                                    if *module.get_exports().split_locals_and_reexports().await? {
+                        if *module.get_exports().split_locals_and_reexports().await? {
+                            if let Some(part) = part {
+                                match part {
+                                    ModulePart::Evaluation => {
                                         Vc::upcast(EcmascriptModuleLocalsModule::new(*module))
-                                    } else {
-                                        Vc::upcast(*module)
                                     }
-                                }
-                                ModulePart::Export(_) => {
-                                    let side_effect_free_packages = module_asset_context
-                                        .side_effect_free_packages()
-                                        .resolve()
-                                        .await?;
+                                    ModulePart::Export(_) => {
+                                        let side_effect_free_packages = module_asset_context
+                                            .side_effect_free_packages()
+                                            .resolve()
+                                            .await?;
 
-                                    if *module.get_exports().split_locals_and_reexports().await? {
                                         apply_reexport_tree_shaking(
                                             Vc::upcast(
                                                 EcmascriptModuleFacadeModule::new(
@@ -202,25 +198,19 @@ async fn apply_module_type(
                                             part,
                                             side_effect_free_packages,
                                         )
-                                    } else {
-                                        apply_reexport_tree_shaking(
-                                            Vc::upcast(*module),
-                                            part,
-                                            side_effect_free_packages,
-                                        )
                                     }
+                                    _ => bail!(
+                                        "Invalid module part \"{}\" for reexports only tree \
+                                         shaking mode",
+                                        part
+                                    ),
                                 }
-                                _ => bail!(
-                                    "Invalid module part \"{}\" for reexports only tree shaking \
-                                     mode",
-                                    part
-                                ),
+                            } else {
+                                Vc::upcast(EcmascriptModuleFacadeModule::new(
+                                    Vc::upcast(*module),
+                                    ModulePart::facade(),
+                                ))
                             }
-                        } else if *module.get_exports().split_locals_and_reexports().await? {
-                            Vc::upcast(EcmascriptModuleFacadeModule::new(
-                                Vc::upcast(*module),
-                                ModulePart::facade(),
-                            ))
                         } else {
                             Vc::upcast(*module)
                         }
