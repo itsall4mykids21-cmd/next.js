@@ -718,16 +718,17 @@ export async function copyMetadataStaticFiles({
     )
 
     const filename = parse(filePath).name
-    const isTwitterImage = filename === 'twitter-image'
-    const isOpenGraphImage = filename === 'opengraph-image'
+    // Use 'includes' since they can have suffixes.
+    const isTwitter = filename.includes('twitter-image')
+    const isOpenGraph = filename.includes('opengraph-image')
 
-    if (isTwitterImage || isOpenGraphImage) {
-      const imgName = isTwitterImage ? 'Twitter' : 'Open Graph'
+    if (isTwitter || isOpenGraph) {
+      const imgName = isTwitter ? 'Twitter' : 'Open Graph'
       // Twitter image file size limit is 5MB.
       // General Open Graph image file size limit is 8MB.
       // x-ref: https://developer.x.com/en/docs/x-for-websites/cards/overview/summary
       // x-ref(facebook): https://developers.facebook.com/docs/sharing/webmasters/images
-      const fileSizeLimit = isTwitterImage ? 5 : 8
+      const fileSizeLimit = isTwitter ? 5 : 8
       const fileSizeInMB = (await stat(filePath)).size / (1024 * 1024)
 
       if (fileSizeInMB > fileSizeLimit) {
