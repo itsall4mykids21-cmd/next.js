@@ -289,4 +289,6 @@ export interface IncrementalCache extends IncrementalResponseCache {
     data: Exclude<IncrementalCacheValue, CachedFetchValue> | null,
     ctx: SetIncrementalResponseCacheContext
   ): Promise<void>
+  revalidateTag?(tags: string | string[]): Promise<void>
+  setTagStale?(tags: string | string[]): Promise<void>
 }

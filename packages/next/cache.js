@@ -6,6 +6,8 @@ const cacheExports = {
     .revalidateTag,
   revalidatePath: require('next/dist/server/web/spec-extension/revalidate')
     .revalidatePath,
+  setTagStale: require('next/dist/server/web/spec-extension/revalidate')
+    .setTagStale,
 
   unstable_expireTag: require('next/dist/server/web/spec-extension/revalidate')
     .unstable_expireTag,
@@ -28,6 +30,7 @@ module.exports = cacheExports
 exports.unstable_cache = cacheExports.unstable_cache
 exports.revalidatePath = cacheExports.revalidatePath
 exports.revalidateTag = cacheExports.revalidateTag
+exports.setTagStale = cacheExports.setTagStale
 exports.unstable_expireTag = cacheExports.unstable_expireTag
 exports.unstable_expirePath = cacheExports.unstable_expirePath
 exports.unstable_noStore = cacheExports.unstable_noStore

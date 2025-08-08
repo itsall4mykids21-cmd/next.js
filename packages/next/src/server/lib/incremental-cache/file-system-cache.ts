@@ -21,7 +21,7 @@ import {
   RSC_SEGMENTS_DIR_SUFFIX,
   RSC_SUFFIX,
 } from '../../../lib/constants'
-import { isStale, tagsManifest } from './tags-manifest.external'
+import { isStaleOrExpired, tagsManifest } from './tags-manifest.external'
 import { MultiFileWriter } from '../../../lib/multi-file-writer'
 import { getMemoryCache } from './memory-cache.external'
 
@@ -79,8 +79,47 @@ export default class FileSystemCache implements CacheHandler {
     }
 
     for (const tag of tags) {
-      if (!tagsManifest.has(tag)) {
-        tagsManifest.set(tag, Date.now())
+      const existing = tagsManifest.get(tag)
+      const now = Date.now()
+
+      if (!existing) {
+        // New tag - set expire timestamp for revalidateTag
+        tagsManifest.set(tag, { expire: now })
+      } else if (typeof existing === 'number') {
+        // Legacy format - convert to new format and update expire
+        tagsManifest.set(tag, { expire: now })
+      } else {
+        // New format - update expire timestamp
+        existing.expire = now
+      }
+    }
+  }
+
+  public async setTagStale(...args: Parameters<CacheHandler['setTagStale']>) {
+    let [tags] = args
+    tags = typeof tags === 'string' ? [tags] : tags
+
+    if (FileSystemCache.debug) {
+      console.log('setTagStale', tags)
+    }
+
+    if (tags.length === 0) {
+      return
+    }
+
+    const now = Date.now()
+    for (const tag of tags) {
+      const existing = tagsManifest.get(tag)
+
+      if (!existing) {
+        // New tag - set stale timestamp
+        tagsManifest.set(tag, { stale: now })
+      } else if (typeof existing === 'number') {
+        // Legacy format - convert to new format, preserve as expire and add stale
+        tagsManifest.set(tag, { expire: existing, stale: now })
+      } else {
+        // New format - update stale timestamp, preserve existing expire
+        existing.stale = now
       }
     }
   }
@@ -297,12 +336,21 @@ export default class FileSystemCache implements CacheHandler {
         // we trigger a blocking validation if an ISR page
         // had a tag revalidated, if we want to be a background
         // revalidation instead we return data.lastModified = -1
-        if (cacheTags.length > 0 && isStale(cacheTags, data.lastModified)) {
+        const { state } = isStaleOrExpired(
+          cacheTags,
+          data?.lastModified || Date.now()
+        )
+        if (state === 'EXPIRED') {
           if (FileSystemCache.debug) {
-            console.log('FileSystemCache: stale tags', cacheTags)
+            console.log?.('get', key, 'had expired tag', cacheTags)
           }
-
           return null
+        }
+        if (state === 'STALE') {
+          if (FileSystemCache.debug) {
+            console.log?.('get', key, 'had stale tag', cacheTags)
+          }
+          data.lastModified = -1
         }
       }
     } else if (data?.value?.kind === CachedRouteKind.FETCH) {
@@ -311,22 +359,36 @@ export default class FileSystemCache implements CacheHandler {
           ? [...(ctx.tags || []), ...(ctx.softTags || [])]
           : []
 
-      // When revalidate tag is called we don't return stale data so it's
-      // updated right away.
-      if (combinedTags.some((tag) => this.revalidatedTags.includes(tag))) {
-        if (FileSystemCache.debug) {
-          console.log('FileSystemCache: was revalidated', combinedTags)
+      for (const tag of combinedTags) {
+        // When revalidate tag is called we don't return
+        // stale data so it's updated right away
+        if (this.revalidatedTags.includes(tag)) {
+          data = undefined
+          if (FileSystemCache.debug) {
+            console.log?.('get', key, 'had expired tag', this.revalidatedTags)
+          }
+          break
         }
 
-        return null
-      }
+        const { state } = isStaleOrExpired(
+          [tag],
+          data?.lastModified || Date.now()
+        )
 
-      if (isStale(combinedTags, data.lastModified)) {
-        if (FileSystemCache.debug) {
-          console.log('FileSystemCache: stale tags', combinedTags)
+        if (state === 'EXPIRED') {
+          if (FileSystemCache.debug) {
+            console.log?.('get', key, 'had expired tag', tag)
+          }
+          data = undefined
+          break
         }
-
-        return null
+        if (state === 'STALE') {
+          if (FileSystemCache.debug) {
+            console.log?.('get', key, 'had stale tag', tag)
+          }
+          data.lastModified = -1
+          break
+        }
       }
     }
 

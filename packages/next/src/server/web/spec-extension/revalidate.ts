@@ -22,6 +22,20 @@ export function revalidateTag(tag: string) {
 }
 
 /**
+ * This function allows you to mark [cached data](https://nextjs.org/docs/app/building-your-application/caching) as stale for specific cache tags.
+ *
+ * Unlike `revalidateTag`, this function marks entries as stale but preserves the existing timestamp
+ * under an `expire` field in the tag manifest. This allows for more granular cache control where
+ * data can be marked stale without immediately invalidating it.
+ *
+ * @param tags - A single tag string or array of tag strings to mark as stale
+ */
+export function setTagStale(tags: string | string[]) {
+  const tagArray = Array.isArray(tags) ? tags : [tags]
+  return revalidateStale(tagArray, `setTagStale ${tagArray.join(', ')}`)
+}
+
+/**
  * This function allows you to purge [cached data](https://nextjs.org/docs/app/building-your-application/caching) on-demand for a specific path.
  *
  * Read more: [Next.js Docs: `unstable_expirePath`](https://nextjs.org/docs/app/api-reference/functions/unstable_expirePath)
@@ -166,4 +180,86 @@ function revalidate(tags: string[], expression: string) {
 
   // TODO: only revalidate if the path matches
   store.pathWasRevalidated = true
+}
+
+function revalidateStale(tags: string[], expression: string) {
+  const store = workAsyncStorage.getStore()
+  if (!store || !store.incrementalCache) {
+    throw new Error(
+      `Invariant: static generation store missing in ${expression}`
+    )
+  }
+
+  const workUnitStore = workUnitAsyncStorage.getStore()
+  if (workUnitStore) {
+    if (workUnitStore.phase === 'render') {
+      throw new Error(
+        `Route ${store.route} used "${expression}" during render which is unsupported. To ensure revalidation is performed consistently it must always happen outside of renders and cached functions. See more info here: https://nextjs.org/docs/app/building-your-application/rendering/static-and-dynamic#dynamic-rendering`
+      )
+    }
+
+    switch (workUnitStore.type) {
+      case 'cache':
+      case 'private-cache':
+        throw new Error(
+          `Route ${store.route} used "${expression}" inside a "use cache" which is unsupported. To ensure revalidation is performed consistently it must always happen outside of renders and cached functions. See more info here: https://nextjs.org/docs/app/building-your-application/rendering/static-and-dynamic#dynamic-rendering`
+        )
+      case 'unstable-cache':
+        throw new Error(
+          `Route ${store.route} used "${expression}" inside a function cached with "unstable_cache(...)" which is unsupported. To ensure revalidation is performed consistently it must always happen outside of renders and cached functions. See more info here: https://nextjs.org/docs/app/building-your-application/rendering/static-and-dynamic#dynamic-rendering`
+        )
+      case 'prerender':
+      case 'prerender-runtime':
+        // cacheComponents Prerender
+        const error = new Error(
+          `Route ${store.route} used ${expression} without first calling \`await connection()\`.`
+        )
+        return abortAndThrowOnSynchronousRequestDataAccess(
+          store.route,
+          expression,
+          error,
+          workUnitStore
+        )
+      case 'prerender-client':
+        throw new InvariantError(
+          `${expression} must not be used within a client component. Next.js should be preventing ${expression} from being included in client components statically, but did not in this case.`
+        )
+      case 'prerender-ppr':
+        return postponeWithTracking(
+          store.route,
+          expression,
+          workUnitStore.dynamicTracking
+        )
+      case 'prerender-legacy':
+        workUnitStore.revalidate = 0
+
+        const err = new DynamicServerError(
+          `Route ${store.route} couldn't be rendered statically because it used \`${expression}\`. See more info here: https://nextjs.org/docs/messages/dynamic-server-error`
+        )
+        store.dynamicUsageDescription = expression
+        store.dynamicUsageStack = err.stack
+
+        throw err
+      case 'request':
+        if (process.env.NODE_ENV !== 'production') {
+          // TODO: This is most likely incorrect. It would lead to the ISR
+          // status being flipped when revalidating a static page with a server
+          // action.
+          workUnitStore.usedDynamic = true
+        }
+        break
+      default:
+        workUnitStore satisfies never
+    }
+  }
+
+  if (!store.pendingStaleTags) {
+    store.pendingStaleTags = []
+  }
+
+  for (const tag of tags) {
+    if (!store.pendingStaleTags.includes(tag)) {
+      store.pendingStaleTags.push(tag)
+    }
+  }
 }

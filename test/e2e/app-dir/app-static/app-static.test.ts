@@ -861,6 +861,8 @@ describe('app-dir static/dynamic handling', () => {
          "index.rsc",
          "isr-error-handling.html",
          "isr-error-handling.rsc",
+         "multiple-stale-tags.html",
+         "multiple-stale-tags.rsc",
          "no-config-fetch.html",
          "no-config-fetch.rsc",
          "no-store/static.html",
@@ -905,6 +907,8 @@ describe('app-dir static/dynamic handling', () => {
          "ssg-draft-mode/test-2.rsc",
          "ssg-draft-mode/test.html",
          "ssg-draft-mode/test.rsc",
+         "stale-tag-test.html",
+         "stale-tag-test.rsc",
          "strip-w3c-trace-context-headers.html",
          "strip-w3c-trace-context-headers.rsc",
          "unstable-cache/fetch/no-cache.html",
@@ -1550,6 +1554,31 @@ describe('app-dir static/dynamic handling', () => {
            "prefetchDataRoute": null,
            "srcRoute": "/isr-error-handling",
          },
+         "/multiple-stale-tags": {
+           "allowHeader": [
+             "host",
+             "x-matched-path",
+             "x-prerender-revalidate",
+             "x-prerender-revalidate-if-generated",
+             "x-next-revalidated-tags",
+             "x-next-revalidate-tag-token",
+           ],
+           "dataRoute": "/multiple-stale-tags.rsc",
+           "experimentalBypassFor": [
+             {
+               "key": "next-action",
+               "type": "header",
+             },
+             {
+               "key": "content-type",
+               "type": "header",
+               "value": "multipart/form-data;.*",
+             },
+           ],
+           "initialExpireSeconds": 31536000,
+           "initialRevalidateSeconds": 60,
+           "srcRoute": "/multiple-stale-tags",
+         },
          "/no-config-fetch": {
            "allowHeader": [
              "host",
@@ -2189,6 +2218,31 @@ describe('app-dir static/dynamic handling', () => {
            "initialRevalidateSeconds": false,
            "prefetchDataRoute": null,
            "srcRoute": "/ssg-draft-mode/[[...route]]",
+         },
+         "/stale-tag-test": {
+           "allowHeader": [
+             "host",
+             "x-matched-path",
+             "x-prerender-revalidate",
+             "x-prerender-revalidate-if-generated",
+             "x-next-revalidated-tags",
+             "x-next-revalidate-tag-token",
+           ],
+           "dataRoute": "/stale-tag-test.rsc",
+           "experimentalBypassFor": [
+             {
+               "key": "next-action",
+               "type": "header",
+             },
+             {
+               "key": "content-type",
+               "type": "header",
+               "value": "multipart/form-data;.*",
+             },
+           ],
+           "initialExpireSeconds": 31536000,
+           "initialRevalidateSeconds": 60,
+           "srcRoute": "/stale-tag-test",
          },
          "/strip-w3c-trace-context-headers": {
            "allowHeader": [

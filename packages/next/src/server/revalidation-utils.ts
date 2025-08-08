@@ -28,7 +28,10 @@ export async function withExecuteRevalidates<T>(
 type RevalidationState = Required<
   Pick<
     WorkStore,
-    'pendingRevalidatedTags' | 'pendingRevalidates' | 'pendingRevalidateWrites'
+    | 'pendingRevalidatedTags'
+    | 'pendingStaleTags'
+    | 'pendingRevalidates'
+    | 'pendingRevalidateWrites'
   >
 >
 
@@ -37,6 +40,7 @@ function cloneRevalidationState(store: WorkStore): RevalidationState {
     pendingRevalidatedTags: store.pendingRevalidatedTags
       ? [...store.pendingRevalidatedTags]
       : [],
+    pendingStaleTags: store.pendingStaleTags ? [...store.pendingStaleTags] : [],
     pendingRevalidates: { ...store.pendingRevalidates },
     pendingRevalidateWrites: store.pendingRevalidateWrites
       ? [...store.pendingRevalidateWrites]
@@ -49,10 +53,14 @@ function diffRevalidationState(
   curr: RevalidationState
 ): RevalidationState {
   const prevTags = new Set(prev.pendingRevalidatedTags)
+  const prevStaleTags = new Set(prev.pendingStaleTags)
   const prevRevalidateWrites = new Set(prev.pendingRevalidateWrites)
   return {
     pendingRevalidatedTags: curr.pendingRevalidatedTags.filter(
       (tag) => !prevTags.has(tag)
+    ),
+    pendingStaleTags: curr.pendingStaleTags.filter(
+      (tag) => !prevStaleTags.has(tag)
     ),
     pendingRevalidates: Object.fromEntries(
       Object.entries(curr.pendingRevalidates).filter(
@@ -89,12 +97,44 @@ async function revalidateTags(
   await Promise.all(promises)
 }
 
+async function setStaleTags(
+  tags: string[],
+  incrementalCache: IncrementalCache | undefined
+): Promise<void> {
+  if (tags.length === 0) {
+    return
+  }
+
+  const promises: Promise<void>[] = []
+
+  if (incrementalCache) {
+    promises.push(incrementalCache.setTagStale(tags))
+  }
+
+  const handlers = getCacheHandlers()
+  if (handlers) {
+    for (const handler of handlers) {
+      if (
+        'setTagStale' in handler &&
+        typeof handler.setTagStale === 'function'
+      ) {
+        promises.push(handler.setTagStale(...tags))
+      }
+    }
+  }
+
+  await Promise.all(promises)
+}
+
 export async function executeRevalidates(
   workStore: WorkStore,
   state?: RevalidationState
 ) {
   const pendingRevalidatedTags =
     state?.pendingRevalidatedTags ?? workStore.pendingRevalidatedTags ?? []
+
+  const pendingStaleTags =
+    state?.pendingStaleTags ?? workStore.pendingStaleTags ?? []
 
   const pendingRevalidates =
     state?.pendingRevalidates ?? workStore.pendingRevalidates ?? {}
@@ -104,6 +144,7 @@ export async function executeRevalidates(
 
   return Promise.all([
     revalidateTags(pendingRevalidatedTags, workStore.incrementalCache),
+    setStaleTags(pendingStaleTags, workStore.incrementalCache),
     ...Object.values(pendingRevalidates),
     ...pendingRevalidateWrites,
   ])

@@ -77,6 +77,10 @@ export class CacheHandler {
     ..._args: Parameters<IncrementalCache['revalidateTag']>
   ): Promise<void> {}
 
+  public async setTagStale(
+    ..._args: Parameters<IncrementalCache['setTagStale']>
+  ): Promise<void> {}
+
   public resetRequestCache(): void {}
 }
 
@@ -279,7 +283,11 @@ export class IncrementalCache implements IncrementalCacheType {
   }
 
   async revalidateTag(tags: string | string[]): Promise<void> {
-    return this.cacheHandler?.revalidateTag(tags)
+    return this.cacheHandler?.revalidateTag?.(tags)
+  }
+
+  async setTagStale(tags: string | string[]): Promise<void> {
+    return this.cacheHandler?.setTagStale?.(tags)
   }
 
   // x-ref: https://github.com/facebook/react/blob/2655c9354d8e1c54ba888444220f63e836925caa/packages/react/src/ReactFetch.js#L23

@@ -71,6 +71,12 @@ export interface WorkStore {
   pendingRevalidatedTags?: string[]
 
   /**
+   * Tags that were marked as stale during the current request. They need to be
+   * processed to update the tag manifest with stale timestamps.
+   */
+  pendingStaleTags?: string[]
+
+  /**
    * Tags that were previously revalidated (e.g. by a redirecting server action)
    * and have already been sent to cache handlers. Retrieved cache entries that
    * include any of these tags must be discarded.

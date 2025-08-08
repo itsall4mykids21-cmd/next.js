@@ -113,6 +113,13 @@ export interface CacheHandlerV2 {
    * it should update the tags manifest accordingly.
    */
   expireTags(...tags: string[]): Promise<void>
+
+  /**
+   * This function is called when tags are marked as stale. If applicable,
+   * it should update the tags manifest accordingly by marking tags as stale
+   * while preserving existing expire timestamps.
+   */
+  setTagStale?(...tags: string[]): Promise<void>
 }
 
 /**

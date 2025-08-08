@@ -1,6 +1,20 @@
 {
   "version": 2,
   "suites": {
+    "test/e2e/app-dir/app-static/app-static-set-tag-stale.test.ts": {
+      "passed": [],
+      "failed": [
+        "app-dir set-tag-stale should mark single tag as stale with setTagStale",
+        "app-dir set-tag-stale should mark multiple tags as stale with setTagStale",
+        "app-dir set-tag-stale should work with edge runtime for setTagStale",
+        "app-dir set-tag-stale should handle empty tag gracefully",
+        "app-dir set-tag-stale should preserve expire timestamp when using setTagStale then revalidateTag",
+        "app-dir set-tag-stale should work with array input for multiple tags"
+      ],
+      "pending": [],
+      "flakey": [],
+      "runtimeError": false
+    },
     "test/production/app-dir/fetch-cache/fetch-cache.test.ts": {
       "passed": [
         "fetch-cache should have correct fetchUrl field for fetches and unstable_cache",

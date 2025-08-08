@@ -1,0 +1,152 @@
+---
+title: setTagStale
+description: API Reference for the setTagStale function.
+---
+
+`setTagStale` allows you to mark [cached data](/docs/app/guides/caching) as stale for specific cache tags without immediately invalidating it.
+
+## Usage
+
+`setTagStale` can be called in Server Functions and Route Handlers.
+
+`setTagStale` cannot be called in Client Components or Middleware, as it only works in server environments.
+
+> **Good to know**: Unlike [`revalidateTag`](/docs/app/api-reference/functions/revalidateTag), `setTagStale` marks data as stale but preserves the existing timestamp under an `expire` field in the tag manifest. This allows for more granular cache control where data can be marked stale without immediate invalidation.
+
+## Parameters
+
+```tsx
+setTagStale(tags: string | string[]): void;
+```
+
+- `tags`: A string or array of strings representing the cache tags associated with the data you want to mark as stale. Each tag must not exceed 256 characters and values are case-sensitive.
+
+You can add tags to `fetch` as follows:
+
+```tsx
+fetch(url, { next: { tags: [...] } });
+```
+
+## Returns
+
+`setTagStale` does not return a value.
+
+## Relationship with `revalidateTag`
+
+`setTagStale` complements [`revalidateTag`](/docs/app/api-reference/functions/revalidateTag) by providing more granular cache control:
+
+- `setTagStale` marks data as stale while preserving the original timestamp under an `expire` field
+- `revalidateTag` uses the `expire` timestamp (if present) for invalidation checks instead of the stale timestamp
+- This allows for strategies where data can be progressively marked as stale and later invalidated
+
+## Examples
+
+### Server Action with Single Tag
+
+```ts filename="app/actions.ts" switcher
+'use server'
+
+import { setTagStale } from 'next/cache'
+
+export default async function markPostsStale() {
+  // Mark posts data as stale without immediately invalidating
+  setTagStale('posts')
+}
+```
+
+```js filename="app/actions.js" switcher
+'use server'
+
+import { setTagStale } from 'next/cache'
+
+export default async function markPostsStale() {
+  // Mark posts data as stale without immediately invalidating
+  setTagStale('posts')
+}
+```
+
+### Server Action with Multiple Tags
+
+```ts filename="app/actions.ts" switcher
+'use server'
+
+import { setTagStale } from 'next/cache'
+
+export default async function markContentStale() {
+  // Mark multiple content types as stale
+  setTagStale(['posts', 'users', 'comments'])
+}
+```
+
+```js filename="app/actions.js" switcher
+'use server'
+
+import { setTagStale } from 'next/cache'
+
+export default async function markContentStale() {
+  // Mark multiple content types as stale
+  setTagStale(['posts', 'users', 'comments'])
+}
+```
+
+### Route Handler
+
+```ts filename="app/api/mark-stale/route.ts" switcher
+import { setTagStale } from 'next/cache'
+
+export async function POST(request: Request) {
+  const { tags } = await request.json()
+
+  setTagStale(tags)
+
+  return Response.json({ message: 'Tags marked as stale' })
+}
+```
+
+```js filename="app/api/mark-stale/route.js" switcher
+import { setTagStale } from 'next/cache'
+
+export async function POST(request) {
+  const { tags } = await request.json()
+
+  setTagStale(tags)
+
+  return Response.json({ message: 'Tags marked as stale' })
+}
+```
+
+### Combined with revalidateTag
+
+```ts filename="app/actions.ts" switcher
+'use server'
+
+import { setTagStale, revalidateTag } from 'next/cache'
+
+export async function updatePost() {
+  // First mark as stale
+  setTagStale('posts')
+
+  // Later, fully invalidate when ready
+  // revalidateTag('posts') // Will use the expire timestamp
+}
+```
+
+```js filename="app/actions.js" switcher
+'use server'
+
+import { setTagStale, revalidateTag } from 'next/cache'
+
+export async function updatePost() {
+  // First mark as stale
+  setTagStale('posts')
+
+  // Later, fully invalidate when ready
+  // revalidateTag('posts') // Will use the expire timestamp
+}
+```
+
+## Version History
+
+| Version   | Changes                   |
+| --------- | ------------------------- |
+| `v15.5.0` | `setTagStale` introduced. |
