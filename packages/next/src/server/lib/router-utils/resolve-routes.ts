@@ -306,7 +306,7 @@ export function getResolveRoutes(
             ? // If the request is metadata file, it would have one more segment
               // after the dynamic param (its filename, e.g., /[id]/sitemap.xml),
               // so use the dirname to match the dynamic route value.
-              path.dirname(localeResult.pathname)
+              path.posix.dirname(localeResult.pathname)
             : localeResult.pathname
         )
 
@@ -318,7 +318,7 @@ export function getResolveRoutes(
                   // e.g. /[id] -> /[id]/sitemap.xml
                   route.page +
                     (route.page.endsWith('/') ? '' : '/') +
-                    path.basename(localeResult.pathname),
+                    path.posix.basename(localeResult.pathname),
                   '/_next/static/metadata'
                 )
               : addPathPrefix(route.page, config.basePath || '')
