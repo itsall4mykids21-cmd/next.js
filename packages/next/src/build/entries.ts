@@ -769,7 +769,7 @@ export async function copyMetadataStaticFiles({
   })
 
   await Promise.all(promises)
-  // This is only used for minimal mode.
+  // This manifest is generated to be compatible with Vercel CLI.
   await writeFile(
     join(distDir, 'static-metadata-routes-manifest.json'),
     JSON.stringify(staticMetadataRoutesManifest, null, 2),

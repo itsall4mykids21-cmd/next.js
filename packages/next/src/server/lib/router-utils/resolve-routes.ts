@@ -304,8 +304,8 @@ export function getResolveRoutes(
         const params = route.match(
           isMetadataStatic
             ? // If the request is metadata file, it would have one more segment
-              // after the param. E.g., /[id]/sitemap.xml has another "sitemap.xml",
-              // so won't match the /[id] route segment.
+              // after the dynamic param (its filename, e.g., /[id]/sitemap.xml),
+              // so use the dirname to match the dynamic route value.
               path.dirname(localeResult.pathname)
             : localeResult.pathname
         )
@@ -314,7 +314,7 @@ export function getResolveRoutes(
           const pageOutput = await fsChecker.getItem(
             isMetadataStatic
               ? addPathPrefix(
-                  // `route.page` has up until the segments, so add the filename.
+                  // `route.page` has up until the segment, so add the filename.
                   // e.g. /[id] -> /[id]/sitemap.xml
                   route.page +
                     (route.page.endsWith('/') ? '' : '/') +

@@ -413,11 +413,9 @@ async function startWatcher(
           continue
         }
 
-        // Handle metadata files (before page file filtering)
         if (appDir && validFileMatcher.isMetadataRouteStaticFile(fileName)) {
           currentMetadataFiles.add(fileName)
 
-          // File exists (either new or changed)
           if (watchTimeChange) {
             const relativePath = `/${path.relative(appDir, fileName)}`
             try {
@@ -435,11 +433,9 @@ async function startWatcher(
             }
           }
 
-          // Skip page processing for metadata files
           continue
         }
 
-        // Original filtering logic for page files
         if (
           meta?.accuracy === undefined ||
           !validFileMatcher.isPageFile(fileName)
@@ -1083,33 +1079,28 @@ async function startWatcher(
         }
         prevSortedRoutes = sortedRoutes
 
-        // Handle deleted metadata files
         if (appDir) {
           for (const previousFile of previousMetadataFiles) {
             if (!currentMetadataFiles.has(previousFile)) {
-              const relativePath = path.relative(appDir, previousFile)
               const targetPath = path.join(
                 distDir,
                 'static',
                 'metadata',
-                relativePath
+                path.relative(appDir, previousFile)
               )
 
               try {
-                // Check if target file exists before attempting to delete
                 if (fs.existsSync(targetPath)) {
                   await fs.promises.unlink(targetPath)
                 }
               } catch (error) {
-                // Actual filesystem error during deletion - report it clearly
                 Log.error(
-                  `Failed to remove metadata file ${relativePath}: ${error instanceof Error ? error.message : String(error)}`
+                  `Failed to remove metadata file ${targetPath}: ${error instanceof Error ? error.message : String(error)}`
                 )
               }
             }
           }
 
-          // Update known metadata files for next iteration
           previousMetadataFiles.clear()
           for (const file of currentMetadataFiles) {
             previousMetadataFiles.add(file)

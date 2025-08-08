@@ -87,10 +87,9 @@ export function normalizeMetadataRoute(page: string) {
     return page
   }
 
-  // If there is an extension, it's a static file, for dynamic files' page key,
-  // they won't have an extension. Files with '/__static_metadata_file__' suffix
-  // will be excluded from the build entries, but instead will be copied to
-  // {distDir}/static/metadata/... and served as static files on requests.
+  // Files with '/__static_metadata_file__' suffix will be excluded from
+  // the build entries, but instead will be copied to .next/static/metadata/
+  // and served as static files on requests.
   if (isMetadataRouteStaticFile(page)) {
     const { dir, name, ext } = path.parse(page)
     const suffix = getMetadataRouteSuffix(page)
