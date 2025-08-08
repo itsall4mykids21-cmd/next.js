@@ -564,6 +564,7 @@ export async function createPagesMapping({
   pagesDir,
   appDir,
   appDirOnly,
+  isExportMode,
 }: {
   isDev: boolean
   pageExtensions: PageExtensions
@@ -572,6 +573,8 @@ export async function createPagesMapping({
   pagesDir: string | undefined
   appDir: string | undefined
   appDirOnly: boolean
+  // TODO(jiwon): This is a temporary flag to exclude copying metadata files in export mode.
+  isExportMode?: boolean
 }): Promise<MappedPages> {
   const isAppRoute = pagesType === 'app'
   const pages: MappedPages = {}
@@ -603,7 +606,10 @@ export async function createPagesMapping({
       )
     )
 
-    let route = pagesType === 'app' ? normalizeMetadataRoute(pageKey) : pageKey
+    let route =
+      pagesType === 'app'
+        ? normalizeMetadataRoute(pageKey, isExportMode)
+        : pageKey
 
     if (route.endsWith('/__static_metadata_file__')) {
       // These files will be copied under {distDir}/static/metadata/...

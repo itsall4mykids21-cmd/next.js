@@ -1229,6 +1229,7 @@ export default async function build(
               pagesDir,
               appDir,
               appDirOnly,
+              isExportMode: config.output === 'export',
             })
           )
 
@@ -1246,17 +1247,21 @@ export default async function build(
             })
           )
 
-        await nextBuildSpan
-          .traceChild('copy-metadata-static-files')
-          .traceAsyncFn(() =>
-            copyMetadataStaticFiles({
-              appDir,
-              pagesType: PAGE_TYPES.APP,
-              pagePaths: appPaths,
-              distDir,
-              pageExtensions: config.pageExtensions,
-            })
-          )
+        // TODO(jiwon): Export mode has bug in resolving metadata files in dynamic routes.
+        // Follow up to support export mode with copied metadata files.
+        if (config.output !== 'export') {
+          await nextBuildSpan
+            .traceChild('copy-metadata-static-files')
+            .traceAsyncFn(() =>
+              copyMetadataStaticFiles({
+                appDir,
+                pagesType: PAGE_TYPES.APP,
+                pagePaths: appPaths,
+                distDir,
+                pageExtensions: config.pageExtensions,
+              })
+            )
+        }
 
         NextBuildContext.mappedAppPages = mappedAppPages
       }
