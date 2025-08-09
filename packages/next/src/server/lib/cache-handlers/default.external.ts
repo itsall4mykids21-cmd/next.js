@@ -79,10 +79,12 @@ const DefaultCacheHandler: CacheHandlerV2 = {
       debug?.('get', cacheKey, 'had expired tag')
       return undefined
     }
+    const entryTimestamp = state === 'STALE' ? -1 : entry.timestamp
     const [returnStream, newSaved] = entry.value.tee()
     entry.value = newSaved
 
     debug?.('get', cacheKey, 'found', {
+      tagState: state,
       tags: entry.tags,
       timestamp: entry.timestamp,
       revalidate: entry.revalidate,
@@ -91,6 +93,7 @@ const DefaultCacheHandler: CacheHandlerV2 = {
 
     return {
       ...entry,
+      timestamp: entryTimestamp,
       value: returnStream,
     }
   },
@@ -145,8 +148,7 @@ const DefaultCacheHandler: CacheHandlerV2 = {
         if (typeof entry === 'number') {
           return entry
         } else if (entry && typeof entry === 'object') {
-          // Use expire timestamp if available, fall back to stale
-          return entry.expire || entry.stale || 0
+          return entry.expire || 0
         }
         return 0
       })
