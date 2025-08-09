@@ -3,7 +3,7 @@ title: setTagStale
 description: API Reference for the setTagStale function.
 ---
 
-`setTagStale` allows you to mark [cached data](/docs/app/guides/caching) as stale for specific cache tags without immediately invalidating it.
+`setTagStale` allows you to mark a cache tag and any pages that use that tag as stale for background revalidation on the next request, instead of the blocking revalidation used by [`revalidateTag`](/docs/app/api-reference/functions/revalidateTag).
 
 ## Usage
 
@@ -11,7 +11,7 @@ description: API Reference for the setTagStale function.
 
 `setTagStale` cannot be called in Client Components or Middleware, as it only works in server environments.
 
-> **Good to know**: Unlike [`revalidateTag`](/docs/app/api-reference/functions/revalidateTag), `setTagStale` marks data as stale but preserves the existing timestamp under an `expire` field in the tag manifest. This allows for more granular cache control where data can be marked stale without immediate invalidation.
+> **Good to know**: Unlike [`revalidateTag`](/docs/app/api-reference/functions/revalidateTag) which performs blocking revalidation, `setTagStale` marks tags for background revalidation that occurs on the next request. This provides better performance by avoiding blocking operations during user requests.
 
 ## Parameters
 
@@ -21,23 +21,17 @@ setTagStale(tags: string | string[]): void;
 
 - `tags`: A string or array of strings representing the cache tags associated with the data you want to mark as stale. Each tag must not exceed 256 characters and values are case-sensitive.
 
-You can add tags to `fetch` as follows:
-
-```tsx
-fetch(url, { next: { tags: [...] } });
-```
-
 ## Returns
 
 `setTagStale` does not return a value.
 
 ## Relationship with `revalidateTag`
 
-`setTagStale` complements [`revalidateTag`](/docs/app/api-reference/functions/revalidateTag) by providing more granular cache control:
+`setTagStale` provides an alternative to [`revalidateTag`](/docs/app/api-reference/functions/revalidateTag) for different revalidation strategies:
 
-- `setTagStale` marks data as stale while preserving the original timestamp under an `expire` field
-- `revalidateTag` uses the `expire` timestamp (if present) for invalidation checks instead of the stale timestamp
-- This allows for strategies where data can be progressively marked as stale and later invalidated
+- `setTagStale` marks a tag and pages using that tag for background revalidation on the next request
+- `revalidateTag` performs blocking revalidation that happens immediately when the tagged data is accessed
+- Use `setTagStale` when you want better performance by avoiding blocking operations during user requests and don't need read your write behavior.
 
 ## Examples
 
@@ -49,7 +43,7 @@ fetch(url, { next: { tags: [...] } });
 import { setTagStale } from 'next/cache'
 
 export default async function markPostsStale() {
-  // Mark posts data as stale without immediately invalidating
+  // Mark posts tag for background revalidation on next request
   setTagStale('posts')
 }
 ```
@@ -60,32 +54,8 @@ export default async function markPostsStale() {
 import { setTagStale } from 'next/cache'
 
 export default async function markPostsStale() {
-  // Mark posts data as stale without immediately invalidating
+  // Mark posts tag for background revalidation on next request
   setTagStale('posts')
-}
-```
-
-### Server Action with Multiple Tags
-
-```ts filename="app/actions.ts" switcher
-'use server'
-
-import { setTagStale } from 'next/cache'
-
-export default async function markContentStale() {
-  // Mark multiple content types as stale
-  setTagStale(['posts', 'users', 'comments'])
-}
-```
-
-```js filename="app/actions.js" switcher
-'use server'
-
-import { setTagStale } from 'next/cache'
-
-export default async function markContentStale() {
-  // Mark multiple content types as stale
-  setTagStale(['posts', 'users', 'comments'])
 }
 ```
 
@@ -99,7 +69,7 @@ export async function POST(request: Request) {
 
   setTagStale(tags)
 
-  return Response.json({ message: 'Tags marked as stale' })
+  return Response.json({ message: 'Tags marked for background revalidation' })
 }
 ```
 
@@ -111,37 +81,7 @@ export async function POST(request) {
 
   setTagStale(tags)
 
-  return Response.json({ message: 'Tags marked as stale' })
-}
-```
-
-### Combined with revalidateTag
-
-```ts filename="app/actions.ts" switcher
-'use server'
-
-import { setTagStale, revalidateTag } from 'next/cache'
-
-export async function updatePost() {
-  // First mark as stale
-  setTagStale('posts')
-
-  // Later, fully invalidate when ready
-  // revalidateTag('posts') // Will use the expire timestamp
-}
-```
-
-```js filename="app/actions.js" switcher
-'use server'
-
-import { setTagStale, revalidateTag } from 'next/cache'
-
-export async function updatePost() {
-  // First mark as stale
-  setTagStale('posts')
-
-  // Later, fully invalidate when ready
-  // revalidateTag('posts') // Will use the expire timestamp
+  return Response.json({ message: 'Tags marked for background revalidation' })
 }
 ```
 
