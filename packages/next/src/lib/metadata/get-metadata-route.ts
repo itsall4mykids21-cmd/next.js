@@ -76,33 +76,25 @@ export function fillMetadataSegment(
 /**
  * Map metadata page key to the corresponding route
  *
- * static file page key:    /robots.txt -> /robots.txt/__static_metadata_file__
+ * static file page key:    /robots.txt -> /robots.txt
  * dynamic route page key:  /robots -> /robots.txt/route
  *
  * @param page
  * @returns
  */
-export function normalizeMetadataRoute(
-  page: string,
-  // TODO(jiwon): This is a temporary flag to exclude copying metadata files in export mode.
-  isExportMode?: boolean
-) {
+export function normalizeMetadataRoute(page: string) {
   if (!isMetadataPage(page)) {
     return page
   }
 
-  // Files with '/__static_metadata_file__' suffix will be excluded from
-  // the build entries, but instead will be copied to .next/static/metadata/
-  // and served as static files on requests.
-  if (!isExportMode && isMetadataRouteStaticFile(page)) {
+  // Static metadata files will be excluded from the build entries,
+  // but instead will be copied to ".next/static/metadata/" and served
+  // as static files on requests.
+  if (isMetadataRouteStaticFile(page)) {
     const { dir, name, ext } = path.parse(page)
     const suffix = getMetadataRouteSuffix(page)
 
-    return path.posix.join(
-      dir,
-      `${name}${suffix ? `-${suffix}` : ''}${ext}`,
-      '__static_metadata_file__'
-    )
+    return path.posix.join(dir, `${name}${suffix ? `-${suffix}` : ''}${ext}`)
   }
 
   let route = page
