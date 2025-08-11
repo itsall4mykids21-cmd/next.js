@@ -702,11 +702,13 @@ export async function copyMetadataStaticFiles({
   distDir: string
   pagePaths: string[]
   appDir: string
-  pagesType: PAGE_TYPES
+  pagesType: PAGE_TYPES.APP
   pageExtensions: PageExtensions
 }) {
   if (pagesType !== PAGE_TYPES.APP) {
-    return
+    throw new Error(
+      `copyMetadataStaticFiles() is only supported for PAGE_TYPES.APP, but received ${pagesType}`
+    )
   }
 
   const staticMetadataRoutesManifest: Record<
