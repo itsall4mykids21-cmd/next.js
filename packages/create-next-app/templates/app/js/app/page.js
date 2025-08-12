@@ -17,7 +17,22 @@ export default function Home() {
           <h1>To get started, edit the page.js file.</h1>
           <p>
             Looking for a starting point or more instructions? Head over to{" "}
-            <span>Template</span> or the <span>Learning</span> center.
+            <a
+              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Templates
+            </a>{" "}
+            or the{" "}
+            <a
+              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Learning
+            </a>{" "}
+            center.
           </p>
         </div>
         <div className={styles.ctas}>

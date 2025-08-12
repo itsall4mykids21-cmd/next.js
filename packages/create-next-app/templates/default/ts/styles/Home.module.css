@@ -21,26 +21,12 @@
   display: flex;
   min-height: 100vh;
   width: 100%;
-  max-width: 768px;
+  max-width: 800px;
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
   background-color: var(--foreground);
-  padding: 128px 64px;
-}
-
-@media (prefers-color-scheme: dark) {
-  .page {
-    --background: #000;
-    --foreground: #000;
-
-    --text-primary: #ededed;
-    --text-secondary: #999;
-
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-    --button-secondary-border: #1a1a1a;
-  }
+  padding: 120px 60px;
 }
 
 .intro {
@@ -48,15 +34,16 @@
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  gap: 1.5rem;
+  gap: 24px;
 }
 
 .intro h1 {
   max-width: 320px;
-  font-size: 30px;
+  font-size: 40px;
   font-weight: 600;
-  line-height: 40px;
-  letter-spacing: -0.01em;
+  line-height: 48px;
+  letter-spacing: -2.4px;
+  text-wrap: balance;
   color: var(--text-primary);
 }
 
@@ -64,10 +51,11 @@
   max-width: 440px;
   font-size: 18px;
   line-height: 32px;
+  text-wrap: balance;
   color: var(--text-secondary);
 }
 
-.intro span {
+.intro a {
   font-weight: 500;
   color: var(--text-primary);
 }
@@ -78,20 +66,20 @@
   width: 100%;
   max-width: 440px;
   gap: 16px;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .ctas a {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 48px;
-  padding: 0 20px;
+  height: 40px;
+  padding: 0 16px;
   border-radius: 128px;
   border: 1px solid transparent;
   transition: 0.2s;
   cursor: pointer;
-  max-width: 158px;
+  width: fit-content;
   font-weight: 500;
 }
 
@@ -120,22 +108,34 @@ a.secondary {
 
 @media (max-width: 600px) {
   .main {
-    align-items: center;
+    padding: 48px 24px;
   }
 
   .intro {
-    align-items: center;
-    text-align: center;
+    gap: 16px;
   }
 
-  .ctas {
-    flex-direction: column;
-    align-items: center;
+  .intro h1 {
+    font-size: 32px;
+    line-height: 40px;
+    letter-spacing: -1.92px;
   }
 }
 
 @media (prefers-color-scheme: dark) {
   .logo {
     filter: invert();
+  }
+
+  .page {
+    --background: #000;
+    --foreground: #000;
+
+    --text-primary: #ededed;
+    --text-secondary: #999;
+
+    --button-primary-hover: #ccc;
+    --button-secondary-hover: #1a1a1a;
+    --button-secondary-border: #1a1a1a;
   }
 }
