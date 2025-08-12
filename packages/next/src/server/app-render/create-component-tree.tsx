@@ -20,7 +20,7 @@ import { StaticGenBailoutError } from '../../client/components/static-generation
 import type { LoadingModuleData } from '../../shared/lib/app-router-context.shared-runtime'
 import type { Params } from '../request/params'
 import { workUnitAsyncStorage } from './work-unit-async-storage.external'
-import { OUTLET_BOUNDARY_NAME } from '../../lib/metadata/metadata-constants'
+import { OUTLET_BOUNDARY_NAME } from '../../lib/framework/boundary-constants'
 import type {
   UseCacheLayoutComponentProps,
   UseCachePageComponentProps,
@@ -201,8 +201,6 @@ async function createComponentTreeInternal(
     () => getLayoutOrPageModule(tree)
   )
 
-  const gracefullyDegrade = !!ctx.renderOpts.botType
-
   /**
    * Checks if the current segment is a root layout.
    */
@@ -300,6 +298,7 @@ async function createComponentTreeInternal(
     if (workUnitStore) {
       switch (workUnitStore.type) {
         case 'prerender':
+        case 'prerender-runtime':
         case 'prerender-legacy':
         case 'prerender-ppr':
           if (workUnitStore.revalidate > defaultRevalidate) {
@@ -417,9 +416,9 @@ async function createComponentTreeInternal(
     process.env.NODE_ENV === 'development' &&
     ctx.renderOpts.devtoolSegmentExplorer
   const dir =
-    process.env.NEXT_RUNTIME === 'edge'
-      ? process.env.__NEXT_EDGE_PROJECT_DIR!
-      : ctx.renderOpts.dir || ''
+    (process.env.NEXT_RUNTIME === 'edge'
+      ? process.env.__NEXT_EDGE_PROJECT_DIR
+      : ctx.renderOpts.dir) || ''
 
   // Use the same condition to render metadataOutlet as metadata
   const metadataOutlet = StreamingMetadataOutlet ? (
@@ -646,9 +645,6 @@ async function createComponentTreeInternal(
             forbidden={forbiddenComponent}
             unauthorized={unauthorizedComponent}
             {...(isSegmentViewEnabled && { segmentViewBoundaries })}
-            // Since gracefullyDegrade only applies to bots, only
-            // pass it when we're in a bot context to avoid extra bytes.
-            {...(gracefullyDegrade && { gracefullyDegrade })}
           />,
           childCacheNodeSeedData,
         ]
@@ -752,10 +748,8 @@ async function createComponentTreeInternal(
     let pageElement: React.ReactNode
     if (isClientComponent) {
       if (isStaticGeneration) {
-        const promiseOfParams = createPrerenderParamsForClientSegment(
-          currentParams,
-          workStore
-        )
+        const promiseOfParams =
+          createPrerenderParamsForClientSegment(currentParams)
         const promiseOfSearchParams =
           createPrerenderSearchParamsForClientPage(workStore)
         pageElement = (
@@ -851,10 +845,8 @@ async function createComponentTreeInternal(
       let clientSegment: React.ReactNode
 
       if (isStaticGeneration) {
-        const promiseOfParams = createPrerenderParamsForClientSegment(
-          currentParams,
-          workStore
-        )
+        const promiseOfParams =
+          createPrerenderParamsForClientSegment(currentParams)
 
         clientSegment = (
           <ClientSegmentRoot
@@ -1143,9 +1135,9 @@ async function createBoundaryConventionElement({
     process.env.NODE_ENV === 'development' &&
     ctx.renderOpts.devtoolSegmentExplorer
   const dir =
-    process.env.NEXT_RUNTIME === 'edge'
-      ? process.env.__NEXT_EDGE_PROJECT_DIR!
-      : ctx.renderOpts.dir || ''
+    (process.env.NEXT_RUNTIME === 'edge'
+      ? process.env.__NEXT_EDGE_PROJECT_DIR
+      : ctx.renderOpts.dir) || ''
   const { SegmentViewNode } = ctx.componentMod
   const element = Component ? (
     <>
