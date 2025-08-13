@@ -1,5 +1,5 @@
 import { nextTestSetup } from 'e2e-utils'
-import { check } from 'next-test-utils'
+import { retry } from 'next-test-utils'
 import { join } from 'node:path'
 
 describe('deployment-id-handling disabled', () => {
@@ -58,10 +58,7 @@ describe('deployment-id-handling disabled', () => {
 
       await browser.elementByCss('#dynamic-import').click()
 
-      await check(
-        () => (requests.length > 0 ? 'success' : JSON.stringify(requests)),
-        'success'
-      )
+      await retry(() => expect(requests).not.toBeEmpty())
 
       try {
         expect(
