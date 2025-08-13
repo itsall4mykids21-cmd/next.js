@@ -299,7 +299,7 @@ jobs:
         exclude:
           # Excluding React 18 tests unless on `canary` branch until budget is approved.
           - react: ${{ github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'run-react-18-tests') && '18.3.1' }}
-        group: [1/7, 2/7, 3/7, 4/7, 5/7, 6/7, 7/7]
+        group: [1/8, 2/8, 3/8, 4/8, 5/8, 6/8, 7/8, 8/8]
         # Empty value uses default
         # TODO: Run with React 18.
         # Integration tests use the installed React version in next/package.json.include:
@@ -320,6 +320,7 @@ jobs:
         npm i -g vercel@latest
         node run-tests.js --timings -g ${{ matrix.group }} -c 2 --type e2e
       stepName: 'test-turbopack-production-react-${{ matrix.react }}-${{ matrix.group }}'
+      timeout_minutes: 60
     secrets: inherit
 
   test-turbopack-production-integration:
