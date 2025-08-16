@@ -53,13 +53,6 @@ describe(`Terminal Logging (${bundlerName})`, () => {
       next = await createNext({
         files: {
           pages: new FileRef(join(__dirname, 'fixtures/pages')),
-          'next.config.js': `
-            module.exports = {
-              experimental: {
-                browserDebugInfoInTerminal: true
-              }
-            }
-          `,
         },
       })
     })
@@ -162,13 +155,6 @@ describe(`Terminal Logging (${bundlerName})`, () => {
       next = await createNext({
         files: {
           app: new FileRef(join(__dirname, 'fixtures/app')),
-          'next.config.js': `
-            module.exports = {
-              experimental: {
-                browserDebugInfoInTerminal: true
-              }
-            }
-          `,
         },
       })
     })
@@ -226,13 +212,6 @@ describe(`Terminal Logging (${bundlerName})`, () => {
       next = await createNext({
         files: {
           app: new FileRef(join(__dirname, 'fixtures/app')),
-          'next.config.js': `
-            module.exports = {
-              experimental: {
-                browserDebugInfoInTerminal: true
-              }
-            }
-          `,
         },
       })
     })
@@ -292,13 +271,6 @@ describe(`Terminal Logging (${bundlerName})`, () => {
       next = await createNext({
         files: {
           app: new FileRef(join(__dirname, 'fixtures/app')),
-          'next.config.js': `
-            module.exports = {
-              experimental: {
-                browserDebugInfoInTerminal: true
-              }
-            }
-          `,
         },
       })
     })
@@ -341,15 +313,6 @@ describe(`Terminal Logging (${bundlerName})`, () => {
         next = await createNext({
           files: {
             pages: new FileRef(join(__dirname, 'fixtures/pages')),
-            'next.config.js': `
-              module.exports = {
-                experimental: {
-                  browserDebugInfoInTerminal: {
-                    showSourceLocation: false
-                  }
-                }
-              }
-            `,
           },
         })
       })

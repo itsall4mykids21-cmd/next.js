@@ -13,6 +13,19 @@ import {
   type ConsoleEntry,
   UNDEFINED_MARKER,
 } from '../../../next-devtools/shared/forward-logs-shared'
+import type { NextConfigComplete } from '../../config-shared'
+
+export function getDisplayedSourceLocation(
+  location: string | null | undefined,
+  config: NextConfigComplete['browserDebugInfoInTerminal']
+) {
+  const shouldShowSourceLocation =
+    typeof config === 'object' && config.showSourceLocation === true
+  if (!location || !shouldShowSourceLocation) {
+    return null
+  }
+  return dim(`(${location})`)
+}
 
 export function restoreUndefined(x: any): any {
   if (x === UNDEFINED_MARKER) return undefined
@@ -238,7 +251,8 @@ async function prepareConsoleArgs(
 async function prepareConsoleErrorArgs(
   entry: Extract<ServerLogEntry, { kind: 'any-logged-error' }>,
   ctx: MappingContext,
-  distDir: string
+  distDir: string,
+  config: NextConfigComplete['browserDebugInfoInTerminal']
 ) {
   const deserialized = await Promise.all(
     entry.args.map(async (arg) => {
@@ -264,10 +278,12 @@ async function prepareConsoleErrorArgs(
    * - the user already knows where the console.error is at because we append the location
    */
   const location = getConsoleLocation(mappedStack)
+  const displayedSourceLocation = getDisplayedSourceLocation(location, config)
+
   if (entry.args.some((a) => a.kind === 'formatted-error-arg')) {
     const result = stripFormatSpecifiers(deserialized)
-    if (location) {
-      result.push(dim(`(${location})`))
+    if (displayedSourceLocation) {
+      result.push(displayedSourceLocation)
     }
     return result
   }
@@ -275,8 +291,8 @@ async function prepareConsoleErrorArgs(
     ...processConsoleFormatStrings(deserialized),
     colorError(mappedStack),
   ]
-  if (location) {
-    result.push(dim(`(${location})`))
+  if (displayedSourceLocation) {
+    result.push(displayedSourceLocation)
   }
   return result
 }
@@ -285,7 +301,8 @@ async function handleTable(
   entry: ConsoleEntry<string>,
   browserPrefix: string,
   ctx: MappingContext,
-  distDir: string
+  distDir: string,
+  config: NextConfigComplete['browserDebugInfoInTerminal']
 ) {
   const deserializedArgs = await Promise.all(
     entry.args.map(async (arg: any) => {
@@ -311,8 +328,10 @@ async function handleTable(
   // we can't inline pass browser prefix, but it looks better multiline for table anyways
   forwardConsole.log(browserPrefix)
   forwardConsole.table(...deserializedArgs)
-  if (location) {
-    forwardConsole.log(dim(`(${location})`))
+
+  const displayedSourceLocation = getDisplayedSourceLocation(location, config)
+  if (displayedSourceLocation) {
+    forwardConsole.log(displayedSourceLocation)
   }
 }
 
@@ -320,7 +339,8 @@ async function handleTrace(
   entry: ConsoleEntry<string>,
   browserPrefix: string,
   ctx: MappingContext,
-  distDir: string
+  distDir: string,
+  config: NextConfigComplete['browserDebugInfoInTerminal']
 ) {
   const deserializedArgs = await Promise.all(
     entry.args.map(async (arg: any) => {
@@ -349,11 +369,13 @@ async function handleTrace(
   ])
 
   const location = getConsoleLocation(mappedIgnored)
+  const displayedSourceLocation = getDisplayedSourceLocation(location, config)
+
   forwardConsole.log(
     browserPrefix,
     ...deserializedArgs,
     `\n${mapped.stack}`,
-    ...(location ? [`\n${dim(`(${location})`)}`] : [])
+    ...(displayedSourceLocation ? [`\n${displayedSourceLocation}`] : [])
   )
 }
 
@@ -361,7 +383,8 @@ async function handleDir(
   entry: ConsoleEntry<string>,
   browserPrefix: string,
   ctx: MappingContext,
-  distDir: string
+  distDir: string,
+  config: NextConfigComplete['browserDebugInfoInTerminal']
 ) {
   const loggableEntry = await prepareConsoleArgs(entry, ctx, distDir)
   const consoleMethod =
@@ -373,7 +396,9 @@ async function handleDir(
       ctx,
       distDir
     )
-    const location = dim(`(${getConsoleLocation(mapped)})`)
+    const location = getConsoleLocation(mapped)
+    const displayedSourceLocation = getDisplayedSourceLocation(location, config)
+
     const originalWrite = process.stdout.write.bind(process.stdout)
     let captured = ''
     process.stdout.write = (chunk) => {
@@ -386,7 +411,9 @@ async function handleDir(
       process.stdout.write = originalWrite
     }
     const preserved = captured.replace(/\r?\n$/, '')
-    originalWrite(`${browserPrefix}${preserved} ${location}\n`)
+    originalWrite(
+      `${browserPrefix}${preserved}${displayedSourceLocation ? ` ${displayedSourceLocation}` : ''}\n`
+    )
     return
   }
   consoleMethod(browserPrefix, ...loggableEntry)
@@ -397,7 +424,7 @@ async function handleDefaultConsole(
   browserPrefix: string,
   ctx: MappingContext,
   distDir: string,
-  config: boolean | { logDepth?: number; showSourceLocation?: boolean }
+  config: NextConfigComplete['browserDebugInfoInTerminal']
 ) {
   const loggableEntry = await prepareConsoleArgs(entry, ctx, distDir)
   const withStackEntry = await withLocation(
@@ -417,7 +444,7 @@ export async function handleLog(
   entries: ServerLogEntry[],
   ctx: MappingContext,
   distDir: string,
-  config: boolean | { logDepth?: number; showSourceLocation?: boolean }
+  config: NextConfigComplete['browserDebugInfoInTerminal']
 ): Promise<void> {
   const browserPrefix = cyan('[browser]')
 
@@ -428,16 +455,16 @@ export async function handleLog(
           switch (entry.method) {
             case 'table': {
               // timeout based abort on source mapping result
-              await handleTable(entry, browserPrefix, ctx, distDir)
+              await handleTable(entry, browserPrefix, ctx, distDir, config)
               break
             }
             // ignore frames
             case 'trace': {
-              await handleTrace(entry, browserPrefix, ctx, distDir)
+              await handleTrace(entry, browserPrefix, ctx, distDir, config)
               break
             }
             case 'dir': {
-              await handleDir(entry, browserPrefix, ctx, distDir)
+              await handleDir(entry, browserPrefix, ctx, distDir, config)
               break
             }
             case 'dirxml': {
@@ -476,7 +503,12 @@ export async function handleLog(
         }
         // any logged errors are anything that are logged as "red" in the browser but aren't only an Error (console.error, Promise.reject(100))
         case 'any-logged-error': {
-          const consoleArgs = await prepareConsoleErrorArgs(entry, ctx, distDir)
+          const consoleArgs = await prepareConsoleErrorArgs(
+            entry,
+            ctx,
+            distDir,
+            config
+          )
           forwardConsole.error(browserPrefix, ...consoleArgs)
           break
         }
@@ -496,7 +528,12 @@ export async function handleLog(
     } catch {
       switch (entry.kind) {
         case 'any-logged-error': {
-          const consoleArgs = await prepareConsoleErrorArgs(entry, ctx, distDir)
+          const consoleArgs = await prepareConsoleErrorArgs(
+            entry,
+            ctx,
+            distDir,
+            config
+          )
           forwardConsole.error(browserPrefix, ...consoleArgs)
           break
         }
@@ -531,7 +568,7 @@ export async function receiveBrowserLogsWebpack(opts: {
   edgeServerStats: () => any
   rootDirectory: string
   distDir: string
-  config: boolean | { logDepth?: number; showSourceLocation?: boolean }
+  config: NextConfigComplete['browserDebugInfoInTerminal']
 }): Promise<void> {
   const {
     entries,
@@ -569,7 +606,7 @@ export async function receiveBrowserLogsTurbopack(opts: {
   project: Project
   projectPath: string
   distDir: string
-  config: boolean | { logDepth?: number; showSourceLocation?: boolean }
+  config: NextConfigComplete['browserDebugInfoInTerminal']
 }): Promise<void> {
   const { entries, router, sourceType, project, projectPath, distDir } = opts
 

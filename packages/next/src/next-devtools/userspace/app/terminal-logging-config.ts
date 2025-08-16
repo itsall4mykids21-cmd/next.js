@@ -8,7 +8,7 @@ export function getTerminalLoggingConfig():
     } {
   try {
     return JSON.parse(
-      process.env.__NEXT_BROWSER_DEBUG_INFO_IN_TERMINAL || 'false'
+      process.env.__NEXT_BROWSER_DEBUG_INFO_IN_TERMINAL || 'true'
     )
   } catch {
     return false
