@@ -120,7 +120,6 @@ use super::{
     },
     errors,
     parse::ParseResult,
-    special_cases::special_cases,
     utils::js_value_to_pattern,
     webpack::{
         WebpackChunkAssetReference, WebpackEntryAssetReference, WebpackRuntimeAssetReference,
@@ -515,7 +514,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
     let origin = ResolvedVc::upcast::<Box<dyn ResolveOrigin>>(module);
 
     let mut analysis = AnalyzeEcmascriptModuleResultBuilder::new();
-    let path = origin.origin_path().owned().await?;
+    let path = &*origin.origin_path().await?;
 
     // Is this a typescript file that requires analyzing type references?
     let analyze_types = match &ty {
@@ -524,6 +523,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
         EcmascriptModuleAssetType::Ecmascript => false,
     };
 
+    // Split out our module part if we have one.
     let parsed = if let Some(part) = part {
         let parsed = parse(*source, ty, *transforms);
         let split_data = split(source.ident(), *source, parsed);
@@ -569,8 +569,6 @@ pub(crate) async fn analyse_ecmascript_module_internal(
         .instrument(span)
         .await?;
     }
-
-    special_cases(&path.path, &mut analysis);
 
     let parsed = parsed.await?;
 
@@ -947,6 +945,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
         .instrument(span)
         .await?;
     }
+    // TODO: we can do this when constructing the var graph
     let span = tracing::info_span!("async module handling");
     async {
         let top_level_await_span =
@@ -1034,9 +1033,8 @@ pub(crate) async fn analyse_ecmascript_module_internal(
 
             match effect {
                 Effect::Unreachable { start_ast_path } => {
-                    analysis.add_code_gen(Unreachable::new(AstPathRange::StartAfter(
-                        start_ast_path.to_vec(),
-                    )));
+                    analysis
+                        .add_code_gen(Unreachable::new(AstPathRange::StartAfter(start_ast_path)));
                 }
                 Effect::Conditional {
                     condition,
