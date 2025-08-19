@@ -7,6 +7,7 @@ const hrefs = [
   '/file-segments',
   '/parallel-default',
   '/parallel-default/subroute',
+  '/search',
 ]
 
 export default function Page() {

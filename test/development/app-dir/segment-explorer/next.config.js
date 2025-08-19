@@ -5,6 +5,7 @@ const nextConfig = {
   experimental: {
     devtoolSegmentExplorer: true,
     authInterrupts: true,
+    clientSegmentCache: true,
   },
 }
 
