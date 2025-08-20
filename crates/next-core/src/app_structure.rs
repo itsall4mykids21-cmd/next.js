@@ -348,7 +348,12 @@ async fn get_directory_tree_internal(
                         if dynamic {
                             modules.metadata.sitemap = Some(MetadataItem::Dynamic { path: file });
                         } else {
-                            modules.metadata.sitemap = Some(MetadataItem::Static { path: file });
+                            // Verify this is actually a file, not a directory.
+                            let entry_type = file.get_type().await?;
+                            if *entry_type == FileSystemEntryType::File {
+                                modules.metadata.sitemap =
+                                    Some(MetadataItem::Static { path: file });
+                            }
                         }
                         continue;
                     }
@@ -357,6 +362,12 @@ async fn get_directory_tree_internal(
 
                 if dynamic {
                     entry.push((number, MetadataWithAltItem::Dynamic { path: file }));
+                    continue;
+                }
+
+                // Verify this is actually a file, not a directory.
+                let entry_type = file.get_type().await?;
+                if *entry_type != FileSystemEntryType::File {
                     continue;
                 }
 
@@ -1721,7 +1732,11 @@ pub async fn get_global_metadata(
         if dynamic {
             *entry = Some(MetadataItem::Dynamic { path: file.clone() });
         } else {
-            *entry = Some(MetadataItem::Static { path: file.clone() });
+            // Verify this is actually a file, not a directory.
+            let entry_type = file.get_type().await?;
+            if *entry_type == FileSystemEntryType::File {
+                *entry = Some(MetadataItem::Static { path: file.clone() });
+            }
         }
         // TODO(WEB-952) handle symlinks in app dir
     }
