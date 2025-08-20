@@ -108,7 +108,7 @@ export function isMetadataRouteFile(
   // Match the optional variants like /opengraph-image2, /icon-a102f4.png, etc.
   const variantsMatcher = '\\d?'
   // The -\w{6} is the suffix that normalized from group routes;
-  const groupSuffix = '(-\\w{6})?'
+  const groupSuffix = strictlyMatchExtensions ? '' : '(-\\w{6})?'
 
   const suffixMatcher = `${variantsMatcher}${groupSuffix}`
 
