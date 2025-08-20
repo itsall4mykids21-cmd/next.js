@@ -609,7 +609,12 @@ export async function createPagesMapping({
       )
     )
 
-    if (pagesType === 'app' && isMetadataStaticFileRoute(pagePath)) {
+    if (
+      // TODO(jiwon): Remove this once we support export mode with copied metadata files.
+      !isExportMode &&
+      pagesType === 'app' &&
+      isMetadataStaticFileRoute(pagePath)
+    ) {
       // These files will be copied under ".next/static/metadata/" and served
       // as static files on requests.
       return
