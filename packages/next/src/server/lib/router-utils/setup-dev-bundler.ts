@@ -416,7 +416,7 @@ async function startWatcher(
           continue
         }
 
-        if (appDir && isMetadataStaticFile(path.relative(appDir, fileName))) {
+        if (appDir && isMetadataStaticFile(fileName.replace(appDir, ''))) {
           currentMetadataFiles.add(fileName)
 
           if (watchTimeChange) {
