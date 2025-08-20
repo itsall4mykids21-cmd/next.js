@@ -1257,7 +1257,6 @@ export default async function build(
                 appDir,
                 pagePaths: appPaths,
                 distDir,
-                pageExtensions: config.pageExtensions,
               })
             )
         }

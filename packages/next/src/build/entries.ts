@@ -700,12 +700,10 @@ export async function copyMetadataStaticFiles({
   distDir,
   pagePaths,
   appDir,
-  pageExtensions,
 }: {
   distDir: string
   pagePaths: string[]
   appDir: string
-  pageExtensions: PageExtensions
 }) {
   const staticMetadataRoutesManifest: Record<
     string,
@@ -719,10 +717,7 @@ export async function copyMetadataStaticFiles({
     if (!isMetadataStaticFileRoute(pagePath)) {
       return
     }
-
-    const pageKey = getPageFromPath(pagePath, pageExtensions)
-    const routePath = normalizeAppPath(normalizeMetadataRoute(pageKey))
-    const targetPath = join(distDir, 'static', 'metadata', routePath)
+    const targetPath = join(distDir, 'static', 'metadata', pagePath)
 
     const filePath = join(appDir, pagePath)
     const filename = parse(filePath).name
@@ -756,6 +751,9 @@ export async function copyMetadataStaticFiles({
     await mkdir(dirname(targetPath), { recursive: true })
     await copyFile(filePath, targetPath)
 
+    const routePath = normalizeAppPath(
+      normalizeMetadataRoute(normalizePathSep(pagePath))
+    )
     // Copied method from pageToRoute()
     const routeRegex = getNamedRouteRegex(routePath, {
       prefixRouteKeys: true,

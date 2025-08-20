@@ -426,7 +426,6 @@ async function startWatcher(
                 appDir,
                 pagePaths: [relativePath],
                 distDir,
-                pageExtensions: nextConfig.pageExtensions,
               })
             } catch (error) {
               Log.error(
