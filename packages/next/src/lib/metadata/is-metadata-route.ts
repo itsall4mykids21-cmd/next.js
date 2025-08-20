@@ -52,7 +52,7 @@ export const getExtensionRegexString = (
  */
 export function isMetadataStaticFileRoute(appDirRelativePath: string) {
   // Match the optional variants like /icon1.png, /icon2.png, etc.
-  const variantsMatcher = '\\d+'
+  const variantsMatcher = '\\d*'
   // Hash suffix added for routes like parallel, intercept, and group routes.
   // E.g. /icon-xxxxxx.png, /opengraph-image-yyyyyy.jpg, etc.
   const routeSuffix = '(-\\w{6})?'
