@@ -37,42 +37,6 @@ describe('metadata-files-static-output-root-route', () => {
     `)
   })
 
-  it('should not generate routes for metadata files', async () => {
-    const appPathRoutesManifest: Record<string, string> = await next.readJSON(
-      '.next/app-path-routes-manifest.json'
-    )
-
-    // Previously, metadata files were generated as routes even though the user
-    // provided a static file. So, the manifest used to include "/sitemap.xml/route",
-    // "/robots.txt/route", etc. This is still true for generated metadata files
-    // e.g. `sitemap.ts` or `robots.ts`.
-    // Files inside "/api/" are expected to be generated as routes.
-    expect(Object.keys(appPathRoutesManifest).sort()).toMatchInlineSnapshot(`
-     [
-       "/(group)/group/page",
-       "/_not-found/page",
-       "/api/apple-icon/route",
-       "/api/icon/route",
-       "/api/opengraph-image/route",
-       "/api/routes/apple-icon/route",
-       "/api/routes/icon/route",
-       "/api/routes/opengraph-image/route",
-       "/api/routes/sitemap.xml/route",
-       "/api/routes/twitter-image/route",
-       "/api/sitemap.xml/route",
-       "/api/twitter-image/route",
-       "/dynamic/[id]/page",
-       "/intercept-me/page",
-       "/intercepting/(..)intercept-me/page",
-       "/intercepting/page",
-       "/page",
-       "/parallel/@parallel/page",
-       "/parallel/page",
-       "/static/page",
-     ]
-    `)
-  })
-
   it('should serve static files when requested to its route', async () => {
     const [faviconRes, manifestRes, robotsRes, sitemapRes] = await Promise.all([
       next.fetch('/favicon.ico'),

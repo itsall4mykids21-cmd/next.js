@@ -1,4 +1,6 @@
+import { readFile } from 'fs/promises'
 import { nextTestSetup } from 'e2e-utils'
+import { join } from 'path'
 
 describe('metadata-files-manifest', () => {
   const { next, isNextDev, skipped } = nextTestSetup({
@@ -10,6 +12,45 @@ describe('metadata-files-manifest', () => {
     it.skip('skip dev or skipped tests', () => {})
     return
   }
+
+  it('should not generate routes for metadata files', async () => {
+    const appPathRoutesManifest: Record<string, string> = JSON.parse(
+      await readFile(
+        join(next.testDir, '.next/app-path-routes-manifest.json'),
+        'utf-8'
+      )
+    )
+
+    // Previously, metadata files were generated as routes even though the user
+    // provided a static file. So, the manifest used to include "/sitemap.xml/route",
+    // "/robots.txt/route", etc. This is still true for generated metadata files
+    // e.g. `sitemap.ts` or `robots.ts`.
+    // Files inside "/api/" are expected to be generated as routes.
+    expect(Object.keys(appPathRoutesManifest).sort()).toMatchInlineSnapshot(`
+     [
+       "/(group)/group/page",
+       "/_not-found/page",
+       "/api/apple-icon/route",
+       "/api/icon/route",
+       "/api/opengraph-image/route",
+       "/api/routes/apple-icon/route",
+       "/api/routes/icon/route",
+       "/api/routes/opengraph-image/route",
+       "/api/routes/sitemap.xml/route",
+       "/api/routes/twitter-image/route",
+       "/api/sitemap.xml/route",
+       "/api/twitter-image/route",
+       "/dynamic/[id]/page",
+       "/intercept-me/page",
+       "/intercepting/(..)intercept-me/page",
+       "/intercepting/page",
+       "/page",
+       "/parallel/@parallel/page",
+       "/parallel/page",
+       "/static/page",
+     ]
+    `)
+  })
 
   it('should generate static-metadata-routes-manifest.json', async () => {
     const manifest = await next.readJSON(
