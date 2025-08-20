@@ -82,7 +82,7 @@ export function fillMetadataSegment(
  * @param page
  * @returns
  */
-export function normalizeMetadataRoute(page: string) {
+export function normalizeMetadataRoute(page: string, isExportMode?: boolean) {
   if (!isMetadataPage(page)) {
     return page
   }
@@ -90,7 +90,8 @@ export function normalizeMetadataRoute(page: string) {
   // Static metadata files will be excluded from the build entries,
   // but instead will be copied to ".next/static/metadata/" and served
   // as static files on requests.
-  if (isMetadataStaticFile(page)) {
+  // TODO(jiwon): Remove this once we support export mode with copied metadata files.
+  if (!isExportMode && isMetadataStaticFile(page)) {
     const { dir, name, ext } = path.parse(page)
     const suffix = getMetadataRouteSuffix(page)
 

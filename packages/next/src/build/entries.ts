@@ -567,6 +567,7 @@ export async function createPagesMapping({
   pagesDir,
   appDir,
   appDirOnly,
+  isExportMode,
 }: {
   isDev: boolean
   pageExtensions: PageExtensions
@@ -575,7 +576,7 @@ export async function createPagesMapping({
   pagesDir: string | undefined
   appDir: string | undefined
   appDirOnly: boolean
-  // TODO(jiwon): This is a temporary flag to exclude copying metadata files in export mode.
+  // TODO(jiwon): Remove this once we support export mode with copied metadata files.
   isExportMode?: boolean
 }): Promise<MappedPages> {
   const isAppRoute = pagesType === 'app'
@@ -614,7 +615,10 @@ export async function createPagesMapping({
       return
     }
 
-    let route = pagesType === 'app' ? normalizeMetadataRoute(pageKey) : pageKey
+    let route =
+      pagesType === 'app'
+        ? normalizeMetadataRoute(pageKey, isExportMode)
+        : pageKey
 
     if (
       pagesType === 'app' &&
