@@ -421,7 +421,6 @@ async function startWatcher(
             try {
               await copyMetadataStaticFiles({
                 appDir,
-                pagesType: PAGE_TYPES.APP,
                 pagePaths: [relativePath],
                 distDir,
                 pageExtensions: nextConfig.pageExtensions,

@@ -1255,7 +1255,6 @@ export default async function build(
             .traceAsyncFn(() =>
               copyMetadataStaticFiles({
                 appDir,
-                pagesType: PAGE_TYPES.APP,
                 pagePaths: appPaths,
                 distDir,
                 pageExtensions: config.pageExtensions,
