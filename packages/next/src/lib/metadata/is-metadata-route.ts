@@ -105,9 +105,10 @@ export function isMetadataRouteFile(
   // When strictlyMatchExtensions, the dynamic extension is skipped but
   // static extension is kept, which is usually used for matching route path.
   const trailingMatcher = (strictlyMatchExtensions ? '' : '?') + '$'
-  // Match the optional variants like /opengraph-image2, /icon-a102f4.png, etc.
-  const variantsMatcher = '\\d?'
-  // The -\w{6} is the suffix that normalized from group routes;
+  // Match the optional variants like /icon1.png, /icon2.png, etc.
+  const variantsMatcher = '\\d*'
+  // Hash suffix added for routes like parallel, intercept, and group routes.
+  // E.g. /icon-xxxxxx.png, /opengraph-image-yyyyyy.jpg, etc.
   const groupSuffix = strictlyMatchExtensions ? '' : '(-\\w{6})?'
 
   const suffixMatcher = `${variantsMatcher}${groupSuffix}`
