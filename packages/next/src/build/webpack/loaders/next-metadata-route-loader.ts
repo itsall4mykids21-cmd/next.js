@@ -83,9 +83,8 @@ async function getStaticAssetRouteCode(
         ? cacheHeader.none
         : cacheHeader.longCache
 
-  // Use 'includes' since they can have suffixes.
-  const isTwitter = fileBaseName.includes('twitter-image')
-  const isOpenGraph = fileBaseName.includes('opengraph-image')
+  const isTwitter = fileBaseName === 'twitter-image'
+  const isOpenGraph = fileBaseName === 'opengraph-image'
   // Twitter image file size limit is 5MB.
   // General Open Graph image file size limit is 8MB.
   // x-ref: https://developer.x.com/en/docs/x-for-websites/cards/overview/summary

@@ -145,9 +145,8 @@ async fn static_route_source(mode: NextMode, path: FileSystemPath) -> Result<Vc<
 
     let original_file_content_b64 = get_base64_file_content(path.clone()).await?;
 
-    // Use 'contains' since they can have suffixes.
-    let is_twitter = stem.contains("twitter-image");
-    let is_open_graph = stem.contains("opengraph-image");
+    let is_twitter = stem == "twitter-image";
+    let is_open_graph = stem == "opengraph-image";
     // Twitter image file size limit is 5MB.
     // General Open Graph image file size limit is 8MB.
     // x-ref: https://developer.x.com/en/docs/x-for-websites/cards/overview/summary
