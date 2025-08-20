@@ -95,7 +95,7 @@ describe('metadata-files-static-output-parallel-route', () => {
       next.fetch(`/parallel/icon-${suffix}.png`),
       next.fetch(`/parallel/opengraph-image-${suffix}.png`),
       next.fetch(`/parallel/twitter-image-${suffix}.png`),
-      // TODO: This seems bug, returning 404
+      // TODO(jiwon): Bug, returning 404
       // next.fetch(`/parallel/sitemap.xml`),
     ])
 
@@ -105,6 +105,7 @@ describe('metadata-files-static-output-parallel-route', () => {
       actualIcon,
       actualOpengraphImage,
       actualTwitterImage,
+      // TODO(jiwon): Bug, returning 404
       // actualSitemap,
     ] = await Promise.all([
       next.readFileBuffer('app/parallel/@parallel/apple-icon.png'),
@@ -131,13 +132,16 @@ describe('metadata-files-static-output-parallel-route', () => {
         Buffer.from(await twitterImageRes.arrayBuffer()),
         actualTwitterImage
       ),
+      // TODO(jiwon): Bug, returning 404
       // sitemap: await sitemapRes.text(),
     }).toEqual({
+      // TODO(jiwon): Bug, returning 404
       // Buffer comparison returns 0 for equal
       appleIcon: 0,
       icon: 0,
       opengraphImage: 0,
       twitterImage: 0,
+      // TODO(jiwon): Bug, returning 404
       // sitemap: actualSitemap,
     })
   })

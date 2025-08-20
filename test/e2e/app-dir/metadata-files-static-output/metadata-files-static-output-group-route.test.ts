@@ -95,7 +95,7 @@ describe('metadata-files-static-output-group-route', () => {
       next.fetch(`/group/icon-${suffix}.png`),
       next.fetch(`/group/opengraph-image-${suffix}.png`),
       next.fetch(`/group/twitter-image-${suffix}.png`),
-      // TODO: This seems bug, returning 404
+      // TODO(jiwon): Bug, returning 404
       // next.fetch('/group/sitemap.xml'),
     ])
 
@@ -105,6 +105,7 @@ describe('metadata-files-static-output-group-route', () => {
       actualIcon,
       actualOpengraphImage,
       actualTwitterImage,
+      // TODO(jiwon): Bug, returning 404
       // actualSitemap,
     ] = await Promise.all([
       next.readFileBuffer('app/(group)/group/apple-icon.png'),
@@ -131,6 +132,7 @@ describe('metadata-files-static-output-group-route', () => {
         Buffer.from(await twitterImageRes.arrayBuffer()),
         actualTwitterImage
       ),
+      // TODO(jiwon): Bug, returning 404
       // sitemap: await sitemapRes.text(),
     }).toEqual({
       // Buffer comparison returns 0 for equal
@@ -138,6 +140,7 @@ describe('metadata-files-static-output-group-route', () => {
       icon: 0,
       opengraphImage: 0,
       twitterImage: 0,
+      // TODO(jiwon): Bug, returning 404
       // sitemap: actualSitemap,
     })
   })
