@@ -1,5 +1,5 @@
 import { nextTestSetup } from 'e2e-utils'
-import { getMetadataHeadTags } from 'next-test-utils'
+import { getCommonMetadataHeadTags } from './utils'
 import { getMetadataRouteSuffix } from 'next/dist/lib/metadata/get-metadata-route'
 
 describe('metadata-files-static-output-parallel-route', () => {
@@ -15,7 +15,7 @@ describe('metadata-files-static-output-parallel-route', () => {
   it('should have correct link tags for parallel slot page', async () => {
     const browser = await next.browser('/parallel')
 
-    expect(await getMetadataHeadTags(browser)).toMatchInlineSnapshot(`
+    expect(await getCommonMetadataHeadTags(browser)).toMatchInlineSnapshot(`
      {
        "links": [
          {

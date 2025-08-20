@@ -1,5 +1,5 @@
 import { nextTestSetup } from 'e2e-utils'
-import { getMetadataHeadTags } from 'next-test-utils'
+import { getCommonMetadataHeadTags } from './utils'
 
 describe('metadata-files-static-output-intercepting-route', () => {
   const { next, skipped } = nextTestSetup({
@@ -20,7 +20,7 @@ describe('metadata-files-static-output-intercepting-route', () => {
       'window.location.pathname === "/intercept-me"'
     )
 
-    expect(await getMetadataHeadTags(browser)).toMatchInlineSnapshot(`
+    expect(await getCommonMetadataHeadTags(browser)).toMatchInlineSnapshot(`
      {
        "links": [
          {

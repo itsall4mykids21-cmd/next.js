@@ -1,5 +1,5 @@
 import { nextTestSetup } from 'e2e-utils'
-import { getMetadataHeadTags } from 'next-test-utils'
+import { getCommonMetadataHeadTags } from './utils'
 
 describe('metadata-files-static-output-static-route', () => {
   const { next, skipped } = nextTestSetup({
@@ -14,7 +14,7 @@ describe('metadata-files-static-output-static-route', () => {
   it('should have correct link tags for static page', async () => {
     const browser = await next.browser('/static')
 
-    expect(await getMetadataHeadTags(browser)).toMatchInlineSnapshot(`
+    expect(await getCommonMetadataHeadTags(browser)).toMatchInlineSnapshot(`
      {
        "links": [
          {
