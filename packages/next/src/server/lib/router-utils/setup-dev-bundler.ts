@@ -74,7 +74,7 @@ import { createHotReloaderTurbopack } from '../../dev/hot-reloader-turbopack'
 import { generateEncryptionKeyBase64 } from '../../app-render/encryption-utils-server'
 import {
   isMetadataRouteFile,
-  isMetadataStaticFile,
+  isMetadataStaticFileRoute,
 } from '../../../lib/metadata/is-metadata-route'
 import { normalizeMetadataPageToRoute } from '../../../lib/metadata/get-metadata-route'
 import { createEnvDefinitions } from '../experimental/create-env-definitions'
@@ -416,7 +416,7 @@ async function startWatcher(
           continue
         }
 
-        if (appDir && isMetadataStaticFile(fileName.replace(appDir, ''))) {
+        if (appDir && isMetadataStaticFileRoute(fileName.replace(appDir, ''))) {
           currentMetadataFiles.add(fileName)
 
           if (watchTimeChange) {

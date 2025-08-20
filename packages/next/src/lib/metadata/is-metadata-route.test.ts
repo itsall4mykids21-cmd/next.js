@@ -3,7 +3,7 @@ import {
   isMetadataRouteFile,
   isMetadataRoute,
   isMetadataPage,
-  isMetadataStaticFile,
+  isMetadataStaticFileRoute,
 } from './is-metadata-route'
 
 describe('getExtensionRegexString', () => {
@@ -112,26 +112,34 @@ describe('isMetadataRouteFile', () => {
   })
 })
 
-describe('isMetadataStaticFile', () => {
+describe('isMetadataStaticFileRoute', () => {
   it('should match static metadata route files', () => {
-    expect(isMetadataStaticFile('/robots.txt')).toBe(true)
-    expect(isMetadataStaticFile('/sitemap.xml')).toBe(true)
+    expect(isMetadataStaticFileRoute('/robots.txt')).toBe(true)
+    expect(isMetadataStaticFileRoute('/sitemap.xml')).toBe(true)
   })
 
   it('should match file with suffix', () => {
-    expect(isMetadataStaticFile('/opengraph-image-xxxxxx.png')).toBe(true)
-    expect(isMetadataStaticFile('/twitter-image-yyyyyy.png')).toBe(true)
+    expect(isMetadataStaticFileRoute('/opengraph-image-xxxxxx.png')).toBe(true)
+    expect(isMetadataStaticFileRoute('/twitter-image-yyyyyy.png')).toBe(true)
   })
 
   it('should not match dynamic metadata routes', () => {
-    expect(isMetadataStaticFile('/foo/icon.js')).toBe(false)
-    expect(isMetadataStaticFile('/foo/icon.ts')).toBe(false)
-    expect(isMetadataStaticFile('/foo/icon.tsx')).toBe(false)
+    expect(isMetadataStaticFileRoute('/foo/icon.js')).toBe(false)
+    expect(isMetadataStaticFileRoute('/foo/icon.ts')).toBe(false)
+    expect(isMetadataStaticFileRoute('/foo/icon.tsx')).toBe(false)
+  })
+
+  it('should not match metadata files as route', () => {
+    expect(isMetadataStaticFileRoute('/foo/icon.png/route')).toBe(false)
+    expect(isMetadataStaticFileRoute('/foo/opengraph-image.jpg/route')).toBe(
+      false
+    )
+    expect(isMetadataStaticFileRoute('/foo/sitemap.xml/route')).toBe(false)
   })
 
   it('should not match without extension', () => {
-    expect(isMetadataStaticFile('/robots')).toBe(false)
-    expect(isMetadataStaticFile('/sitemap')).toBe(false)
+    expect(isMetadataStaticFileRoute('/robots')).toBe(false)
+    expect(isMetadataStaticFileRoute('/sitemap')).toBe(false)
   })
 })
 

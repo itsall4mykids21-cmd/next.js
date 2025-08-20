@@ -1,4 +1,4 @@
-import { isMetadataPage, isMetadataStaticFile } from './is-metadata-route'
+import { isMetadataPage, isMetadataStaticFileRoute } from './is-metadata-route'
 import path from '../../shared/lib/isomorphic/path'
 import { interpolateDynamicPath } from '../../server/server-utils'
 import { getNamedRouteRegex } from '../../shared/lib/router/utils/route-regex'
@@ -91,7 +91,7 @@ export function normalizeMetadataRoute(page: string, isExportMode?: boolean) {
   // but instead will be copied to ".next/static/metadata/" and served
   // as static files on requests.
   // TODO(jiwon): Remove this once we support export mode with copied metadata files.
-  if (!isExportMode && isMetadataStaticFile(page)) {
+  if (!isExportMode && isMetadataStaticFileRoute(page)) {
     const { dir, name, ext } = path.parse(page)
     const suffix = getMetadataRouteSuffix(page)
 
