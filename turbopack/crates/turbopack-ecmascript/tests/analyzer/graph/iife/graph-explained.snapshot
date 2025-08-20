@@ -1,13 +1,13 @@
-a = FreeVar(require)
+a (const after eval) = FreeVar(require)
 
-b = a
+b (const after eval) = a
 
-c = b
+c (const after eval) = b
 
-d = a
+d (const after eval) = a
 
-e = d
+e (const after eval) = d
 
-f = a
+f (const after eval) = a
 
-g = f
+g (const after eval) = f
