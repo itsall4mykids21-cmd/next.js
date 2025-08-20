@@ -724,6 +724,13 @@ export async function copyMetadataStaticFiles({
     }
 
     const filePath = join(appDir, pagePath)
+
+    // Check if the path is actually a file, not a directory.
+    // This is to prevent Turbopack from treating directories as metadata routes.
+    const fileStats = await stat(filePath).catch(() => null)
+    if (!fileStats?.isFile()) {
+      return
+    }
     const filename = parse(filePath).name
     const isTwitterImage = filename === 'twitter-image'
     const isOpenGraphImage = filename === 'opengraph-image'
@@ -735,7 +742,7 @@ export async function copyMetadataStaticFiles({
       // x-ref: https://developer.x.com/en/docs/x-for-websites/cards/overview/summary
       // x-ref(facebook): https://developers.facebook.com/docs/sharing/webmasters/images
       const fileSizeLimit = isTwitterImage ? 5 : 8
-      const fileSizeInMB = (await stat(filePath)).size / (1024 * 1024)
+      const fileSizeInMB = fileStats.size / (1024 * 1024)
 
       if (fileSizeInMB > fileSizeLimit) {
         // In Turbopack, the path is simplified as [project]/..., so match for consistency.
