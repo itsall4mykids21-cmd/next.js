@@ -7,8 +7,6 @@ export async function getCommonMetadataHeadTags(browser: Playwright) {
       '/favicon.ico',
       '/manifest.json',
       '/manifest.webmanifest',
-      '/robots.txt',
-      '/sitemap.xml',
       // Below may have variants like /icon1.png, /icon2.png, etc.
       // Or has suffixes like /icon-xxxxxx.png, /icon-image-yyyyyy.jpg, etc.
       '/icon',
