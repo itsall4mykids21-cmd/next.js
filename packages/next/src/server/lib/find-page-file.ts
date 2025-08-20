@@ -5,10 +5,7 @@ import { join, sep, normalize } from 'path'
 import { promises as fsPromises } from 'fs'
 import { warn } from '../../build/output/log'
 import { cyan } from '../../lib/picocolors'
-import {
-  isMetadataRouteFile as _isMetadataRouteFile,
-  isMetadataRouteStaticFile as _isMetadataRouteStaticFile,
-} from '../../lib/metadata/is-metadata-route'
+import { isMetadataRouteFile } from '../../lib/metadata/is-metadata-route'
 import type { PageExtensions } from '../../build/page-extensions-type'
 
 async function isTrueCasePagePath(pagePath: string, pagesDir: string) {
@@ -122,26 +119,18 @@ export function createValidFileMatcher(
    * Match the file if it's a metadata route file, static: if the file is a static metadata file.
    * It needs to be a file which doesn't match the custom metadata routes e.g. `app/robots.txt/route.js`
    */
-  function isMetadataRouteFile(filePath: string) {
+  function isMetadataFile(filePath: string) {
     const appDirRelativePath = appDirPath
       ? filePath.replace(appDirPath, '')
       : filePath
 
-    return _isMetadataRouteFile(appDirRelativePath, pageExtensions, true)
-  }
-
-  function isMetadataRouteStaticFile(filePath: string) {
-    const appDirRelativePath = appDirPath
-      ? filePath.replace(appDirPath, '')
-      : filePath
-
-    return _isMetadataRouteStaticFile(appDirRelativePath)
+    return isMetadataRouteFile(appDirRelativePath, pageExtensions, true)
   }
 
   // Determine if the file is leaf node page file or route file under layouts,
   // 'page.<extension>' | 'route.<extension>'
   function isAppRouterPage(filePath: string) {
-    return leafOnlyPageFileRegex.test(filePath) || isMetadataRouteFile(filePath)
+    return leafOnlyPageFileRegex.test(filePath) || isMetadataFile(filePath)
   }
 
   // Determine if the file is leaf node route file under app directory
@@ -158,9 +147,7 @@ export function createValidFileMatcher(
   }
 
   function isPageFile(filePath: string) {
-    return (
-      validExtensionFileRegex.test(filePath) || isMetadataRouteFile(filePath)
-    )
+    return validExtensionFileRegex.test(filePath) || isMetadataFile(filePath)
   }
 
   function isRootNotFound(filePath: string) {
@@ -180,8 +167,7 @@ export function createValidFileMatcher(
     isAppRouterRoute,
     isAppLayoutPage,
     isAppDefaultPage,
-    isMetadataRouteFile,
-    isMetadataRouteStaticFile,
+    isMetadataFile,
     isRootNotFound,
   }
 }

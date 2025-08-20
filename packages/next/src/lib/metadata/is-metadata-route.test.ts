@@ -3,7 +3,7 @@ import {
   isMetadataRouteFile,
   isMetadataRoute,
   isMetadataPage,
-  isMetadataRouteStaticFile,
+  isMetadataStaticFile,
 } from './is-metadata-route'
 
 describe('getExtensionRegexString', () => {
@@ -112,26 +112,26 @@ describe('isMetadataRouteFile', () => {
   })
 })
 
-describe('isMetadataRouteStaticFile', () => {
+describe('isMetadataStaticFile', () => {
   it('should match static metadata route files', () => {
-    expect(isMetadataRouteStaticFile('/robots.txt')).toBe(true)
-    expect(isMetadataRouteStaticFile('/sitemap.xml')).toBe(true)
+    expect(isMetadataStaticFile('/robots.txt')).toBe(true)
+    expect(isMetadataStaticFile('/sitemap.xml')).toBe(true)
   })
 
   it('should match file with suffix', () => {
-    expect(isMetadataRouteStaticFile('/opengraph-image-xxxxxx.png')).toBe(true)
-    expect(isMetadataRouteStaticFile('/twitter-image-yyyyyy.png')).toBe(true)
+    expect(isMetadataStaticFile('/opengraph-image-xxxxxx.png')).toBe(true)
+    expect(isMetadataStaticFile('/twitter-image-yyyyyy.png')).toBe(true)
   })
 
   it('should not match dynamic metadata routes', () => {
-    expect(isMetadataRouteStaticFile('/foo/icon.js')).toBe(false)
-    expect(isMetadataRouteStaticFile('/foo/icon.ts')).toBe(false)
-    expect(isMetadataRouteStaticFile('/foo/icon.tsx')).toBe(false)
+    expect(isMetadataStaticFile('/foo/icon.js')).toBe(false)
+    expect(isMetadataStaticFile('/foo/icon.ts')).toBe(false)
+    expect(isMetadataStaticFile('/foo/icon.tsx')).toBe(false)
   })
 
   it('should not match without extension', () => {
-    expect(isMetadataRouteStaticFile('/robots')).toBe(false)
-    expect(isMetadataRouteStaticFile('/sitemap')).toBe(false)
+    expect(isMetadataStaticFile('/robots')).toBe(false)
+    expect(isMetadataStaticFile('/sitemap')).toBe(false)
   })
 })
 

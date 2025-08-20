@@ -48,7 +48,7 @@ import {
 import { getSelectedParams } from '../../../client/components/router-reducer/compute-changed-path'
 import { isInterceptionRouteRewrite } from '../../../lib/generate-interception-routes-rewrites'
 import { parseAndValidateFlightRouterState } from '../../app-render/parse-and-validate-flight-router-state'
-import { isMetadataRouteStaticFile } from '../../../lib/metadata/is-metadata-route'
+import { isMetadataStaticFile } from '../../../lib/metadata/is-metadata-route'
 
 const debug = setupDebug('next:router-server:resolve-routes')
 
@@ -261,7 +261,7 @@ export function getResolveRoutes(
       }
       if (!invokedOutputs?.has(pathname)) {
         const output = await fsChecker.getItem(
-          isMetadataRouteStaticFile(pathname)
+          isMetadataStaticFile(pathname)
             ? '/_next/static/metadata' + pathname
             : pathname
         )
@@ -297,9 +297,7 @@ export function getResolveRoutes(
           continue
         }
 
-        const isMetadataStatic = isMetadataRouteStaticFile(
-          localeResult.pathname
-        )
+        const isMetadataStatic = isMetadataStaticFile(localeResult.pathname)
 
         const params = route.match(
           isMetadataStatic
