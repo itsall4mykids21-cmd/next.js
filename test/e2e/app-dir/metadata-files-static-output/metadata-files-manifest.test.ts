@@ -1,12 +1,13 @@
 import { nextTestSetup } from 'e2e-utils'
 
 describe('metadata-files-manifest', () => {
-  const { next, skipped } = nextTestSetup({
+  const { next, isNextDev, skipped } = nextTestSetup({
     files: __dirname,
     skipDeployment: true,
   })
 
-  if (skipped) {
+  if (isNextDev || skipped) {
+    it.skip('skip dev or skipped tests', () => {})
     return
   }
 
