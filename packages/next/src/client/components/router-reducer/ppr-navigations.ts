@@ -974,6 +974,18 @@ function createPendingCacheNode(
 
   const maybePrefetchRsc = prefetchData !== null ? prefetchData[1] : null
   const maybePrefetchLoading = prefetchData !== null ? prefetchData[3] : null
+
+  // When there's no prefetch loading data, create a deferred loading that will be
+  // resolved by the dynamic response. This ensures loading boundaries are preserved
+  // during soft navigation with clientSegmentCache
+  const shouldHaveLoading =
+    maybePrefetchLoading || (!isLeafSegment && !maybePrefetchLoading)
+
+  const loading = shouldHaveLoading
+    ? maybePrefetchLoading ||
+      (createDeferredRsc() as Promise<LoadingModuleData>)
+    : null
+
   return {
     lazyData: null,
     parallelRoutes: parallelRoutes,
@@ -984,7 +996,7 @@ function createPendingCacheNode(
     // TODO: Technically, a loading boundary could contain dynamic data. We must
     // have separate `loading` and `prefetchLoading` fields to handle this, like
     // we do for the segment data and head.
-    loading: maybePrefetchLoading !== undefined ? maybePrefetchLoading : null,
+    loading,
 
     // Create a deferred promise. This will be fulfilled once the dynamic
     // response is received from the server.
@@ -1096,6 +1108,15 @@ function finishPendingCacheNode(
   if (isDeferredRsc(head)) {
     head.resolve(dynamicHead)
   }
+
+  // If we have a deferred loading promise, resolve it with the loading data
+  // from the server response
+  const loading = cacheNode.loading
+  const dynamicLoadingData = dynamicData[3]
+  if (isDeferredRsc(loading)) {
+    // Resolve the deferred loading promise with the loading component from server
+    loading.resolve(dynamicLoadingData)
+  }
 }
 
 export function abortTask(task: SPANavigationTask, error: any): void {
@@ -1171,6 +1192,12 @@ function abortPendingCacheNode(
   const head = cacheNode.head
   if (isDeferredRsc(head)) {
     head.resolve(null)
+  }
+
+  // Also resolve any deferred loading promises to null to prevent hanging
+  const loading = cacheNode.loading
+  if (isDeferredRsc(loading)) {
+    loading.resolve(null)
   }
 }
 
