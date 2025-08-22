@@ -51,8 +51,8 @@ export const getExtensionRegexString = (
  * @returns True if the path is a static metadata file route, false otherwise.
  */
 export function isMetadataStaticFileRoute(appDirRelativePath: string) {
-  // Match the optional variants like /icon1.png, /icon2.png, etc.
-  const variantsMatcher = '\\d*'
+  // Match the optional variants like /icon[0-9].png
+  const variantsMatcher = '\\d?'
   // Hash suffix added for routes like parallel, intercept, and group routes.
   // E.g. /icon-xxxxxx.png, /opengraph-image-yyyyyy.jpg, etc.
   const routeSuffix = '(-\\w{6})?'
@@ -105,8 +105,8 @@ export function isMetadataRouteFile(
   // When strictlyMatchExtensions, the dynamic extension is skipped but
   // static extension is kept, which is usually used for matching route path.
   const trailingMatcher = (strictlyMatchExtensions ? '' : '?') + '$'
-  // Match the optional variants like /icon1.png, /icon2.png, etc.
-  const variantsMatcher = '\\d*'
+  // Match the optional variants like /icon[0-9].png
+  const variantsMatcher = '\\d?'
   // Hash suffix added for routes like parallel, intercept, and group routes.
   // E.g. /icon-xxxxxx.png, /opengraph-image-yyyyyy.jpg, etc.
   const groupSuffix = strictlyMatchExtensions ? '' : '(-\\w{6})?'
