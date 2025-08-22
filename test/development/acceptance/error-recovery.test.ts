@@ -81,11 +81,11 @@ describe('pages/ error recovery', () => {
     } else {
       await expect(browser).toDisplayRedbox(`
        {
-         "description": "  x Expected '>', got '<eof>'",
+         "description": "  x Unexpected eof",
          "environmentLabel": null,
          "label": "Build Error",
          "source": "./index.js
-       Error:   x Expected '>', got '<eof>'
+       Error:   x Unexpected eof
           ,----
         1 | export default () => <div/
           \`----
@@ -168,6 +168,8 @@ describe('pages/ error recovery', () => {
           |           ^",
        "stack": [
          "Index.useCallback[increment] index.js (7:11)",
+         "button <anonymous>",
+         "Index index.js (12:7)",
        ],
      }
     `)
@@ -305,6 +307,7 @@ describe('pages/ error recovery', () => {
              |         ^",
            "stack": [
              "Child child.js (3:9)",
+             "Index index.js (6:7)",
            ],
          }
         `)
@@ -733,6 +736,7 @@ describe('pages/ error recovery', () => {
              |   ^",
            "stack": [
              "Foo Foo.js (3:3)",
+             "FunctionDefault index.js (4:10)",
            ],
          }
         `)
