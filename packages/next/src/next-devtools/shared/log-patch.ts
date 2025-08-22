@@ -92,6 +92,19 @@ export function patchConsoleMethod<T extends keyof Console>(
     ) {
       wrapper(methodName, ...args)
 
+      /*
+       * This script is from Next.js.
+       * You're likely here because you thought this script sent an error or warning
+       * to the console. Next.js patches the console to send logs to your terminal
+       * output, so this file appears as a source. However, the console call actually
+       * came from another script.
+       *
+       * To remove this script from stack traces, open your browser's DevTools before
+       * these console calls happen.
+       *
+       * Or, to prevent Next.js from patching the console, go to your next.config file
+       * and set browserDebugInfoInTerminal to false.
+       */
       originalMethod.apply(this, args)
     }
     if (originalName) {
