@@ -11,9 +11,10 @@ import type {
 } from './analysis/get-page-static-info'
 import type { LoadedEnvFiles } from '@next/env'
 import type { AppLoaderOptions } from './webpack/loaders/next-app-loader'
+import type { Rewrite } from '../lib/load-custom-routes'
 
 import { posix, join, dirname, extname, normalize, parse } from 'path'
-import { copyFile, mkdir, stat, writeFile } from 'fs/promises'
+import { copyFile, mkdir, stat } from 'fs/promises'
 import { stringify } from 'querystring'
 import fs from 'fs'
 import {
@@ -90,8 +91,11 @@ import {
   UNDERSCORE_GLOBAL_ERROR_ROUTE,
   UNDERSCORE_GLOBAL_ERROR_ROUTE_ENTRY,
 } from '../shared/lib/entry-constants'
-import { getNamedRouteRegex } from '../shared/lib/router/utils/route-regex'
-import { normalizeRouteRegex } from '../lib/load-custom-routes'
+import { isInterceptionRouteAppPath } from '../shared/lib/router/utils/interception-routes'
+import {
+  normalizeInterceptionRoute,
+  toPathToRegexpPath,
+} from '../lib/generate-interception-routes-rewrites'
 
 /**
  * Collect app pages, layouts, and default files from the app directory
@@ -709,14 +713,8 @@ export async function copyMetadataStaticFiles({
   distDir: string
   pagePaths: string[]
   appDir: string
-}) {
-  const staticMetadataRoutesManifest: Record<
-    string,
-    {
-      regex: string
-      sourcePage: string
-    }
-  > = {}
+}): Promise<Rewrite[]> {
+  const staticMetadataRewrites: Rewrite[] = []
 
   const promises = pagePaths.map<Promise<void>>(async (pagePath) => {
     if (!isMetadataStaticFileRoute(pagePath)) {
@@ -766,23 +764,18 @@ export async function copyMetadataStaticFiles({
     await mkdir(dirname(targetPath), { recursive: true })
     await copyFile(filePath, targetPath)
 
-    // Copied method from pageToRoute()
-    const routeRegex = getNamedRouteRegex(routePath, {
-      prefixRouteKeys: true,
+    const source = isInterceptionRouteAppPath(routePath)
+      ? normalizeInterceptionRoute(routePath).normalizedInterceptedRoute
+      : toPathToRegexpPath(routePath)
+
+    staticMetadataRewrites.push({
+      source,
+      destination: `/_next/static/metadata${routePath}`,
     })
-    staticMetadataRoutesManifest[routePath] = {
-      regex: normalizeRouteRegex(routeRegex.re.source),
-      sourcePage: `_next/static/metadata${routePath}`,
-    }
   })
 
   await Promise.all(promises)
-  // This manifest is generated to be compatible with Vercel CLI.
-  await writeFile(
-    join(distDir, 'static-metadata-routes-manifest.json'),
-    JSON.stringify(staticMetadataRoutesManifest, null, 2),
-    'utf-8'
-  )
+  return staticMetadataRewrites
 }
 
 export interface CreateEntrypointsParams {

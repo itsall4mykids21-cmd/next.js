@@ -8,7 +8,7 @@ import { safePathToRegexp } from '../shared/lib/router/utils/route-match-utils'
 import type { DeepReadonly } from '../shared/lib/deep-readonly'
 
 // a function that converts normalised paths (e.g. /foo/[bar]/[baz]) to the format expected by pathToRegexp (e.g. /foo/:bar/:baz)
-function toPathToRegexpPath(path: string): string {
+export function toPathToRegexpPath(path: string): string {
   return path.replace(/\[\[?([^\]]+)\]\]?/g, (_, capture) => {
     // path-to-regexp only supports word characters, so we replace any non-word characters with underscores
     const paramName = capture.replace(/\W+/g, '_')
@@ -21,6 +21,31 @@ function toPathToRegexpPath(path: string): string {
   })
 }
 
+export function normalizeInterceptionRoute(appPath: string) {
+  const { interceptingRoute, interceptedRoute } =
+    extractInterceptionRouteInformation(appPath)
+
+  const normalizedInterceptingRoute = `${
+    interceptingRoute !== '/' ? toPathToRegexpPath(interceptingRoute) : ''
+  }/(.*)?`
+
+  const normalizedInterceptedRoute = toPathToRegexpPath(interceptedRoute)
+  const normalizedAppPath = toPathToRegexpPath(appPath)
+
+  // pathToRegexp returns a regex that matches the path, but we need to
+  // convert it to a string that can be used in a header value
+  // to the format that Next/the proxy expects
+  let interceptingRouteRegex = safePathToRegexp(normalizedInterceptingRoute)
+    .toString()
+    .slice(2, -3)
+
+  return {
+    normalizedInterceptedRoute,
+    normalizedAppPath,
+    interceptingRouteRegex,
+  }
+}
+
 export function generateInterceptionRoutesRewrites(
   appPaths: string[],
   basePath = ''
@@ -29,22 +54,11 @@ export function generateInterceptionRoutesRewrites(
 
   for (const appPath of appPaths) {
     if (isInterceptionRouteAppPath(appPath)) {
-      const { interceptingRoute, interceptedRoute } =
-        extractInterceptionRouteInformation(appPath)
-
-      const normalizedInterceptingRoute = `${
-        interceptingRoute !== '/' ? toPathToRegexpPath(interceptingRoute) : ''
-      }/(.*)?`
-
-      const normalizedInterceptedRoute = toPathToRegexpPath(interceptedRoute)
-      const normalizedAppPath = toPathToRegexpPath(appPath)
-
-      // pathToRegexp returns a regex that matches the path, but we need to
-      // convert it to a string that can be used in a header value
-      // to the format that Next/the proxy expects
-      let interceptingRouteRegex = safePathToRegexp(normalizedInterceptingRoute)
-        .toString()
-        .slice(2, -3)
+      const {
+        normalizedInterceptedRoute,
+        normalizedAppPath,
+        interceptingRouteRegex,
+      } = normalizeInterceptionRoute(appPath)
 
       rewrites.push({
         source: `${basePath}${normalizedInterceptedRoute}`,
