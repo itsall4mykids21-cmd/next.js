@@ -91,11 +91,11 @@ import {
   UNDERSCORE_GLOBAL_ERROR_ROUTE,
   UNDERSCORE_GLOBAL_ERROR_ROUTE_ENTRY,
 } from '../shared/lib/entry-constants'
-import { isInterceptionRouteAppPath } from '../shared/lib/router/utils/interception-routes'
 import {
-  normalizeInterceptionRoute,
-  toPathToRegexpPath,
-} from '../lib/generate-interception-routes-rewrites'
+  INTERCEPTION_ROUTE_MARKERS,
+  isInterceptionRouteAppPath,
+} from '../shared/lib/router/utils/interception-routes'
+import { toPathToRegexpPath } from '../lib/generate-interception-routes-rewrites'
 
 /**
  * Collect app pages, layouts, and default files from the app directory
@@ -764,9 +764,28 @@ export async function copyMetadataStaticFiles({
     await mkdir(dirname(targetPath), { recursive: true })
     await copyFile(filePath, targetPath)
 
-    const source = isInterceptionRouteAppPath(routePath)
-      ? normalizeInterceptionRoute(routePath).normalizedInterceptedRoute
-      : toPathToRegexpPath(routePath)
+    // Normally "source" wouldn't expect an interception route pattern
+    // because we preprocess and split into "intercepting" and "intercepted".
+    // However since path-to-regexp will parse it as a group regex, we need
+    // to escape the intercepting route pattern.
+    let source = toPathToRegexpPath(routePath)
+    if (isInterceptionRouteAppPath(routePath)) {
+      // Split by segments and only escape actual interception route markers
+      const segments = routePath.split('/')
+      const escapedPath = segments
+        .map((segment) => {
+          const marker = INTERCEPTION_ROUTE_MARKERS.find((m) =>
+            segment.startsWith(m)
+          )
+          if (marker) {
+            // Escape only the interception marker part
+            return segment.replace(marker, marker.replace(/[()]/g, '\\$&'))
+          }
+          return segment
+        })
+        .join('/')
+      source = toPathToRegexpPath(escapedPath)
+    }
 
     staticMetadataRewrites.push({
       source,

@@ -1250,7 +1250,7 @@ export default async function build(
         // TODO(jiwon): Export mode has bug in resolving metadata files in dynamic routes.
         // Follow up to support export mode with copied metadata files.
         if (config.output !== 'export') {
-          await nextBuildSpan
+          const staticMetadataRewrites: Rewrite[] = await nextBuildSpan
             .traceChild('copy-metadata-static-files')
             .traceAsyncFn(() =>
               copyMetadataStaticFiles({
@@ -1259,6 +1259,7 @@ export default async function build(
                 distDir,
               })
             )
+          rewrites.beforeFiles.push(...staticMetadataRewrites)
         }
 
         NextBuildContext.mappedAppPages = mappedAppPages
