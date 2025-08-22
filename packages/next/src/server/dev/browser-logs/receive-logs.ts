@@ -12,7 +12,7 @@ import {
   type LogMethod,
   type ConsoleEntry,
   UNDEFINED_MARKER,
-} from '../../../next-devtools/shared/forward-logs-shared'
+} from '../../../next-devtools/shared/log-patch'
 import type { NextConfigComplete } from '../../config-shared'
 
 export function getDisplayedSourceLocation(
@@ -68,8 +68,14 @@ const forwardConsole: typeof console = {
   ...Object.fromEntries(
     methods.map((method) => [
       method,
-      (...args: Array<any>) =>
-        (console[method] as any)(
+      (...args: Array<any>) => {
+        if (
+          process.env.__NEXT_TEST_MODE &&
+          !process.env.NEXT_TEST_BROWSER_LOGS
+        ) {
+          return
+        }
+        return (console[method] as any)(
           ...args.map((arg) =>
             methodsToSkipInspect.has(method) ||
             typeof arg !== 'object' ||
@@ -78,7 +84,8 @@ const forwardConsole: typeof console = {
               : // we hardcode depth:Infinity to allow the true depth to be configured by the serialization done in the browser (which is controlled by user)
                 util.inspect(arg, { depth: Infinity, colors: true })
           )
-        ),
+        )
+      },
     ])
   ),
 }

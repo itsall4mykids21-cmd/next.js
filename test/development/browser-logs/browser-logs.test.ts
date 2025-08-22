@@ -40,6 +40,21 @@ function setupLogCapture() {
 }
 
 describe(`Terminal Logging (${bundlerName})`, () => {
+  let originalBrowserLogsEnv: string | undefined
+
+  beforeAll(() => {
+    originalBrowserLogsEnv = process.env.NEXT_TEST_BROWSER_LOGS
+    process.env.NEXT_TEST_BROWSER_LOGS = 'true'
+  })
+
+  afterAll(() => {
+    if (originalBrowserLogsEnv === undefined) {
+      delete process.env.NEXT_TEST_BROWSER_LOGS
+    } else {
+      process.env.NEXT_TEST_BROWSER_LOGS = originalBrowserLogsEnv
+    }
+  })
+
   describe('Pages Router', () => {
     let next: NextInstance
     let logs: string[] = []
