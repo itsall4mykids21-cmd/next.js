@@ -51,41 +51,13 @@ export const getExtensionRegexString = (
  * @returns True if the path is a static metadata file route, false otherwise.
  */
 export function isMetadataStaticFileRoute(appDirRelativePath: string) {
-  // Match the optional variants like /icon[0-9].png
-  const variantsMatcher = '\\d?'
-  // Hash suffix added for routes like parallel, intercept, and group routes.
-  // E.g. /icon-xxxxxx.png, /opengraph-image-yyyyyy.jpg, etc.
-  const routeSuffix = '(-\\w{6})?'
-
-  const suffixMatcher = `${variantsMatcher}${routeSuffix}`
-
-  const metadataRouteFilesRegex = [
-    new RegExp(`^[\\\\/]robots\\.txt$`),
-    new RegExp(`^[\\\\/]manifest\\.(webmanifest|json)$`),
-    new RegExp(`[\\\\/]sitemap\\.xml$`),
-    new RegExp(
-      `^[\\\\/]${STATIC_METADATA_IMAGES.favicon.filename}\\.(${STATIC_METADATA_IMAGES.favicon.extensions.join('|')})$`
-    ),
-    new RegExp(
-      `[\\\\/]${STATIC_METADATA_IMAGES.icon.filename}${suffixMatcher}\\.(${STATIC_METADATA_IMAGES.icon.extensions.join('|')})$`
-    ),
-    new RegExp(
-      `[\\\\/]${STATIC_METADATA_IMAGES.apple.filename}${suffixMatcher}\\.(${STATIC_METADATA_IMAGES.apple.extensions.join('|')})$`
-    ),
-    new RegExp(
-      `[\\\\/]${STATIC_METADATA_IMAGES.openGraph.filename}${suffixMatcher}\\.(${STATIC_METADATA_IMAGES.openGraph.extensions.join('|')})$`
-    ),
-    new RegExp(
-      `[\\\\/]${STATIC_METADATA_IMAGES.twitter.filename}${suffixMatcher}\\.(${STATIC_METADATA_IMAGES.twitter.extensions.join('|')})$`
-    ),
-  ]
-
-  const normalizedAppDirRelativePath = normalizePathSep(appDirRelativePath)
-  const matched = metadataRouteFilesRegex.some((r) =>
-    r.test(normalizedAppDirRelativePath)
+  // Strip group suffix (-\w{6}) from the path before checking
+  const pathWithoutGroupSuffix = appDirRelativePath.replace(
+    /-\w{6}(?=\.[^/]*$)/,
+    ''
   )
 
-  return matched
+  return isMetadataRouteFile(pathWithoutGroupSuffix, [], true)
 }
 
 /**
