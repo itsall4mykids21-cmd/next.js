@@ -12,7 +12,7 @@ import {
   type LogMethod,
   type ConsoleEntry,
   UNDEFINED_MARKER,
-} from '../../../next-devtools/shared/log-patch'
+} from '../../../next-devtools/shared/console-patch'
 import type { NextConfigComplete } from '../../config-shared'
 
 export function getDisplayedSourceLocation(
