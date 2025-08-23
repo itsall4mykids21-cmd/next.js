@@ -96,9 +96,9 @@ export function patchConsoleMethod<T extends keyof Console>(
        * This script is from Next.js console patching.
        *
        * You're seeing this because Next.js patches console methods to send logs
-       * to your terminal. 
-       * 
-       * To see the original location, set browserDebugInfoInTerminal to false 
+       * to your terminal.
+       *
+       * To see the original location, set browserDebugInfoInTerminal to false
        * in your next.config file.
        */
       originalMethod.apply(this, args)
