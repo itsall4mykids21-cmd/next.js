@@ -73,7 +73,7 @@ const forwardConsole: typeof console = {
         // of test failures that require non trivial updates. Because we only omit
         // logging to stdout/stderr by default, but still perform the entire log collection
         // pipeline we wont be missing out on any important coverage, unless the code guarded here
-        // is bugged
+        // is bugged (but this should be test by the explicit NEXT_TEST_BROWSER_LOGS tests)
         if (
           process.env.__NEXT_TEST_MODE &&
           !process.env.NEXT_TEST_BROWSER_LOGS

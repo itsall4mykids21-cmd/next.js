@@ -11,7 +11,7 @@ export function getTerminalLoggingConfig():
       process.env.__NEXT_BROWSER_DEBUG_INFO_IN_TERMINAL || 'true'
     )
   } catch {
-    return false
+    return true
   }
 }
 
