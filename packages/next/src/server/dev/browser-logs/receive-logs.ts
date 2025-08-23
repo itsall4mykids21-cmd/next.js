@@ -69,6 +69,11 @@ const forwardConsole: typeof console = {
     methods.map((method) => [
       method,
       (...args: Array<any>) => {
+        // we don't actually log to stdout/stderr because that causes a significant amount
+        // of test failures that require non trivial updates. Because we only omit
+        // logging to stdout/stderr by default, but still perform the entire log collection
+        // pipeline we wont be missing out on any important coverage, unless the code guarded here
+        // is bugged
         if (
           process.env.__NEXT_TEST_MODE &&
           !process.env.NEXT_TEST_BROWSER_LOGS
