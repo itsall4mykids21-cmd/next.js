@@ -573,15 +573,160 @@
   ⚠️  function calls are not analysed yet
 
 0 -> 189 member call = {}["hasOwnProperty"](
-    (???*0* | (???*1* ? ???*5* : null)["attributeName"] | ???*7*)
+    (???*0* | (???*1* ? ???*4* : null)["attributeName"] | ???*6*)
 )
 - *0* arguments[1]
   ⚠️  function calls are not analysed yet
-- *1* (???*2* | ???*3*)(???*4*)
+- *1* (undefined | ???*2*)(???*3*)
   ⚠️  non-function callee
-- *2* FreeVar(undefined)
-  ⚠️  unknown global
+- *2* unknown mutation
   ⚠️  This value might have side effects
+- *3* b
+  ⚠️  circular variable reference
+- *4* {}[???*5*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *5* b
+  ⚠️  circular variable reference
+- *6* ???*7*["attributeName"]
+  ⚠️  unknown object
+- *7* ???*8*["type"]
+  ⚠️  unknown object
+- *8* e
+  ⚠️  circular variable reference
+
+0 -> 190 conditional = ???*0*
+- *0* (undefined | ???*1*)(
+        (???*2* | (???*3* ? ???*6* : null)["attributeName"] | ???*8*)
+    )
+  ⚠️  non-function callee
+  ⚠️  This value might have side effects
+- *1* unknown mutation
+  ⚠️  This value might have side effects
+- *2* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *3* (undefined | ???*4*)(???*5*)
+  ⚠️  non-function callee
+- *4* unknown mutation
+  ⚠️  This value might have side effects
+- *5* b
+  ⚠️  circular variable reference
+- *6* {}[???*7*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *7* b
+  ⚠️  circular variable reference
+- *8* ???*9*["attributeName"]
+  ⚠️  unknown object
+- *9* ???*10*["type"]
+  ⚠️  unknown object
+- *10* e
+  ⚠️  circular variable reference
+
+0 -> 192 conditional = (null !== (???*0* | ???*8*))
+- *0* (???*1* ? ???*6* : null)
+  ⚠️  nested operation
+- *1* (undefined | ???*2*)((???*3* | ???*4*))
+  ⚠️  non-function callee
+- *2* unknown mutation
+  ⚠️  This value might have side effects
+- *3* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *4* ???*5*["attributeName"]
+  ⚠️  unknown object
+- *5* e
+  ⚠️  circular variable reference
+- *6* {}[???*7*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *7* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *8* ???*9*["type"]
+  ⚠️  unknown object
+- *9* e
+  ⚠️  circular variable reference
+
+0 -> 199 conditional = (???*0* ? ???*11* : (???*20* | ???*21* | ???*30*))
+- *0* (null !== (???*1* | ???*9*))
+  ⚠️  nested operation
+- *1* (???*2* ? ???*7* : null)
+  ⚠️  nested operation
+- *2* (undefined | ???*3*)((???*4* | ???*5*))
+  ⚠️  non-function callee
+- *3* unknown mutation
+  ⚠️  This value might have side effects
+- *4* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *5* ???*6*["attributeName"]
+  ⚠️  unknown object
+- *6* e
+  ⚠️  circular variable reference
+- *7* {}[???*8*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *8* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *9* ???*10*["type"]
+  ⚠️  unknown object
+- *10* e
+  ⚠️  circular variable reference
+- *11* (0 !== ???*12*)
+  ⚠️  nested operation
+- *12* ???*13*["type"]
+  ⚠️  unknown object
+- *13* (???*14* ? ???*18* : null)
+  ⚠️  nested operation
+- *14* (undefined | ???*15*)((???*16* | ???*17*))
+  ⚠️  non-function callee
+- *15* unknown mutation
+  ⚠️  This value might have side effects
+- *16* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *17* ???["attributeName"]
+  ⚠️  unknown object
+- *18* {}[???*19*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *19* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *20* arguments[3]
+  ⚠️  function calls are not analysed yet
+- *21* ???*22*["attributeNamespace"]
+  ⚠️  unknown object
+- *22* (???*23* ? ???*28* : null)
+  ⚠️  nested operation
+- *23* (undefined | ???*24*)((???*25* | ???*26*))
+  ⚠️  non-function callee
+- *24* unknown mutation
+  ⚠️  This value might have side effects
+- *25* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *26* ???*27*["attributeName"]
+  ⚠️  unknown object
+- *27* e
+  ⚠️  circular variable reference
+- *28* {}[???*29*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *29* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *30* !(???*31*)
+  ⚠️  nested operation
+- *31* unsupported expression
+  ⚠️  This value might have side effects
+
+199 -> 200 call = (...) => (!(0) | !(1) | !(b) | (!(1) === b) | FreeVar(isNaN)(b) | (FreeVar(isNaN)(b) || ???*0*))(
+    (???*1* | (???*2* ? ???*5* : null)["attributeName"] | ???*7*),
+    (???*10* | null | (???*11* ? "" : ???*22*)),
+    ((???*23* ? ???*28* : null) | ???*30*),
+    (???*32* | (???*33* ? ???*38* : null)["attributeNamespace"] | ???*40*)
+)
+- *0* unsupported expression
+  ⚠️  This value might have side effects
+- *1* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *2* (undefined | ???*3*)(???*4*)
+  ⚠️  non-function callee
 - *3* unknown mutation
   ⚠️  This value might have side effects
 - *4* b
@@ -597,627 +742,14 @@
   ⚠️  unknown object
 - *9* e
   ⚠️  circular variable reference
-
-0 -> 190 conditional = ???*0*
-- *0* (???*1* | ???*2*)(
-        (???*3* | (???*4* ? ???*8* : null)["attributeName"] | ???*10*)
-    )
-  ⚠️  non-function callee
-  ⚠️  This value might have side effects
-- *1* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *2* unknown mutation
-  ⚠️  This value might have side effects
-- *3* arguments[1]
+- *10* arguments[2]
   ⚠️  function calls are not analysed yet
-- *4* (???*5* | ???*6*)(???*7*)
-  ⚠️  non-function callee
-- *5* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *6* unknown mutation
-  ⚠️  This value might have side effects
-- *7* b
-  ⚠️  circular variable reference
-- *8* {}[???*9*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *9* b
-  ⚠️  circular variable reference
-- *10* ???*11*["attributeName"]
-  ⚠️  unknown object
-- *11* ???*12*["type"]
-  ⚠️  unknown object
-- *12* e
-  ⚠️  circular variable reference
-
-0 -> 192 conditional = (null !== (???*0* | ???*9*))
-- *0* (???*1* ? ???*7* : null)
+- *11* (3 === (???*12* | ???*20*))
   ⚠️  nested operation
-- *1* (???*2* | ???*3*)((???*4* | ???*5*))
+- *12* (???*13* ? ???*18* : null)
+  ⚠️  nested operation
+- *13* (undefined | ???*14*)((???*15* | ???*16*))
   ⚠️  non-function callee
-- *2* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *3* unknown mutation
-  ⚠️  This value might have side effects
-- *4* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *5* ???*6*["attributeName"]
-  ⚠️  unknown object
-- *6* e
-  ⚠️  circular variable reference
-- *7* {}[???*8*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *8* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *9* ???*10*["type"]
-  ⚠️  unknown object
-- *10* e
-  ⚠️  circular variable reference
-
-0 -> 199 conditional = (???*0* ? ???*12* : (???*22* | ???*23* | ???*33*))
-- *0* (null !== (???*1* | ???*10*))
-  ⚠️  nested operation
-- *1* (???*2* ? ???*8* : null)
-  ⚠️  nested operation
-- *2* (???*3* | ???*4*)((???*5* | ???*6*))
-  ⚠️  non-function callee
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *6* ???*7*["attributeName"]
-  ⚠️  unknown object
-- *7* e
-  ⚠️  circular variable reference
-- *8* {}[???*9*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *9* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *10* ???*11*["type"]
-  ⚠️  unknown object
-- *11* e
-  ⚠️  circular variable reference
-- *12* (0 !== ???*13*)
-  ⚠️  nested operation
-- *13* ???*14*["type"]
-  ⚠️  unknown object
-- *14* (???*15* ? ???*20* : null)
-  ⚠️  nested operation
-- *15* (???*16* | ???*17*)((???*18* | ???*19*))
-  ⚠️  non-function callee
-- *16* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *17* unknown mutation
-  ⚠️  This value might have side effects
-- *18* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *19* ???["attributeName"]
-  ⚠️  unknown object
-- *20* {}[???*21*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *21* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *22* arguments[3]
-  ⚠️  function calls are not analysed yet
-- *23* ???*24*["attributeNamespace"]
-  ⚠️  unknown object
-- *24* (???*25* ? ???*31* : null)
-  ⚠️  nested operation
-- *25* (???*26* | ???*27*)((???*28* | ???*29*))
-  ⚠️  non-function callee
-- *26* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *27* unknown mutation
-  ⚠️  This value might have side effects
-- *28* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *29* ???*30*["attributeName"]
-  ⚠️  unknown object
-- *30* e
-  ⚠️  circular variable reference
-- *31* {}[???*32*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *32* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *33* !(???*34*)
-  ⚠️  nested operation
-- *34* unsupported expression
-  ⚠️  This value might have side effects
-
-199 -> 200 call = (...) => (!(0) | !(1) | !(b) | (!(1) === b) | FreeVar(isNaN)(b) | (FreeVar(isNaN)(b) || ???*0*))(
-    (???*1* | (???*2* ? ???*6* : null)["attributeName"] | ???*8*),
-    (???*11* | null | (???*12* ? "" : ???*24*)),
-    ((???*25* ? ???*31* : null) | ???*33*),
-    (???*35* | (???*36* ? ???*42* : null)["attributeNamespace"] | ???*44*)
-)
-- *0* unsupported expression
-  ⚠️  This value might have side effects
-- *1* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *2* (???*3* | ???*4*)(???*5*)
-  ⚠️  non-function callee
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* b
-  ⚠️  circular variable reference
-- *6* {}[???*7*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *7* b
-  ⚠️  circular variable reference
-- *8* ???*9*["attributeName"]
-  ⚠️  unknown object
-- *9* ???*10*["type"]
-  ⚠️  unknown object
-- *10* e
-  ⚠️  circular variable reference
-- *11* arguments[2]
-  ⚠️  function calls are not analysed yet
-- *12* (3 === (???*13* | ???*22*))
-  ⚠️  nested operation
-- *13* (???*14* ? ???*20* : null)
-  ⚠️  nested operation
-- *14* (???*15* | ???*16*)((???*17* | ???*18*))
-  ⚠️  non-function callee
-- *15* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *16* unknown mutation
-  ⚠️  This value might have side effects
-- *17* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *18* ???*19*["attributeName"]
-  ⚠️  unknown object
-- *19* e
-  ⚠️  circular variable reference
-- *20* {}[???*21*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *21* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *22* ???*23*["type"]
-  ⚠️  unknown object
-- *23* e
-  ⚠️  circular variable reference
-- *24* c
-  ⚠️  circular variable reference
-- *25* (???*26* | ???*27*)((???*28* | ???*29*))
-  ⚠️  non-function callee
-- *26* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *27* unknown mutation
-  ⚠️  This value might have side effects
-- *28* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *29* ???*30*["attributeName"]
-  ⚠️  unknown object
-- *30* e
-  ⚠️  circular variable reference
-- *31* {}[???*32*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *32* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *33* ???*34*["type"]
-  ⚠️  unknown object
-- *34* e
-  ⚠️  circular variable reference
-- *35* arguments[3]
-  ⚠️  function calls are not analysed yet
-- *36* (???*37* | ???*38*)((???*39* | ???*40*))
-  ⚠️  non-function callee
-- *37* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *38* unknown mutation
-  ⚠️  This value might have side effects
-- *39* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *40* ???*41*["attributeName"]
-  ⚠️  unknown object
-- *41* e
-  ⚠️  circular variable reference
-- *42* {}[???*43*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *43* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *44* ???*45*["attributeNamespace"]
-  ⚠️  unknown object
-- *45* ???*46*["type"]
-  ⚠️  unknown object
-- *46* e
-  ⚠️  circular variable reference
-
-199 -> 201 conditional = (???*0* | (???*1* ? ???*7* : null)["attributeNamespace"] | ???*9* | (null === (???*12* | ???*21*)))
-- *0* arguments[3]
-  ⚠️  function calls are not analysed yet
-- *1* (???*2* | ???*3*)((???*4* | ???*5*))
-  ⚠️  non-function callee
-- *2* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *3* unknown mutation
-  ⚠️  This value might have side effects
-- *4* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *5* ???*6*["attributeName"]
-  ⚠️  unknown object
-- *6* e
-  ⚠️  circular variable reference
-- *7* {}[???*8*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *8* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *9* ???*10*["attributeNamespace"]
-  ⚠️  unknown object
-- *10* ???*11*["type"]
-  ⚠️  unknown object
-- *11* e
-  ⚠️  circular variable reference
-- *12* (???*13* ? ???*19* : null)
-  ⚠️  nested operation
-- *13* (???*14* | ???*15*)((???*16* | ???*17*))
-  ⚠️  non-function callee
-- *14* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *15* unknown mutation
-  ⚠️  This value might have side effects
-- *16* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *17* ???*18*["attributeName"]
-  ⚠️  unknown object
-- *18* e
-  ⚠️  circular variable reference
-- *19* {}[???*20*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *20* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *21* ???*22*["type"]
-  ⚠️  unknown object
-- *22* e
-  ⚠️  circular variable reference
-
-201 -> 202 call = (...) => (!(0) | !(1) | ???*0*)(
-    (???*1* | (???*2* ? ???*6* : null)["attributeName"] | ???*8*)
-)
-- *0* unsupported expression
-  ⚠️  This value might have side effects
-- *1* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *2* (???*3* | ???*4*)(???*5*)
-  ⚠️  non-function callee
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* b
-  ⚠️  circular variable reference
-- *6* {}[???*7*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *7* b
-  ⚠️  circular variable reference
-- *8* ???*9*["attributeName"]
-  ⚠️  unknown object
-- *9* ???*10*["type"]
-  ⚠️  unknown object
-- *10* e
-  ⚠️  circular variable reference
-
-201 -> 203 conditional = (null === (???*0* | null | ???*1*))
-- *0* arguments[2]
-  ⚠️  function calls are not analysed yet
-- *1* (???*2* ? "" : ???*13*)
-  ⚠️  nested operation
-- *2* (3 === (???*3* | ???*11*))
-  ⚠️  nested operation
-- *3* (???*4* ? ???*9* : null)
-  ⚠️  nested operation
-- *4* (???*5* | ???*6*)((???*7* | ???*8*))
-  ⚠️  non-function callee
-- *5* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *6* unknown mutation
-  ⚠️  This value might have side effects
-- *7* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *8* ???["attributeName"]
-  ⚠️  unknown object
-- *9* {}[???*10*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *10* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *11* ???*12*["type"]
-  ⚠️  unknown object
-- *12* e
-  ⚠️  circular variable reference
-- *13* c
-  ⚠️  circular variable reference
-
-203 -> 205 member call = ???*0*["removeAttribute"](
-    (???*1* | (???*2* ? ???*6* : null)["attributeName"] | ???*8*)
-)
-- *0* arguments[0]
-  ⚠️  function calls are not analysed yet
-- *1* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *2* (???*3* | ???*4*)(???*5*)
-  ⚠️  non-function callee
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* b
-  ⚠️  circular variable reference
-- *6* {}[???*7*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *7* b
-  ⚠️  circular variable reference
-- *8* ???*9*["attributeName"]
-  ⚠️  unknown object
-- *9* ???*10*["type"]
-  ⚠️  unknown object
-- *10* e
-  ⚠️  circular variable reference
-
-203 -> 207 member call = ???*0*["setAttribute"](
-    (???*1* | (???*2* ? ???*6* : null)["attributeName"] | ???*8*),
-    (???*11* | null | (???*12* ? "" : ???*24*))
-)
-- *0* arguments[0]
-  ⚠️  function calls are not analysed yet
-- *1* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *2* (???*3* | ???*4*)(???*5*)
-  ⚠️  non-function callee
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* b
-  ⚠️  circular variable reference
-- *6* {}[???*7*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *7* b
-  ⚠️  circular variable reference
-- *8* ???*9*["attributeName"]
-  ⚠️  unknown object
-- *9* ???*10*["type"]
-  ⚠️  unknown object
-- *10* e
-  ⚠️  circular variable reference
-- *11* arguments[2]
-  ⚠️  function calls are not analysed yet
-- *12* (3 === (???*13* | ???*22*))
-  ⚠️  nested operation
-- *13* (???*14* ? ???*20* : null)
-  ⚠️  nested operation
-- *14* (???*15* | ???*16*)((???*17* | ???*18*))
-  ⚠️  non-function callee
-- *15* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *16* unknown mutation
-  ⚠️  This value might have side effects
-- *17* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *18* ???*19*["attributeName"]
-  ⚠️  unknown object
-- *19* e
-  ⚠️  circular variable reference
-- *20* {}[???*21*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *21* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *22* ???*23*["type"]
-  ⚠️  unknown object
-- *23* e
-  ⚠️  circular variable reference
-- *24* c
-  ⚠️  circular variable reference
-
-201 -> 209 conditional = ((???*0* ? ???*6* : null)["mustUseProperty"] | ???*8*)
-- *0* (???*1* | ???*2*)((???*3* | ???*4*))
-  ⚠️  non-function callee
-- *1* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *2* unknown mutation
-  ⚠️  This value might have side effects
-- *3* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *4* ???*5*["attributeName"]
-  ⚠️  unknown object
-- *5* e
-  ⚠️  circular variable reference
-- *6* {}[???*7*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *7* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *8* ???*9*["mustUseProperty"]
-  ⚠️  unknown object
-- *9* ???*10*["type"]
-  ⚠️  unknown object
-- *10* e
-  ⚠️  circular variable reference
-
-209 -> 212 conditional = (null === (???*0* | null | ???*1*))
-- *0* arguments[2]
-  ⚠️  function calls are not analysed yet
-- *1* (???*2* ? "" : ???*13*)
-  ⚠️  nested operation
-- *2* (3 === (???*3* | ???*11*))
-  ⚠️  nested operation
-- *3* (???*4* ? ???*9* : null)
-  ⚠️  nested operation
-- *4* (???*5* | ???*6*)((???*7* | ???*8*))
-  ⚠️  non-function callee
-- *5* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *6* unknown mutation
-  ⚠️  This value might have side effects
-- *7* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *8* ???["attributeName"]
-  ⚠️  unknown object
-- *9* {}[???*10*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *10* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *11* ???*12*["type"]
-  ⚠️  unknown object
-- *12* e
-  ⚠️  circular variable reference
-- *13* c
-  ⚠️  circular variable reference
-
-212 -> 214 conditional = (3 === ???*0*)
-- *0* ???*1*["type"]
-  ⚠️  unknown object
-- *1* (???*2* ? ???*8* : null)
-  ⚠️  nested operation
-- *2* (???*3* | ???*4*)((???*5* | ???*6*))
-  ⚠️  non-function callee
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *6* ???*7*["attributeName"]
-  ⚠️  unknown object
-- *7* e
-  ⚠️  circular variable reference
-- *8* {}[???*9*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *9* arguments[1]
-  ⚠️  function calls are not analysed yet
-
-209 -> 217 conditional = (null === (???*0* | null | ???*1*))
-- *0* arguments[2]
-  ⚠️  function calls are not analysed yet
-- *1* (???*2* ? "" : ???*13*)
-  ⚠️  nested operation
-- *2* (3 === (???*3* | ???*11*))
-  ⚠️  nested operation
-- *3* (???*4* ? ???*9* : null)
-  ⚠️  nested operation
-- *4* (???*5* | ???*6*)((???*7* | ???*8*))
-  ⚠️  non-function callee
-- *5* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *6* unknown mutation
-  ⚠️  This value might have side effects
-- *7* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *8* ???["attributeName"]
-  ⚠️  unknown object
-- *9* {}[???*10*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *10* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *11* ???*12*["type"]
-  ⚠️  unknown object
-- *12* e
-  ⚠️  circular variable reference
-- *13* c
-  ⚠️  circular variable reference
-
-217 -> 219 member call = ???*0*["removeAttribute"](
-    (???*1* | (???*2* ? ???*6* : null)["attributeName"] | ???*8*)
-)
-- *0* arguments[0]
-  ⚠️  function calls are not analysed yet
-- *1* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *2* (???*3* | ???*4*)(???*5*)
-  ⚠️  non-function callee
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* b
-  ⚠️  circular variable reference
-- *6* {}[???*7*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *7* b
-  ⚠️  circular variable reference
-- *8* ???*9*["attributeName"]
-  ⚠️  unknown object
-- *9* ???*10*["type"]
-  ⚠️  unknown object
-- *10* e
-  ⚠️  circular variable reference
-
-217 -> 221 conditional = ((3 === (???*0* | ???*9*)) | (4 === (???*11* | ???*20*)) | (true === (???*22* | null | ???*23*)))
-- *0* (???*1* ? ???*7* : null)
-  ⚠️  nested operation
-- *1* (???*2* | ???*3*)((???*4* | ???*5*))
-  ⚠️  non-function callee
-- *2* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *3* unknown mutation
-  ⚠️  This value might have side effects
-- *4* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *5* ???*6*["attributeName"]
-  ⚠️  unknown object
-- *6* e
-  ⚠️  circular variable reference
-- *7* {}[???*8*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *8* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *9* ???*10*["type"]
-  ⚠️  unknown object
-- *10* e
-  ⚠️  circular variable reference
-- *11* (???*12* ? ???*18* : null)
-  ⚠️  nested operation
-- *12* (???*13* | ???*14*)((???*15* | ???*16*))
-  ⚠️  non-function callee
-- *13* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
 - *14* unknown mutation
   ⚠️  This value might have side effects
 - *15* arguments[1]
@@ -1235,45 +767,463 @@
   ⚠️  unknown object
 - *21* e
   ⚠️  circular variable reference
-- *22* arguments[2]
-  ⚠️  function calls are not analysed yet
-- *23* (???*24* ? "" : ???*35*)
-  ⚠️  nested operation
-- *24* (3 === (???*25* | ???*33*))
-  ⚠️  nested operation
-- *25* (???*26* ? ???*31* : null)
-  ⚠️  nested operation
-- *26* (???*27* | ???*28*)((???*29* | ???*30*))
+- *22* c
+  ⚠️  circular variable reference
+- *23* (undefined | ???*24*)((???*25* | ???*26*))
   ⚠️  non-function callee
-- *27* FreeVar(undefined)
-  ⚠️  unknown global
+- *24* unknown mutation
   ⚠️  This value might have side effects
-- *28* unknown mutation
+- *25* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *26* ???*27*["attributeName"]
+  ⚠️  unknown object
+- *27* e
+  ⚠️  circular variable reference
+- *28* {}[???*29*]
+  ⚠️  unknown object prototype methods or values
   ⚠️  This value might have side effects
 - *29* arguments[1]
   ⚠️  function calls are not analysed yet
-- *30* ???["attributeName"]
+- *30* ???*31*["type"]
   ⚠️  unknown object
-- *31* {}[???*32*]
+- *31* e
+  ⚠️  circular variable reference
+- *32* arguments[3]
+  ⚠️  function calls are not analysed yet
+- *33* (undefined | ???*34*)((???*35* | ???*36*))
+  ⚠️  non-function callee
+- *34* unknown mutation
+  ⚠️  This value might have side effects
+- *35* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *36* ???*37*["attributeName"]
+  ⚠️  unknown object
+- *37* e
+  ⚠️  circular variable reference
+- *38* {}[???*39*]
   ⚠️  unknown object prototype methods or values
   ⚠️  This value might have side effects
-- *32* arguments[1]
+- *39* arguments[1]
   ⚠️  function calls are not analysed yet
-- *33* ???*34*["type"]
+- *40* ???*41*["attributeNamespace"]
   ⚠️  unknown object
-- *34* e
-  ⚠️  circular variable reference
-- *35* c
+- *41* ???*42*["type"]
+  ⚠️  unknown object
+- *42* e
   ⚠️  circular variable reference
 
-217 -> 222 conditional = (???*0* | (???*1* ? ???*7* : null)["attributeNamespace"] | ???*9*)
+199 -> 201 conditional = (???*0* | (???*1* ? ???*6* : null)["attributeNamespace"] | ???*8* | (null === (???*11* | ???*19*)))
 - *0* arguments[3]
   ⚠️  function calls are not analysed yet
-- *1* (???*2* | ???*3*)((???*4* | ???*5*))
+- *1* (undefined | ???*2*)((???*3* | ???*4*))
   ⚠️  non-function callee
-- *2* FreeVar(undefined)
-  ⚠️  unknown global
+- *2* unknown mutation
   ⚠️  This value might have side effects
+- *3* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *4* ???*5*["attributeName"]
+  ⚠️  unknown object
+- *5* e
+  ⚠️  circular variable reference
+- *6* {}[???*7*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *7* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *8* ???*9*["attributeNamespace"]
+  ⚠️  unknown object
+- *9* ???*10*["type"]
+  ⚠️  unknown object
+- *10* e
+  ⚠️  circular variable reference
+- *11* (???*12* ? ???*17* : null)
+  ⚠️  nested operation
+- *12* (undefined | ???*13*)((???*14* | ???*15*))
+  ⚠️  non-function callee
+- *13* unknown mutation
+  ⚠️  This value might have side effects
+- *14* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *15* ???*16*["attributeName"]
+  ⚠️  unknown object
+- *16* e
+  ⚠️  circular variable reference
+- *17* {}[???*18*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *18* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *19* ???*20*["type"]
+  ⚠️  unknown object
+- *20* e
+  ⚠️  circular variable reference
+
+201 -> 202 call = (...) => (!(0) | !(1) | ???*0*)(
+    (???*1* | (???*2* ? ???*5* : null)["attributeName"] | ???*7*)
+)
+- *0* unsupported expression
+  ⚠️  This value might have side effects
+- *1* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *2* (undefined | ???*3*)(???*4*)
+  ⚠️  non-function callee
+- *3* unknown mutation
+  ⚠️  This value might have side effects
+- *4* b
+  ⚠️  circular variable reference
+- *5* {}[???*6*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *6* b
+  ⚠️  circular variable reference
+- *7* ???*8*["attributeName"]
+  ⚠️  unknown object
+- *8* ???*9*["type"]
+  ⚠️  unknown object
+- *9* e
+  ⚠️  circular variable reference
+
+201 -> 203 conditional = (null === (???*0* | null | ???*1*))
+- *0* arguments[2]
+  ⚠️  function calls are not analysed yet
+- *1* (???*2* ? "" : ???*12*)
+  ⚠️  nested operation
+- *2* (3 === (???*3* | ???*10*))
+  ⚠️  nested operation
+- *3* (???*4* ? ???*8* : null)
+  ⚠️  nested operation
+- *4* (undefined | ???*5*)((???*6* | ???*7*))
+  ⚠️  non-function callee
+- *5* unknown mutation
+  ⚠️  This value might have side effects
+- *6* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *7* ???["attributeName"]
+  ⚠️  unknown object
+- *8* {}[???*9*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *9* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *10* ???*11*["type"]
+  ⚠️  unknown object
+- *11* e
+  ⚠️  circular variable reference
+- *12* c
+  ⚠️  circular variable reference
+
+203 -> 205 member call = ???*0*["removeAttribute"](
+    (???*1* | (???*2* ? ???*5* : null)["attributeName"] | ???*7*)
+)
+- *0* arguments[0]
+  ⚠️  function calls are not analysed yet
+- *1* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *2* (undefined | ???*3*)(???*4*)
+  ⚠️  non-function callee
+- *3* unknown mutation
+  ⚠️  This value might have side effects
+- *4* b
+  ⚠️  circular variable reference
+- *5* {}[???*6*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *6* b
+  ⚠️  circular variable reference
+- *7* ???*8*["attributeName"]
+  ⚠️  unknown object
+- *8* ???*9*["type"]
+  ⚠️  unknown object
+- *9* e
+  ⚠️  circular variable reference
+
+203 -> 207 member call = ???*0*["setAttribute"](
+    (???*1* | (???*2* ? ???*5* : null)["attributeName"] | ???*7*),
+    (???*10* | null | (???*11* ? "" : ???*22*))
+)
+- *0* arguments[0]
+  ⚠️  function calls are not analysed yet
+- *1* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *2* (undefined | ???*3*)(???*4*)
+  ⚠️  non-function callee
+- *3* unknown mutation
+  ⚠️  This value might have side effects
+- *4* b
+  ⚠️  circular variable reference
+- *5* {}[???*6*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *6* b
+  ⚠️  circular variable reference
+- *7* ???*8*["attributeName"]
+  ⚠️  unknown object
+- *8* ???*9*["type"]
+  ⚠️  unknown object
+- *9* e
+  ⚠️  circular variable reference
+- *10* arguments[2]
+  ⚠️  function calls are not analysed yet
+- *11* (3 === (???*12* | ???*20*))
+  ⚠️  nested operation
+- *12* (???*13* ? ???*18* : null)
+  ⚠️  nested operation
+- *13* (undefined | ???*14*)((???*15* | ???*16*))
+  ⚠️  non-function callee
+- *14* unknown mutation
+  ⚠️  This value might have side effects
+- *15* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *16* ???*17*["attributeName"]
+  ⚠️  unknown object
+- *17* e
+  ⚠️  circular variable reference
+- *18* {}[???*19*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *19* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *20* ???*21*["type"]
+  ⚠️  unknown object
+- *21* e
+  ⚠️  circular variable reference
+- *22* c
+  ⚠️  circular variable reference
+
+201 -> 209 conditional = ((???*0* ? ???*5* : null)["mustUseProperty"] | ???*7*)
+- *0* (undefined | ???*1*)((???*2* | ???*3*))
+  ⚠️  non-function callee
+- *1* unknown mutation
+  ⚠️  This value might have side effects
+- *2* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *3* ???*4*["attributeName"]
+  ⚠️  unknown object
+- *4* e
+  ⚠️  circular variable reference
+- *5* {}[???*6*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *6* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *7* ???*8*["mustUseProperty"]
+  ⚠️  unknown object
+- *8* ???*9*["type"]
+  ⚠️  unknown object
+- *9* e
+  ⚠️  circular variable reference
+
+209 -> 212 conditional = (null === (???*0* | null | ???*1*))
+- *0* arguments[2]
+  ⚠️  function calls are not analysed yet
+- *1* (???*2* ? "" : ???*12*)
+  ⚠️  nested operation
+- *2* (3 === (???*3* | ???*10*))
+  ⚠️  nested operation
+- *3* (???*4* ? ???*8* : null)
+  ⚠️  nested operation
+- *4* (undefined | ???*5*)((???*6* | ???*7*))
+  ⚠️  non-function callee
+- *5* unknown mutation
+  ⚠️  This value might have side effects
+- *6* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *7* ???["attributeName"]
+  ⚠️  unknown object
+- *8* {}[???*9*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *9* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *10* ???*11*["type"]
+  ⚠️  unknown object
+- *11* e
+  ⚠️  circular variable reference
+- *12* c
+  ⚠️  circular variable reference
+
+212 -> 214 conditional = (3 === ???*0*)
+- *0* ???*1*["type"]
+  ⚠️  unknown object
+- *1* (???*2* ? ???*7* : null)
+  ⚠️  nested operation
+- *2* (undefined | ???*3*)((???*4* | ???*5*))
+  ⚠️  non-function callee
+- *3* unknown mutation
+  ⚠️  This value might have side effects
+- *4* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *5* ???*6*["attributeName"]
+  ⚠️  unknown object
+- *6* e
+  ⚠️  circular variable reference
+- *7* {}[???*8*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *8* arguments[1]
+  ⚠️  function calls are not analysed yet
+
+209 -> 217 conditional = (null === (???*0* | null | ???*1*))
+- *0* arguments[2]
+  ⚠️  function calls are not analysed yet
+- *1* (???*2* ? "" : ???*12*)
+  ⚠️  nested operation
+- *2* (3 === (???*3* | ???*10*))
+  ⚠️  nested operation
+- *3* (???*4* ? ???*8* : null)
+  ⚠️  nested operation
+- *4* (undefined | ???*5*)((???*6* | ???*7*))
+  ⚠️  non-function callee
+- *5* unknown mutation
+  ⚠️  This value might have side effects
+- *6* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *7* ???["attributeName"]
+  ⚠️  unknown object
+- *8* {}[???*9*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *9* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *10* ???*11*["type"]
+  ⚠️  unknown object
+- *11* e
+  ⚠️  circular variable reference
+- *12* c
+  ⚠️  circular variable reference
+
+217 -> 219 member call = ???*0*["removeAttribute"](
+    (???*1* | (???*2* ? ???*5* : null)["attributeName"] | ???*7*)
+)
+- *0* arguments[0]
+  ⚠️  function calls are not analysed yet
+- *1* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *2* (undefined | ???*3*)(???*4*)
+  ⚠️  non-function callee
+- *3* unknown mutation
+  ⚠️  This value might have side effects
+- *4* b
+  ⚠️  circular variable reference
+- *5* {}[???*6*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *6* b
+  ⚠️  circular variable reference
+- *7* ???*8*["attributeName"]
+  ⚠️  unknown object
+- *8* ???*9*["type"]
+  ⚠️  unknown object
+- *9* e
+  ⚠️  circular variable reference
+
+217 -> 221 conditional = ((3 === (???*0* | ???*8*)) | (4 === (???*10* | ???*18*)) | (true === (???*20* | null | ???*21*)))
+- *0* (???*1* ? ???*6* : null)
+  ⚠️  nested operation
+- *1* (undefined | ???*2*)((???*3* | ???*4*))
+  ⚠️  non-function callee
+- *2* unknown mutation
+  ⚠️  This value might have side effects
+- *3* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *4* ???*5*["attributeName"]
+  ⚠️  unknown object
+- *5* e
+  ⚠️  circular variable reference
+- *6* {}[???*7*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *7* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *8* ???*9*["type"]
+  ⚠️  unknown object
+- *9* e
+  ⚠️  circular variable reference
+- *10* (???*11* ? ???*16* : null)
+  ⚠️  nested operation
+- *11* (undefined | ???*12*)((???*13* | ???*14*))
+  ⚠️  non-function callee
+- *12* unknown mutation
+  ⚠️  This value might have side effects
+- *13* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *14* ???*15*["attributeName"]
+  ⚠️  unknown object
+- *15* e
+  ⚠️  circular variable reference
+- *16* {}[???*17*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *17* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *18* ???*19*["type"]
+  ⚠️  unknown object
+- *19* e
+  ⚠️  circular variable reference
+- *20* arguments[2]
+  ⚠️  function calls are not analysed yet
+- *21* (???*22* ? "" : ???*32*)
+  ⚠️  nested operation
+- *22* (3 === (???*23* | ???*30*))
+  ⚠️  nested operation
+- *23* (???*24* ? ???*28* : null)
+  ⚠️  nested operation
+- *24* (undefined | ???*25*)((???*26* | ???*27*))
+  ⚠️  non-function callee
+- *25* unknown mutation
+  ⚠️  This value might have side effects
+- *26* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *27* ???["attributeName"]
+  ⚠️  unknown object
+- *28* {}[???*29*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *29* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *30* ???*31*["type"]
+  ⚠️  unknown object
+- *31* e
+  ⚠️  circular variable reference
+- *32* c
+  ⚠️  circular variable reference
+
+217 -> 222 conditional = (???*0* | (???*1* ? ???*6* : null)["attributeNamespace"] | ???*8*)
+- *0* arguments[3]
+  ⚠️  function calls are not analysed yet
+- *1* (undefined | ???*2*)((???*3* | ???*4*))
+  ⚠️  non-function callee
+- *2* unknown mutation
+  ⚠️  This value might have side effects
+- *3* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *4* ???*5*["attributeName"]
+  ⚠️  unknown object
+- *5* e
+  ⚠️  circular variable reference
+- *6* {}[???*7*]
+  ⚠️  unknown object prototype methods or values
+  ⚠️  This value might have side effects
+- *7* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *8* ???*9*["attributeNamespace"]
+  ⚠️  unknown object
+- *9* ???*10*["type"]
+  ⚠️  unknown object
+- *10* e
+  ⚠️  circular variable reference
+
+222 -> 224 member call = ???*0*["setAttributeNS"](
+    (???*1* | (???*2* ? ???*7* : null)["attributeNamespace"] | ???*9*),
+    (???*12* | (???*13* ? ???*16* : null)["attributeName"] | ???*18*),
+    (???*21* | null | (???*22* ? "" : ???*33*))
+)
+- *0* arguments[0]
+  ⚠️  function calls are not analysed yet
+- *1* arguments[3]
+  ⚠️  function calls are not analysed yet
+- *2* (undefined | ???*3*)((???*4* | ???*5*))
+  ⚠️  non-function callee
 - *3* unknown mutation
   ⚠️  This value might have side effects
 - *4* arguments[1]
@@ -1293,150 +1243,104 @@
   ⚠️  unknown object
 - *11* e
   ⚠️  circular variable reference
-
-222 -> 224 member call = ???*0*["setAttributeNS"](
-    (???*1* | (???*2* ? ???*8* : null)["attributeNamespace"] | ???*10*),
-    (???*13* | (???*14* ? ???*18* : null)["attributeName"] | ???*20*),
-    (???*23* | null | (???*24* ? "" : ???*36*))
-)
-- *0* arguments[0]
+- *12* arguments[1]
   ⚠️  function calls are not analysed yet
-- *1* arguments[3]
-  ⚠️  function calls are not analysed yet
-- *2* (???*3* | ???*4*)((???*5* | ???*6*))
+- *13* (undefined | ???*14*)(???*15*)
   ⚠️  non-function callee
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
+- *14* unknown mutation
   ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *6* ???*7*["attributeName"]
-  ⚠️  unknown object
-- *7* e
+- *15* b
   ⚠️  circular variable reference
-- *8* {}[???*9*]
+- *16* {}[???*17*]
   ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *9* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *10* ???*11*["attributeNamespace"]
-  ⚠️  unknown object
-- *11* ???*12*["type"]
-  ⚠️  unknown object
-- *12* e
-  ⚠️  circular variable reference
-- *13* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *14* (???*15* | ???*16*)(???*17*)
-  ⚠️  non-function callee
-- *15* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *16* unknown mutation
   ⚠️  This value might have side effects
 - *17* b
   ⚠️  circular variable reference
-- *18* {}[???*19*]
-  ⚠️  unknown object prototype methods or values
-  ⚠️  This value might have side effects
-- *19* b
-  ⚠️  circular variable reference
-- *20* ???*21*["attributeName"]
+- *18* ???*19*["attributeName"]
   ⚠️  unknown object
-- *21* ???*22*["type"]
+- *19* ???*20*["type"]
   ⚠️  unknown object
-- *22* e
+- *20* e
   ⚠️  circular variable reference
-- *23* arguments[2]
+- *21* arguments[2]
   ⚠️  function calls are not analysed yet
-- *24* (3 === (???*25* | ???*34*))
+- *22* (3 === (???*23* | ???*31*))
   ⚠️  nested operation
-- *25* (???*26* ? ???*32* : null)
+- *23* (???*24* ? ???*29* : null)
   ⚠️  nested operation
-- *26* (???*27* | ???*28*)((???*29* | ???*30*))
+- *24* (undefined | ???*25*)((???*26* | ???*27*))
   ⚠️  non-function callee
-- *27* FreeVar(undefined)
-  ⚠️  unknown global
+- *25* unknown mutation
   ⚠️  This value might have side effects
-- *28* unknown mutation
-  ⚠️  This value might have side effects
-- *29* arguments[1]
+- *26* arguments[1]
   ⚠️  function calls are not analysed yet
-- *30* ???*31*["attributeName"]
+- *27* ???*28*["attributeName"]
   ⚠️  unknown object
-- *31* e
+- *28* e
   ⚠️  circular variable reference
-- *32* {}[???*33*]
+- *29* {}[???*30*]
   ⚠️  unknown object prototype methods or values
   ⚠️  This value might have side effects
-- *33* arguments[1]
+- *30* arguments[1]
   ⚠️  function calls are not analysed yet
-- *34* ???*35*["type"]
+- *31* ???*32*["type"]
   ⚠️  unknown object
-- *35* e
+- *32* e
   ⚠️  circular variable reference
-- *36* c
+- *33* c
   ⚠️  circular variable reference
 
 222 -> 226 member call = ???*0*["setAttribute"](
-    (???*1* | (???*2* ? ???*6* : null)["attributeName"] | ???*8*),
-    (???*11* | null | (???*12* ? "" : ???*24*))
+    (???*1* | (???*2* ? ???*5* : null)["attributeName"] | ???*7*),
+    (???*10* | null | (???*11* ? "" : ???*22*))
 )
 - *0* arguments[0]
   ⚠️  function calls are not analysed yet
 - *1* arguments[1]
   ⚠️  function calls are not analysed yet
-- *2* (???*3* | ???*4*)(???*5*)
+- *2* (undefined | ???*3*)(???*4*)
   ⚠️  non-function callee
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
+- *3* unknown mutation
   ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* b
+- *4* b
   ⚠️  circular variable reference
-- *6* {}[???*7*]
+- *5* {}[???*6*]
   ⚠️  unknown object prototype methods or values
   ⚠️  This value might have side effects
-- *7* b
+- *6* b
   ⚠️  circular variable reference
-- *8* ???*9*["attributeName"]
+- *7* ???*8*["attributeName"]
   ⚠️  unknown object
-- *9* ???*10*["type"]
+- *8* ???*9*["type"]
   ⚠️  unknown object
-- *10* e
+- *9* e
   ⚠️  circular variable reference
-- *11* arguments[2]
+- *10* arguments[2]
   ⚠️  function calls are not analysed yet
-- *12* (3 === (???*13* | ???*22*))
+- *11* (3 === (???*12* | ???*20*))
   ⚠️  nested operation
-- *13* (???*14* ? ???*20* : null)
+- *12* (???*13* ? ???*18* : null)
   ⚠️  nested operation
-- *14* (???*15* | ???*16*)((???*17* | ???*18*))
+- *13* (undefined | ???*14*)((???*15* | ???*16*))
   ⚠️  non-function callee
-- *15* FreeVar(undefined)
-  ⚠️  unknown global
+- *14* unknown mutation
   ⚠️  This value might have side effects
-- *16* unknown mutation
-  ⚠️  This value might have side effects
-- *17* arguments[1]
+- *15* arguments[1]
   ⚠️  function calls are not analysed yet
-- *18* ???*19*["attributeName"]
+- *16* ???*17*["attributeName"]
   ⚠️  unknown object
-- *19* e
+- *17* e
   ⚠️  circular variable reference
-- *20* {}[???*21*]
+- *18* {}[???*19*]
   ⚠️  unknown object prototype methods or values
   ⚠️  This value might have side effects
-- *21* arguments[1]
+- *19* arguments[1]
   ⚠️  function calls are not analysed yet
-- *22* ???*23*["type"]
+- *20* ???*21*["type"]
   ⚠️  unknown object
-- *23* e
+- *21* e
   ⚠️  circular variable reference
-- *24* c
+- *22* c
   ⚠️  circular variable reference
 
 0 -> 229 free var = FreeVar(Symbol)
@@ -4142,11 +4046,11 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
 - *2* c
   ⚠️  circular variable reference
 
-637 -> 656 conditional = (???*0* === (???*16* | 0 | ???*17* | ???*18* | "" | undefined))
+637 -> 656 conditional = (???*0* === (???*15* | 0 | ???*16* | ???*17* | "" | undefined))
 - *0* ???*1*["value"]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *1* ???*2*[(0 | undefined | ???*3* | ???*4* | ???*8* | null["hasOwnProperty"](???*13*))]
+- *1* ???*2*[(0 | undefined | ???*3* | ???*4* | ???*8* | null["hasOwnProperty"](???*12*))]
   ⚠️  unknown object
   ⚠️  This value might have side effects
 - *2* arguments[0]
@@ -4164,33 +4068,30 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
 - *7* ???[(??? | 0 | ??? | ??? | "" | undefined)]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *8* (???*9* | ???*10*)(`$${???*11*}`)
+- *8* (undefined | ???*9*)(`$${???*10*}`)
   ⚠️  non-function callee
   ⚠️  This value might have side effects
-- *9* FreeVar(undefined)
-  ⚠️  unknown global
+- *9* unknown mutation
   ⚠️  This value might have side effects
-- *10* unknown mutation
-  ⚠️  This value might have side effects
-- *11* ???*12*["value"]
+- *10* ???*11*["value"]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *12* ???[(??? | 0 | ??? | ??? | "" | undefined)]
+- *11* ???[(??? | 0 | ??? | ??? | "" | undefined)]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *13* `$${???*14*}`
+- *12* `$${???*13*}`
   ⚠️  nested operation
-- *14* ???*15*["value"]
+- *13* ???*14*["value"]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *15* ???[(??? | 0 | ??? | ??? | "" | undefined)]
+- *14* ???[(??? | 0 | ??? | ??? | "" | undefined)]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *16* arguments[2]
+- *15* arguments[2]
   ⚠️  function calls are not analysed yet
-- *17* updated with update expression
+- *16* updated with update expression
   ⚠️  This value might have side effects
-- *18* c
+- *17* c
   ⚠️  circular variable reference
 
 656 -> 661 unreachable = ???*0*
@@ -4679,7 +4580,7 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
 - *0* arguments[0]
   ⚠️  function calls are not analysed yet
 
-758 -> 763 conditional = (???*0* | ("number" !== ???*1*) | (0 === ???*3*) | ???*4* | true | ???*8*)
+758 -> 763 conditional = (???*0* | ("number" !== ???*1*) | (0 === ???*3*) | ???*4* | true | ???*7*)
 - *0* arguments[2]
   ⚠️  function calls are not analysed yet
 - *1* typeof(???*2*)
@@ -4688,19 +4589,16 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  function calls are not analysed yet
 - *3* arguments[1]
   ⚠️  function calls are not analysed yet
-- *4* (???*5* | ???*6*)(???*7*)
+- *4* (undefined | ???*5*)(???*6*)
   ⚠️  non-function callee
-- *5* FreeVar(undefined)
-  ⚠️  unknown global
+- *5* unknown mutation
   ⚠️  This value might have side effects
-- *6* unknown mutation
-  ⚠️  This value might have side effects
-- *7* arguments[0]
+- *6* arguments[0]
   ⚠️  function calls are not analysed yet
-- *8* {}[???*9*]
+- *7* {}[???*8*]
   ⚠️  unknown object prototype methods or values
   ⚠️  This value might have side effects
-- *9* arguments[0]
+- *8* arguments[0]
   ⚠️  function calls are not analysed yet
 
 763 -> 765 member call = ???*0*["trim"]()
@@ -4758,7 +4656,7 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *6* arguments[1]
   ⚠️  function calls are not analysed yet
-- *7* ((???*8* | undefined | ???*12* | ???*16*) ? ???*17* : ???*21*)
+- *7* ((???*8* | undefined | ???*12* | ???*15*) ? ???*16* : ???*20*)
   ⚠️  nested operation
 - *8* (0 === (???*9* | ???*11*))
   ⚠️  nested operation
@@ -4767,29 +4665,26 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
 - *10* for-in variable currently not analyzed
 - *11* "cssFloat"["indexOf"]("--")
   ⚠️  nested operation
-- *12* (???*13* | ???*14*)((???*15* | "cssFloat"))
+- *12* (undefined | ???*13*)((???*14* | "cssFloat"))
   ⚠️  non-function callee
-- *13* FreeVar(undefined)
-  ⚠️  unknown global
+- *13* unknown mutation
   ⚠️  This value might have side effects
-- *14* unknown mutation
+- *14* for-in variable currently not analyzed
+- *15* node limit reached
   ⚠️  This value might have side effects
-- *15* for-in variable currently not analyzed
-- *16* node limit reached
-  ⚠️  This value might have side effects
-- *17* ???*18*()
+- *16* ???*17*()
   ⚠️  nested operation
-- *18* ???*19*["trim"]
+- *17* ???*18*["trim"]
   ⚠️  unknown object
-- *19* ???*20*[c]
+- *18* ???*19*[c]
   ⚠️  unknown object
-- *20* arguments[1]
+- *19* arguments[1]
   ⚠️  function calls are not analysed yet
-- *21* `${???*22*}px`
+- *20* `${???*21*}px`
   ⚠️  nested operation
-- *22* ???*23*[c]
+- *21* ???*22*[c]
   ⚠️  unknown object
-- *23* arguments[1]
+- *22* arguments[1]
   ⚠️  function calls are not analysed yet
 
 0 -> 779 call = Object.assign*0*(
@@ -12224,29 +12119,26 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  pattern without value
 - *3* for-in variable currently not analyzed
 
-1833 -> 1838 conditional = (???*0* | ???*5* | ???*10*)
-- *0* (???*1* | ???*2*)((???*3* | ???*4*))
+1833 -> 1838 conditional = (???*0* | ???*4* | ???*9*)
+- *0* (undefined | ???*1*)((???*2* | ???*3*))
   ⚠️  non-function callee
-- *1* FreeVar(undefined)
-  ⚠️  unknown global
+- *1* unknown mutation
   ⚠️  This value might have side effects
-- *2* unknown mutation
-  ⚠️  This value might have side effects
-- *3* c
+- *2* c
   ⚠️  pattern without value
-- *4* for-in variable currently not analyzed
-- *5* ???*6*["hasOwnProperty"]((???*8* | ???*9*))
+- *3* for-in variable currently not analyzed
+- *4* ???*5*["hasOwnProperty"]((???*7* | ???*8*))
   ⚠️  unknown callee object
   ⚠️  This value might have side effects
-- *6* {}[???*7*]
+- *5* {}[???*6*]
   ⚠️  unknown object prototype methods or values
   ⚠️  This value might have side effects
-- *7* arguments[0]
+- *6* arguments[0]
   ⚠️  function calls are not analysed yet
-- *8* c
+- *7* c
   ⚠️  pattern without value
-- *9* for-in variable currently not analyzed
-- *10* unsupported expression
+- *8* for-in variable currently not analyzed
+- *9* unsupported expression
   ⚠️  This value might have side effects
 
 1838 -> 1841 unreachable = ???*0*
@@ -12361,31 +12253,25 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
 - *14* undefined["slice"](1)
   ⚠️  nested operation
 
-0 -> 1864 call = (...) => undefined((???*0* | ???*1* | "animationend" | ???*2*), "onAnimationEnd")
-- *0* FreeVar(undefined)
-  ⚠️  unknown global
+0 -> 1864 call = (...) => undefined((undefined | ???*0* | "animationend" | ???*1*), "onAnimationEnd")
+- *0* unknown mutation
   ⚠️  This value might have side effects
-- *1* unknown mutation
-  ⚠️  This value might have side effects
-- *2* unsupported expression
+- *1* unsupported expression
   ⚠️  This value might have side effects
 
-0 -> 1865 call = (...) => undefined((???*0* | ???*1* | "animationiteration" | ???*2*), "onAnimationIteration")
-- *0* FreeVar(undefined)
-  ⚠️  unknown global
+0 -> 1865 call = (...) => undefined(
+    (undefined | ???*0* | "animationiteration" | ???*1*),
+    "onAnimationIteration"
+)
+- *0* unknown mutation
   ⚠️  This value might have side effects
-- *1* unknown mutation
-  ⚠️  This value might have side effects
-- *2* unsupported expression
+- *1* unsupported expression
   ⚠️  This value might have side effects
 
-0 -> 1866 call = (...) => undefined((???*0* | ???*1* | "animationstart" | ???*2*), "onAnimationStart")
-- *0* FreeVar(undefined)
-  ⚠️  unknown global
+0 -> 1866 call = (...) => undefined((undefined | ???*0* | "animationstart" | ???*1*), "onAnimationStart")
+- *0* unknown mutation
   ⚠️  This value might have side effects
-- *1* unknown mutation
-  ⚠️  This value might have side effects
-- *2* unsupported expression
+- *1* unsupported expression
   ⚠️  This value might have side effects
 
 0 -> 1867 call = (...) => undefined("dblclick", "onDoubleClick")
@@ -12394,13 +12280,10 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
 
 0 -> 1869 call = (...) => undefined("focusout", "onBlur")
 
-0 -> 1870 call = (...) => undefined((???*0* | ???*1* | "transitionend" | ???*2*), "onTransitionEnd")
-- *0* FreeVar(undefined)
-  ⚠️  unknown global
+0 -> 1870 call = (...) => undefined((undefined | ???*0* | "transitionend" | ???*1*), "onTransitionEnd")
+- *0* unknown mutation
   ⚠️  This value might have side effects
-- *1* unknown mutation
-  ⚠️  This value might have side effects
-- *2* unsupported expression
+- *1* unsupported expression
   ⚠️  This value might have side effects
 
 0 -> 1871 call = (...) => undefined("onMouseEnter", ["mouseout", "mouseover"])
@@ -16409,20 +16292,17 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
 - *0* unreachable
   ⚠️  This value might have side effects
 
-0 -> 2338 conditional = !((???*0* | ???*2* | ???*3* | ???*4*))
+0 -> 2338 conditional = !((???*0* | undefined | ???*2* | ???*3*))
 - *0* ???*1*["stateNode"]
   ⚠️  unknown object
 - *1* arguments[0]
   ⚠️  function calls are not analysed yet
-- *2* FreeVar(undefined)
-  ⚠️  unknown global
+- *2* unknown mutation
   ⚠️  This value might have side effects
-- *3* unknown mutation
-  ⚠️  This value might have side effects
-- *4* ???*5*["stateNode"]
+- *3* ???*4*["stateNode"]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *5* unknown mutation
+- *4* unknown mutation
   ⚠️  This value might have side effects
 
 2338 -> 2339 free var = FreeVar(Error)
@@ -17394,24 +17274,21 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  This value might have side effects
 
 0 -> 2613 conditional = (
-  | (null !== (???*0* | null["alternate"] | undefined["alternate"] | ???*2* | ???*3* | ???*4*))
-  | ???*6*
+  | (null !== (???*0* | null["alternate"] | undefined["alternate"] | undefined | ???*2* | ???*3*))
+  | ???*5*
 )
 - *0* ???*1*["alternate"]
   ⚠️  unknown object
 - *1* arguments[0]
   ⚠️  function calls are not analysed yet
-- *2* FreeVar(undefined)
-  ⚠️  unknown global
+- *2* unknown mutation
   ⚠️  This value might have side effects
-- *3* unknown mutation
-  ⚠️  This value might have side effects
-- *4* ???*5*["alternate"]
+- *3* ???*4*["alternate"]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *5* unsupported expression
+- *4* unsupported expression
   ⚠️  This value might have side effects
-- *6* (c === d)
+- *5* (c === d)
   ⚠️  sequence with side effects
   ⚠️  This value might have side effects
 
@@ -17491,15 +17368,15 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   | null
   | undefined
   | {
-        "eventTime": (???*0* | ???*3* | ???*4*),
-        "lane": (???*5* | ???*8* | ???*9*),
-        "tag": (???*10* | ???*13* | ???*14*),
-        "payload": (???*15* | ???*18* | ???*19*),
-        "callback": (???*20* | ???*23* | ???*24*),
+        "eventTime": (???*0* | undefined | ???*3*),
+        "lane": (???*4* | undefined | ???*7*),
+        "tag": (???*8* | undefined | ???*11*),
+        "payload": (???*12* | undefined | ???*15*),
+        "callback": (???*16* | undefined | ???*19*),
         "next": null
     }
-  | ???*25*
-  | ???*26*
+  | ???*20*
+  | ???*21*
 ))
 - *0* ???*1*["eventTime"]
   ⚠️  unknown object
@@ -17507,73 +17384,58 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *2* arguments[0]
   ⚠️  function calls are not analysed yet
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
+- *3* unknown mutation
   ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* ???*6*["lane"]
+- *4* ???*5*["lane"]
   ⚠️  unknown object
-- *6* ???*7*["updateQueue"]
+- *5* ???*6*["updateQueue"]
   ⚠️  unknown object
-- *7* arguments[0]
+- *6* arguments[0]
   ⚠️  function calls are not analysed yet
-- *8* FreeVar(undefined)
-  ⚠️  unknown global
+- *7* unknown mutation
   ⚠️  This value might have side effects
-- *9* unknown mutation
-  ⚠️  This value might have side effects
-- *10* ???*11*["tag"]
+- *8* ???*9*["tag"]
   ⚠️  unknown object
-- *11* ???*12*["updateQueue"]
+- *9* ???*10*["updateQueue"]
   ⚠️  unknown object
-- *12* arguments[0]
+- *10* arguments[0]
   ⚠️  function calls are not analysed yet
-- *13* FreeVar(undefined)
-  ⚠️  unknown global
+- *11* unknown mutation
   ⚠️  This value might have side effects
-- *14* unknown mutation
-  ⚠️  This value might have side effects
-- *15* ???*16*["payload"]
+- *12* ???*13*["payload"]
   ⚠️  unknown object
-- *16* ???*17*["updateQueue"]
+- *13* ???*14*["updateQueue"]
   ⚠️  unknown object
-- *17* arguments[0]
+- *14* arguments[0]
   ⚠️  function calls are not analysed yet
-- *18* FreeVar(undefined)
-  ⚠️  unknown global
+- *15* unknown mutation
   ⚠️  This value might have side effects
+- *16* ???*17*["callback"]
+  ⚠️  unknown object
+- *17* ???*18*["updateQueue"]
+  ⚠️  unknown object
+- *18* arguments[0]
+  ⚠️  function calls are not analysed yet
 - *19* unknown mutation
   ⚠️  This value might have side effects
-- *20* ???*21*["callback"]
-  ⚠️  unknown object
-- *21* ???*22*["updateQueue"]
-  ⚠️  unknown object
-- *22* arguments[0]
-  ⚠️  function calls are not analysed yet
-- *23* FreeVar(undefined)
-  ⚠️  unknown global
+- *20* unsupported expression
   ⚠️  This value might have side effects
-- *24* unknown mutation
-  ⚠️  This value might have side effects
-- *25* unsupported expression
-  ⚠️  This value might have side effects
-- *26* arguments[1]
+- *21* arguments[1]
   ⚠️  function calls are not analysed yet
 
 2615 -> 2624 conditional = (null === (
   | null
   | undefined
   | {
-        "eventTime": (???*0* | ???*3* | ???*4*),
-        "lane": (???*5* | ???*8* | ???*9*),
-        "tag": (???*10* | ???*13* | ???*14*),
-        "payload": (???*15* | ???*18* | ???*19*),
-        "callback": (???*20* | ???*23* | ???*24*),
+        "eventTime": (???*0* | undefined | ???*3*),
+        "lane": (???*4* | undefined | ???*7*),
+        "tag": (???*8* | undefined | ???*11*),
+        "payload": (???*12* | undefined | ???*15*),
+        "callback": (???*16* | undefined | ???*19*),
         "next": null
     }
-  | ???*25*
-  | ???*26*
+  | ???*20*
+  | ???*21*
 ))
 - *0* ???*1*["eventTime"]
   ⚠️  unknown object
@@ -17581,58 +17443,43 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *2* arguments[0]
   ⚠️  function calls are not analysed yet
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
+- *3* unknown mutation
   ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* ???*6*["lane"]
+- *4* ???*5*["lane"]
   ⚠️  unknown object
-- *6* ???*7*["updateQueue"]
+- *5* ???*6*["updateQueue"]
   ⚠️  unknown object
-- *7* arguments[0]
+- *6* arguments[0]
   ⚠️  function calls are not analysed yet
-- *8* FreeVar(undefined)
-  ⚠️  unknown global
+- *7* unknown mutation
   ⚠️  This value might have side effects
-- *9* unknown mutation
-  ⚠️  This value might have side effects
-- *10* ???*11*["tag"]
+- *8* ???*9*["tag"]
   ⚠️  unknown object
-- *11* ???*12*["updateQueue"]
+- *9* ???*10*["updateQueue"]
   ⚠️  unknown object
-- *12* arguments[0]
+- *10* arguments[0]
   ⚠️  function calls are not analysed yet
-- *13* FreeVar(undefined)
-  ⚠️  unknown global
+- *11* unknown mutation
   ⚠️  This value might have side effects
-- *14* unknown mutation
-  ⚠️  This value might have side effects
-- *15* ???*16*["payload"]
+- *12* ???*13*["payload"]
   ⚠️  unknown object
-- *16* ???*17*["updateQueue"]
+- *13* ???*14*["updateQueue"]
   ⚠️  unknown object
-- *17* arguments[0]
+- *14* arguments[0]
   ⚠️  function calls are not analysed yet
-- *18* FreeVar(undefined)
-  ⚠️  unknown global
+- *15* unknown mutation
   ⚠️  This value might have side effects
+- *16* ???*17*["callback"]
+  ⚠️  unknown object
+- *17* ???*18*["updateQueue"]
+  ⚠️  unknown object
+- *18* arguments[0]
+  ⚠️  function calls are not analysed yet
 - *19* unknown mutation
   ⚠️  This value might have side effects
-- *20* ???*21*["callback"]
-  ⚠️  unknown object
-- *21* ???*22*["updateQueue"]
-  ⚠️  unknown object
-- *22* arguments[0]
-  ⚠️  function calls are not analysed yet
-- *23* FreeVar(undefined)
-  ⚠️  unknown global
+- *20* unsupported expression
   ⚠️  This value might have side effects
-- *24* unknown mutation
-  ⚠️  This value might have side effects
-- *25* unsupported expression
-  ⚠️  This value might have side effects
-- *26* arguments[1]
+- *21* arguments[1]
   ⚠️  function calls are not analysed yet
 
 2613 -> 2630 unreachable = ???*0*
@@ -17720,9 +17567,9 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   | ???*1*
   | undefined["lastBaseUpdate"]["payload"]
   | ???*6*
+  | undefined["payload"]
   | undefined["next"]["payload"]
   | null["next"]["payload"]
-  | undefined["payload"]
   | (???*9* ? ???*12* : ???*14*)["next"]["payload"]
 ))
 - *0* arguments[0]
@@ -17765,9 +17612,9 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
       | ???*2*
       | undefined["lastBaseUpdate"]["payload"]
       | ???*6*
+      | undefined["payload"]
       | undefined["next"]["payload"]
       | null["next"]["payload"]
-      | undefined["payload"]
     ))
   ⚠️  nested operation
 - *1* arguments[0]
@@ -17795,9 +17642,9 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   | ???*1*
   | undefined["lastBaseUpdate"]["payload"]
   | ???*6*
+  | undefined["payload"]
   | undefined["next"]["payload"]
   | null["next"]["payload"]
-  | undefined["payload"]
   | (???*9* ? ???*12* : ???*14*)["next"]["payload"]
 )["call"](???*15*, ???*16*, ???*17*)
 - *0* arguments[0]
@@ -17845,9 +17692,9 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   | ???*1*
   | undefined["lastBaseUpdate"]["payload"]
   | ???*6*
+  | undefined["payload"]
   | undefined["next"]["payload"]
   | null["next"]["payload"]
-  | undefined["payload"]
   | (???*9* ? ???*12* : ???*14*)["next"]["payload"]
 ))
 - *0* arguments[0]
@@ -17890,9 +17737,9 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
       | ???*2*
       | undefined["lastBaseUpdate"]["payload"]
       | ???*6*
+      | undefined["payload"]
       | undefined["next"]["payload"]
       | null["next"]["payload"]
-      | undefined["payload"]
     ))
   ⚠️  nested operation
 - *1* arguments[0]
@@ -17920,9 +17767,9 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   | ???*1*
   | undefined["lastBaseUpdate"]["payload"]
   | ???*6*
+  | undefined["payload"]
   | undefined["next"]["payload"]
   | null["next"]["payload"]
-  | undefined["payload"]
   | (???*9* ? ???*12* : ???*14*)["next"]["payload"]
 )["call"](???*15*, ???*16*, ???*17*)
 - *0* arguments[0]
@@ -19936,9 +19783,9 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
 0 -> 2784 typeof = typeof((
   | ???*0*
   | new ???*2*(???*3*, ???*4*)["contextType"]
+  | undefined
   | ???*5*
-  | ???*6*
-  | (???*7* ? ({} | ???*8*) : {})
+  | (???*6* ? ({} | ???*7*) : {})
 ))
 - *0* ???*1*["contextType"]
   ⚠️  unknown object
@@ -19950,34 +19797,8 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  function calls are not analysed yet
 - *4* f
   ⚠️  circular variable reference
-- *5* FreeVar(undefined)
-  ⚠️  unknown global
+- *5* unknown mutation
   ⚠️  This value might have side effects
-- *6* unknown mutation
-  ⚠️  This value might have side effects
-- *7* unsupported expression
-  ⚠️  This value might have side effects
-- *8* ???*9*["__reactInternalMemoizedMaskedChildContext"]
-  ⚠️  unknown object
-- *9* ???*10*["stateNode"]
-  ⚠️  unknown object
-- *10* arguments[0]
-  ⚠️  function calls are not analysed yet
-
-0 -> 2785 conditional = (("object" === ???*0*) | (null !== (???*10* | ???*12* | ???*13* | ???*14*)))
-- *0* typeof((???*1* | ???*3* | ???*4* | ???*5*))
-  ⚠️  nested operation
-- *1* ???*2*["contextType"]
-  ⚠️  unknown object
-- *2* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* (???*6* ? ({} | ???*7*) : {})
-  ⚠️  nested operation
 - *6* unsupported expression
   ⚠️  This value might have side effects
 - *7* ???*8*["__reactInternalMemoizedMaskedChildContext"]
@@ -19986,33 +19807,53 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *9* arguments[0]
   ⚠️  function calls are not analysed yet
-- *10* ???*11*["contextType"]
-  ⚠️  unknown object
-- *11* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *12* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *13* unknown mutation
-  ⚠️  This value might have side effects
-- *14* (???*15* ? ({} | ???*16*) : {})
+
+0 -> 2785 conditional = (
+  | ("object" === ???*0*)
+  | (null !== (???*9* | undefined | ???*11* | ???*12*))
+)
+- *0* typeof((???*1* | undefined | ???*3* | ???*4*))
   ⚠️  nested operation
-- *15* unsupported expression
+- *1* ???*2*["contextType"]
+  ⚠️  unknown object
+- *2* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *3* unknown mutation
   ⚠️  This value might have side effects
-- *16* ???*17*["__reactInternalMemoizedMaskedChildContext"]
+- *4* (???*5* ? ({} | ???*6*) : {})
+  ⚠️  nested operation
+- *5* unsupported expression
+  ⚠️  This value might have side effects
+- *6* ???*7*["__reactInternalMemoizedMaskedChildContext"]
   ⚠️  unknown object
-- *17* ???*18*["stateNode"]
+- *7* ???*8*["stateNode"]
   ⚠️  unknown object
-- *18* arguments[0]
+- *8* arguments[0]
+  ⚠️  function calls are not analysed yet
+- *9* ???*10*["contextType"]
+  ⚠️  unknown object
+- *10* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *11* unknown mutation
+  ⚠️  This value might have side effects
+- *12* (???*13* ? ({} | ???*14*) : {})
+  ⚠️  nested operation
+- *13* unsupported expression
+  ⚠️  This value might have side effects
+- *14* ???*15*["__reactInternalMemoizedMaskedChildContext"]
+  ⚠️  unknown object
+- *15* ???*16*["stateNode"]
+  ⚠️  unknown object
+- *16* arguments[0]
   ⚠️  function calls are not analysed yet
 
 2785 -> 2786 call = (...) => b(
     (
       | ???*0*
       | new ???*2*(???*3*, ???*4*)["contextType"]
+      | undefined
       | ???*5*
-      | ???*6*
-      | (???*7* ? ({} | ???*8*) : {})
+      | (???*6* ? ({} | ???*7*) : {})
     )
 )
 - *0* ???*1*["contextType"]
@@ -20025,24 +19866,21 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  function calls are not analysed yet
 - *4* f
   ⚠️  circular variable reference
-- *5* FreeVar(undefined)
-  ⚠️  unknown global
+- *5* unknown mutation
   ⚠️  This value might have side effects
-- *6* unknown mutation
+- *6* unsupported expression
   ⚠️  This value might have side effects
-- *7* unsupported expression
-  ⚠️  This value might have side effects
-- *8* ???*9*["__reactInternalMemoizedMaskedChildContext"]
+- *7* ???*8*["__reactInternalMemoizedMaskedChildContext"]
   ⚠️  unknown object
-- *9* ???*10*["stateNode"]
+- *8* ???*9*["stateNode"]
   ⚠️  unknown object
-- *10* arguments[0]
+- *9* arguments[0]
   ⚠️  function calls are not analysed yet
 
 2785 -> 2787 call = (...) => ((null !== a) && (???*0* !== a))(
     (
       | ???*1*
-      | new ???*2*(???*3*, (???*4* | ???*6* | ???*7* | ???*8*))
+      | new ???*2*(???*3*, (???*4* | undefined | ???*6* | ???*7*))
     )
 )
 - *0* unsupported expression
@@ -20057,157 +19895,6 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *5* b
   ⚠️  circular variable reference
-- *6* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *7* unknown mutation
-  ⚠️  This value might have side effects
-- *8* (???*9* ? ({} | ???*10*) : {})
-  ⚠️  nested operation
-- *9* unsupported expression
-  ⚠️  This value might have side effects
-- *10* ???*11*["__reactInternalMemoizedMaskedChildContext"]
-  ⚠️  unknown object
-- *11* ???*12*["stateNode"]
-  ⚠️  unknown object
-- *12* arguments[0]
-  ⚠️  function calls are not analysed yet
-
-2785 -> 2788 conditional = ((null !== (???*0* | ???*1* | ???*13*)) | (???*15* !== (???*16* | ???*17* | ???*29*)))
-- *0* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *1* new ???*2*(???*3*, (???*4* | ???*6* | ???*7* | ???*8*))
-  ⚠️  nested operation
-- *2* b
-  ⚠️  circular variable reference
-- *3* arguments[2]
-  ⚠️  function calls are not analysed yet
-- *4* ???*5*["contextType"]
-  ⚠️  unknown object
-- *5* b
-  ⚠️  circular variable reference
-- *6* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *7* unknown mutation
-  ⚠️  This value might have side effects
-- *8* (???*9* ? ({} | ???*10*) : {})
-  ⚠️  nested operation
-- *9* unsupported expression
-  ⚠️  This value might have side effects
-- *10* ???*11*["__reactInternalMemoizedMaskedChildContext"]
-  ⚠️  unknown object
-- *11* ???*12*["stateNode"]
-  ⚠️  unknown object
-- *12* arguments[0]
-  ⚠️  function calls are not analysed yet
-- *13* ???*14*["childContextTypes"]
-  ⚠️  unknown object
-- *14* a
-  ⚠️  circular variable reference
-- *15* unsupported expression
-  ⚠️  This value might have side effects
-- *16* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *17* new ???*18*(???*19*, (???*20* | ???*22* | ???*23* | ???*24*))
-  ⚠️  nested operation
-- *18* b
-  ⚠️  circular variable reference
-- *19* arguments[2]
-  ⚠️  function calls are not analysed yet
-- *20* ???*21*["contextType"]
-  ⚠️  unknown object
-- *21* b
-  ⚠️  circular variable reference
-- *22* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *23* unknown mutation
-  ⚠️  This value might have side effects
-- *24* (???*25* ? ({} | ???*26*) : {})
-  ⚠️  nested operation
-- *25* unsupported expression
-  ⚠️  This value might have side effects
-- *26* ???*27*["__reactInternalMemoizedMaskedChildContext"]
-  ⚠️  unknown object
-- *27* ???*28*["stateNode"]
-  ⚠️  unknown object
-- *28* arguments[0]
-  ⚠️  function calls are not analysed yet
-- *29* ???*30*["childContextTypes"]
-  ⚠️  unknown object
-- *30* a
-  ⚠️  circular variable reference
-
-2785 -> 2791 call = (...) => (Vf | d["__reactInternalMemoizedMaskedChildContext"] | e)((???*0* | ???*1*), ({} | (???*3* ? ({} | ???*18*) : ({} | ???*19*))))
-- *0* arguments[0]
-  ⚠️  function calls are not analysed yet
-- *1* ???*2*["stateNode"]
-  ⚠️  unknown object
-- *2* a
-  ⚠️  circular variable reference
-- *3* (null !== (???*4* | ???*5* | ???*16*))
-  ⚠️  nested operation
-- *4* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *5* new ???*6*(???*7*, (???*8* | ???*10* | ???*11* | ???*12*))
-  ⚠️  nested operation
-- *6* b
-  ⚠️  circular variable reference
-- *7* arguments[2]
-  ⚠️  function calls are not analysed yet
-- *8* ???*9*["contextType"]
-  ⚠️  unknown object
-- *9* b
-  ⚠️  circular variable reference
-- *10* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *11* unknown mutation
-  ⚠️  This value might have side effects
-- *12* (???*13* ? ({} | ???*14*) : {})
-  ⚠️  nested operation
-- *13* unsupported expression
-  ⚠️  This value might have side effects
-- *14* ???*15*["__reactInternalMemoizedMaskedChildContext"]
-  ⚠️  unknown object
-- *15* ...[...]
-  ⚠️  unknown object
-- *16* ???*17*["childContextTypes"]
-  ⚠️  unknown object
-- *17* a
-  ⚠️  circular variable reference
-- *18* unknown mutation
-  ⚠️  This value might have side effects
-- *19* unknown mutation
-  ⚠️  This value might have side effects
-
-0 -> 2792 call = new (
-  | ???*0*
-  | new ???*1*(???*2*, (???*3* | ???*5* | ???*6* | ???*7*))
-)(
-    ???*12*,
-    (
-      | ???*13*
-      | new ???*15*(???*16*, ???*17*)["contextType"]
-      | ???*18*
-      | ???*19*
-      | (???*20* ? ({} | ???*21*) : {})
-    )
-)
-- *0* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *1* b
-  ⚠️  circular variable reference
-- *2* arguments[2]
-  ⚠️  function calls are not analysed yet
-- *3* ???*4*["contextType"]
-  ⚠️  unknown object
-- *4* b
-  ⚠️  circular variable reference
-- *5* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
 - *6* unknown mutation
   ⚠️  This value might have side effects
 - *7* (???*8* ? ({} | ???*9*) : {})
@@ -20220,30 +19907,163 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *11* arguments[0]
   ⚠️  function calls are not analysed yet
-- *12* arguments[2]
+
+2785 -> 2788 conditional = ((null !== (???*0* | ???*1* | ???*12*)) | (???*14* !== (???*15* | ???*16* | ???*27*)))
+- *0* arguments[1]
   ⚠️  function calls are not analysed yet
-- *13* ???*14*["contextType"]
-  ⚠️  unknown object
-- *14* arguments[1]
-  ⚠️  function calls are not analysed yet
-- *15* b
+- *1* new ???*2*(???*3*, (???*4* | undefined | ???*6* | ???*7*))
+  ⚠️  nested operation
+- *2* b
   ⚠️  circular variable reference
-- *16* arguments[2]
+- *3* arguments[2]
   ⚠️  function calls are not analysed yet
-- *17* f
+- *4* ???*5*["contextType"]
+  ⚠️  unknown object
+- *5* b
   ⚠️  circular variable reference
-- *18* FreeVar(undefined)
-  ⚠️  unknown global
+- *6* unknown mutation
   ⚠️  This value might have side effects
-- *19* unknown mutation
+- *7* (???*8* ? ({} | ???*9*) : {})
+  ⚠️  nested operation
+- *8* unsupported expression
   ⚠️  This value might have side effects
-- *20* unsupported expression
-  ⚠️  This value might have side effects
-- *21* ???*22*["__reactInternalMemoizedMaskedChildContext"]
+- *9* ???*10*["__reactInternalMemoizedMaskedChildContext"]
   ⚠️  unknown object
-- *22* ???*23*["stateNode"]
+- *10* ???*11*["stateNode"]
   ⚠️  unknown object
-- *23* arguments[0]
+- *11* arguments[0]
+  ⚠️  function calls are not analysed yet
+- *12* ???*13*["childContextTypes"]
+  ⚠️  unknown object
+- *13* a
+  ⚠️  circular variable reference
+- *14* unsupported expression
+  ⚠️  This value might have side effects
+- *15* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *16* new ???*17*(???*18*, (???*19* | undefined | ???*21* | ???*22*))
+  ⚠️  nested operation
+- *17* b
+  ⚠️  circular variable reference
+- *18* arguments[2]
+  ⚠️  function calls are not analysed yet
+- *19* ???*20*["contextType"]
+  ⚠️  unknown object
+- *20* b
+  ⚠️  circular variable reference
+- *21* unknown mutation
+  ⚠️  This value might have side effects
+- *22* (???*23* ? ({} | ???*24*) : {})
+  ⚠️  nested operation
+- *23* unsupported expression
+  ⚠️  This value might have side effects
+- *24* ???*25*["__reactInternalMemoizedMaskedChildContext"]
+  ⚠️  unknown object
+- *25* ???*26*["stateNode"]
+  ⚠️  unknown object
+- *26* arguments[0]
+  ⚠️  function calls are not analysed yet
+- *27* ???*28*["childContextTypes"]
+  ⚠️  unknown object
+- *28* a
+  ⚠️  circular variable reference
+
+2785 -> 2791 call = (...) => (Vf | d["__reactInternalMemoizedMaskedChildContext"] | e)((???*0* | ???*1*), ({} | (???*3* ? ({} | ???*17*) : ({} | ???*18*))))
+- *0* arguments[0]
+  ⚠️  function calls are not analysed yet
+- *1* ???*2*["stateNode"]
+  ⚠️  unknown object
+- *2* a
+  ⚠️  circular variable reference
+- *3* (null !== (???*4* | ???*5* | ???*15*))
+  ⚠️  nested operation
+- *4* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *5* new ???*6*(???*7*, (???*8* | undefined | ???*10* | ???*11*))
+  ⚠️  nested operation
+- *6* b
+  ⚠️  circular variable reference
+- *7* arguments[2]
+  ⚠️  function calls are not analysed yet
+- *8* ???*9*["contextType"]
+  ⚠️  unknown object
+- *9* b
+  ⚠️  circular variable reference
+- *10* unknown mutation
+  ⚠️  This value might have side effects
+- *11* (???*12* ? ({} | ???*13*) : {})
+  ⚠️  nested operation
+- *12* unsupported expression
+  ⚠️  This value might have side effects
+- *13* ???*14*["__reactInternalMemoizedMaskedChildContext"]
+  ⚠️  unknown object
+- *14* ...[...]
+  ⚠️  unknown object
+- *15* ???*16*["childContextTypes"]
+  ⚠️  unknown object
+- *16* a
+  ⚠️  circular variable reference
+- *17* unknown mutation
+  ⚠️  This value might have side effects
+- *18* unknown mutation
+  ⚠️  This value might have side effects
+
+0 -> 2792 call = new (
+  | ???*0*
+  | new ???*1*(???*2*, (???*3* | undefined | ???*5* | ???*6*))
+)(
+    ???*11*,
+    (
+      | ???*12*
+      | new ???*14*(???*15*, ???*16*)["contextType"]
+      | undefined
+      | ???*17*
+      | (???*18* ? ({} | ???*19*) : {})
+    )
+)
+- *0* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *1* b
+  ⚠️  circular variable reference
+- *2* arguments[2]
+  ⚠️  function calls are not analysed yet
+- *3* ???*4*["contextType"]
+  ⚠️  unknown object
+- *4* b
+  ⚠️  circular variable reference
+- *5* unknown mutation
+  ⚠️  This value might have side effects
+- *6* (???*7* ? ({} | ???*8*) : {})
+  ⚠️  nested operation
+- *7* unsupported expression
+  ⚠️  This value might have side effects
+- *8* ???*9*["__reactInternalMemoizedMaskedChildContext"]
+  ⚠️  unknown object
+- *9* ???*10*["stateNode"]
+  ⚠️  unknown object
+- *10* arguments[0]
+  ⚠️  function calls are not analysed yet
+- *11* arguments[2]
+  ⚠️  function calls are not analysed yet
+- *12* ???*13*["contextType"]
+  ⚠️  unknown object
+- *13* arguments[1]
+  ⚠️  function calls are not analysed yet
+- *14* b
+  ⚠️  circular variable reference
+- *15* arguments[2]
+  ⚠️  function calls are not analysed yet
+- *16* f
+  ⚠️  circular variable reference
+- *17* unknown mutation
+  ⚠️  This value might have side effects
+- *18* unsupported expression
+  ⚠️  This value might have side effects
+- *19* ???*20*["__reactInternalMemoizedMaskedChildContext"]
+  ⚠️  unknown object
+- *20* ???*21*["stateNode"]
+  ⚠️  unknown object
+- *21* arguments[0]
   ⚠️  function calls are not analysed yet
 
 0 -> 2796 conditional = ((null !== ???*0*) | (???*2* !== ???*3*))
@@ -32828,9 +32648,9 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
 
 4139 -> 4166 conditional = (
   | (???*0* !== ???*1*)
-  | ((???*2* | undefined | undefined["context"]) !== (???*4* | undefined["context"] | undefined | ???*7* | ???*8* | ???*9* | {}))
+  | ((???*2* | undefined | undefined["context"]) !== (???*4* | undefined["context"] | undefined | ???*7* | ???*8* | {}))
   | false
-  | ???*16*
+  | ???*15*
   | true
 )
 - *0* max number of linking steps reached
@@ -32847,26 +32667,23 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *6* arguments[1]
   ⚠️  function calls are not analysed yet
-- *7* FreeVar(undefined)
-  ⚠️  unknown global
+- *7* unknown mutation
   ⚠️  This value might have side effects
-- *8* unknown mutation
-  ⚠️  This value might have side effects
-- *9* (???*10* ? ({} | ???*14*) : ({} | ???*15*))
+- *8* (???*9* ? ({} | ???*13*) : ({} | ???*14*))
   ⚠️  nested operation
-- *10* (null !== (???*11* | ???*12*))
+- *9* (null !== (???*10* | ???*11*))
   ⚠️  nested operation
-- *11* arguments[2]
+- *10* arguments[2]
   ⚠️  function calls are not analysed yet
-- *12* ???*13*["childContextTypes"]
+- *11* ???*12*["childContextTypes"]
   ⚠️  unknown object
-- *13* a
+- *12* a
   ⚠️  circular variable reference
+- *13* unknown mutation
+  ⚠️  This value might have side effects
 - *14* unknown mutation
   ⚠️  This value might have side effects
 - *15* unknown mutation
-  ⚠️  This value might have side effects
-- *16* unknown mutation
   ⚠️  This value might have side effects
 
 4166 -> 4167 typeof = typeof((???*0* | undefined | ("function" === ???*2*)))
@@ -32910,11 +32727,10 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
       | undefined["context"]
       | undefined
       | ???*9*
-      | ???*10*
-      | (???*11* ? ({} | ???*15*) : ({} | ???*16*))
+      | (???*10* ? ({} | ???*14*) : ({} | ???*15*))
       | {}
     ),
-    ???*17*
+    ???*16*
 )
 - *0* arguments[1]
   ⚠️  function calls are not analysed yet
@@ -32934,24 +32750,21 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *8* arguments[1]
   ⚠️  function calls are not analysed yet
-- *9* FreeVar(undefined)
-  ⚠️  unknown global
+- *9* unknown mutation
   ⚠️  This value might have side effects
-- *10* unknown mutation
-  ⚠️  This value might have side effects
-- *11* (null !== (???*12* | ???*13*))
+- *10* (null !== (???*11* | ???*12*))
   ⚠️  nested operation
-- *12* arguments[2]
+- *11* arguments[2]
   ⚠️  function calls are not analysed yet
-- *13* ???*14*["childContextTypes"]
+- *12* ???*13*["childContextTypes"]
   ⚠️  unknown object
-- *14* a
+- *13* a
   ⚠️  circular variable reference
+- *14* unknown mutation
+  ⚠️  This value might have side effects
 - *15* unknown mutation
   ⚠️  This value might have side effects
-- *16* unknown mutation
-  ⚠️  This value might have side effects
-- *17* max number of linking steps reached
+- *16* max number of linking steps reached
   ⚠️  This value might have side effects
 
 4166 -> 4171 typeof = typeof((???*0* | undefined["UNSAFE_componentWillMount"]))
@@ -33051,8 +32864,7 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   | undefined["context"]
   | undefined
   | ???*3*
-  | ???*4*
-  | (???*5* ? ({} | ???*9*) : ({} | ???*10*))
+  | (???*4* ? ({} | ???*8*) : ({} | ???*9*))
   | {}
 ))
 - *0* ???*1*["context"]
@@ -33061,29 +32873,26 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *2* arguments[1]
   ⚠️  function calls are not analysed yet
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
+- *3* unknown mutation
   ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* (null !== (???*6* | ???*7*))
+- *4* (null !== (???*5* | ???*6*))
   ⚠️  nested operation
-- *6* arguments[2]
+- *5* arguments[2]
   ⚠️  function calls are not analysed yet
-- *7* ???*8*["childContextTypes"]
+- *6* ???*7*["childContextTypes"]
   ⚠️  unknown object
-- *8* a
+- *7* a
   ⚠️  circular variable reference
-- *9* unknown mutation
+- *8* unknown mutation
   ⚠️  This value might have side effects
-- *10* unknown mutation
+- *9* unknown mutation
   ⚠️  This value might have side effects
 
 4139 -> 4210 conditional = (
   | ("object" === ???*0*)
-  | (null !== (???*13* | undefined["context"] | undefined | ???*16* | ???*17* | ???*18* | {}))
+  | (null !== (???*12* | undefined["context"] | undefined | ???*15* | ???*16* | {}))
 )
-- *0* typeof((???*1* | undefined["context"] | undefined | ???*4* | ???*5* | ???*6* | {}))
+- *0* typeof((???*1* | undefined["context"] | undefined | ???*4* | ???*5* | {}))
   ⚠️  nested operation
 - *1* ???*2*["context"]
   ⚠️  unknown object
@@ -33091,49 +32900,43 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *3* arguments[1]
   ⚠️  function calls are not analysed yet
-- *4* FreeVar(undefined)
-  ⚠️  unknown global
+- *4* unknown mutation
   ⚠️  This value might have side effects
-- *5* unknown mutation
-  ⚠️  This value might have side effects
-- *6* (???*7* ? ({} | ???*11*) : ({} | ???*12*))
+- *5* (???*6* ? ({} | ???*10*) : ({} | ???*11*))
   ⚠️  nested operation
-- *7* (null !== (???*8* | ???*9*))
+- *6* (null !== (???*7* | ???*8*))
   ⚠️  nested operation
-- *8* arguments[2]
+- *7* arguments[2]
   ⚠️  function calls are not analysed yet
-- *9* ???*10*["childContextTypes"]
+- *8* ???*9*["childContextTypes"]
   ⚠️  unknown object
-- *10* a
+- *9* a
   ⚠️  circular variable reference
+- *10* unknown mutation
+  ⚠️  This value might have side effects
 - *11* unknown mutation
   ⚠️  This value might have side effects
-- *12* unknown mutation
-  ⚠️  This value might have side effects
-- *13* ???*14*["context"]
+- *12* ???*13*["context"]
   ⚠️  unknown object
-- *14* ???*15*["stateNode"]
+- *13* ???*14*["stateNode"]
   ⚠️  unknown object
-- *15* arguments[1]
+- *14* arguments[1]
   ⚠️  function calls are not analysed yet
-- *16* FreeVar(undefined)
-  ⚠️  unknown global
+- *15* unknown mutation
   ⚠️  This value might have side effects
-- *17* unknown mutation
-  ⚠️  This value might have side effects
-- *18* (???*19* ? ({} | ???*23*) : ({} | ???*24*))
+- *16* (???*17* ? ({} | ???*21*) : ({} | ???*22*))
   ⚠️  nested operation
-- *19* (null !== (???*20* | ???*21*))
+- *17* (null !== (???*18* | ???*19*))
   ⚠️  nested operation
-- *20* arguments[2]
+- *18* arguments[2]
   ⚠️  function calls are not analysed yet
-- *21* ???*22*["childContextTypes"]
+- *19* ???*20*["childContextTypes"]
   ⚠️  unknown object
-- *22* a
+- *20* a
   ⚠️  circular variable reference
-- *23* unknown mutation
+- *21* unknown mutation
   ⚠️  This value might have side effects
-- *24* unknown mutation
+- *22* unknown mutation
   ⚠️  This value might have side effects
 
 4210 -> 4211 call = (...) => b(
@@ -33142,8 +32945,7 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
       | undefined["context"]
       | undefined
       | ???*3*
-      | ???*4*
-      | (???*5* ? ({} | ???*9*) : ({} | ???*10*))
+      | (???*4* ? ({} | ???*8*) : ({} | ???*9*))
       | {}
     )
 )
@@ -33153,22 +32955,19 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *2* arguments[1]
   ⚠️  function calls are not analysed yet
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
+- *3* unknown mutation
   ⚠️  This value might have side effects
-- *4* unknown mutation
-  ⚠️  This value might have side effects
-- *5* (null !== (???*6* | ???*7*))
+- *4* (null !== (???*5* | ???*6*))
   ⚠️  nested operation
-- *6* arguments[2]
+- *5* arguments[2]
   ⚠️  function calls are not analysed yet
-- *7* ???*8*["childContextTypes"]
+- *6* ???*7*["childContextTypes"]
   ⚠️  unknown object
-- *8* a
+- *7* a
   ⚠️  circular variable reference
-- *9* unknown mutation
+- *8* unknown mutation
   ⚠️  This value might have side effects
-- *10* unknown mutation
+- *9* unknown mutation
   ⚠️  This value might have side effects
 
 4210 -> 4212 call = (...) => ((null !== a) && (???*0* !== a))(???*1*)
@@ -33200,8 +32999,7 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
       | undefined["context"]
       | undefined
       | ???*4*
-      | ???*5*
-      | (???*6* ? ({} | ???*10*) : ({} | ???*11*))
+      | (???*5* ? ({} | ???*9*) : ({} | ???*10*))
       | {}
     )
 )
@@ -33213,22 +33011,19 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *3* arguments[1]
   ⚠️  function calls are not analysed yet
-- *4* FreeVar(undefined)
-  ⚠️  unknown global
+- *4* unknown mutation
   ⚠️  This value might have side effects
-- *5* unknown mutation
-  ⚠️  This value might have side effects
-- *6* (null !== (???*7* | ???*8*))
+- *5* (null !== (???*6* | ???*7*))
   ⚠️  nested operation
-- *7* arguments[2]
+- *6* arguments[2]
   ⚠️  function calls are not analysed yet
-- *8* ???*9*["childContextTypes"]
+- *7* ???*8*["childContextTypes"]
   ⚠️  unknown object
-- *9* a
+- *8* a
   ⚠️  circular variable reference
-- *10* unknown mutation
+- *9* unknown mutation
   ⚠️  This value might have side effects
-- *11* unknown mutation
+- *10* unknown mutation
   ⚠️  This value might have side effects
 
 4139 -> 4217 typeof = typeof((???*0* | undefined))
@@ -33270,8 +33065,7 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
       | undefined["context"]
       | undefined
       | ???*7*
-      | ???*8*
-      | (???*9* ? ({} | ???*13*) : ({} | ???*14*))
+      | (???*8* ? ({} | ???*12*) : ({} | ???*13*))
       | {}
     )
 )
@@ -33289,22 +33083,19 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *6* arguments[1]
   ⚠️  function calls are not analysed yet
-- *7* FreeVar(undefined)
-  ⚠️  unknown global
+- *7* unknown mutation
   ⚠️  This value might have side effects
-- *8* unknown mutation
-  ⚠️  This value might have side effects
-- *9* (null !== (???*10* | ???*11*))
+- *8* (null !== (???*9* | ???*10*))
   ⚠️  nested operation
-- *10* arguments[2]
+- *9* arguments[2]
   ⚠️  function calls are not analysed yet
-- *11* ???*12*["childContextTypes"]
+- *10* ???*11*["childContextTypes"]
   ⚠️  unknown object
-- *12* a
+- *11* a
   ⚠️  circular variable reference
-- *13* unknown mutation
+- *12* unknown mutation
   ⚠️  This value might have side effects
-- *14* unknown mutation
+- *13* unknown mutation
   ⚠️  This value might have side effects
 
 4139 -> 4227 call = (...) => undefined(???*0*, ???*1*, (???*2* | undefined), ???*4*)
@@ -33387,8 +33178,7 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
       | undefined["context"]
       | undefined
       | ???*11*
-      | ???*12*
-      | (???*13* ? ({} | ???*17*) : ({} | ???*18*))
+      | (???*12* ? ({} | ???*16*) : ({} | ???*17*))
       | {}
     )
 )
@@ -33414,22 +33204,19 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *10* arguments[1]
   ⚠️  function calls are not analysed yet
-- *11* FreeVar(undefined)
-  ⚠️  unknown global
+- *11* unknown mutation
   ⚠️  This value might have side effects
-- *12* unknown mutation
-  ⚠️  This value might have side effects
-- *13* (null !== (???*14* | ???*15*))
+- *12* (null !== (???*13* | ???*14*))
   ⚠️  nested operation
-- *14* arguments[2]
+- *13* arguments[2]
   ⚠️  function calls are not analysed yet
-- *15* ???*16*["childContextTypes"]
+- *14* ???*15*["childContextTypes"]
   ⚠️  unknown object
-- *16* a
+- *15* a
   ⚠️  circular variable reference
-- *17* unknown mutation
+- *16* unknown mutation
   ⚠️  This value might have side effects
-- *18* unknown mutation
+- *17* unknown mutation
   ⚠️  This value might have side effects
 
 4230 -> 4235 typeof = typeof((???*0* | undefined["UNSAFE_componentWillUpdate"]))
@@ -33464,8 +33251,7 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
       | undefined["context"]
       | undefined
       | ???*8*
-      | ???*9*
-      | (???*10* ? ({} | ???*14*) : ({} | ???*15*))
+      | (???*9* ? ({} | ???*13*) : ({} | ???*14*))
       | {}
     )
 )
@@ -33485,22 +33271,19 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *7* arguments[1]
   ⚠️  function calls are not analysed yet
-- *8* FreeVar(undefined)
-  ⚠️  unknown global
+- *8* unknown mutation
   ⚠️  This value might have side effects
-- *9* unknown mutation
-  ⚠️  This value might have side effects
-- *10* (null !== (???*11* | ???*12*))
+- *9* (null !== (???*10* | ???*11*))
   ⚠️  nested operation
-- *11* arguments[2]
+- *10* arguments[2]
   ⚠️  function calls are not analysed yet
-- *12* ???*13*["childContextTypes"]
+- *11* ???*12*["childContextTypes"]
   ⚠️  unknown object
-- *13* a
+- *12* a
   ⚠️  circular variable reference
-- *14* unknown mutation
+- *13* unknown mutation
   ⚠️  This value might have side effects
-- *15* unknown mutation
+- *14* unknown mutation
   ⚠️  This value might have side effects
 
 4230 -> 4243 typeof = typeof((???*0* | undefined["UNSAFE_componentWillUpdate"]))
@@ -33519,8 +33302,7 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
       | undefined["context"]
       | undefined
       | ???*8*
-      | ???*9*
-      | (???*10* ? ({} | ???*14*) : ({} | ???*15*))
+      | (???*9* ? ({} | ???*13*) : ({} | ???*14*))
       | {}
     )
 )
@@ -33540,22 +33322,19 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *7* arguments[1]
   ⚠️  function calls are not analysed yet
-- *8* FreeVar(undefined)
-  ⚠️  unknown global
+- *8* unknown mutation
   ⚠️  This value might have side effects
-- *9* unknown mutation
-  ⚠️  This value might have side effects
-- *10* (null !== (???*11* | ???*12*))
+- *9* (null !== (???*10* | ???*11*))
   ⚠️  nested operation
-- *11* arguments[2]
+- *10* arguments[2]
   ⚠️  function calls are not analysed yet
-- *12* ???*13*["childContextTypes"]
+- *11* ???*12*["childContextTypes"]
   ⚠️  unknown object
-- *13* a
+- *12* a
   ⚠️  circular variable reference
-- *14* unknown mutation
+- *13* unknown mutation
   ⚠️  This value might have side effects
-- *15* unknown mutation
+- *14* unknown mutation
   ⚠️  This value might have side effects
 
 4230 -> 4247 typeof = typeof((???*0* | undefined["componentDidUpdate"]))
@@ -36309,15 +36088,12 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  circular variable reference
 
 4734 -> 4741 conditional = ???*0*
-- *0* (???*1* | ???*2*)((???*3* | null | undefined | [] | ???*4*))
+- *0* (undefined | ???*1*)((???*2* | null | undefined | [] | ???*3*))
   ⚠️  non-function callee
-- *1* FreeVar(undefined)
-  ⚠️  unknown global
+- *1* unknown mutation
   ⚠️  This value might have side effects
-- *2* unknown mutation
-  ⚠️  This value might have side effects
-- *3* for-in variable currently not analyzed
-- *4* f
+- *2* for-in variable currently not analyzed
+- *3* f
   ⚠️  circular variable reference
 
 4741 -> 4743 member call = ???*0*["push"]((???*1* | null | undefined | [] | ???*2*), null)
@@ -37765,15 +37541,12 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  circular variable reference
 
 4772 -> 4779 conditional = ???*0*
-- *0* (???*1* | ???*2*)((???*3* | null | undefined | [] | ???*4*))
+- *0* (undefined | ???*1*)((???*2* | null | undefined | [] | ???*3*))
   ⚠️  non-function callee
-- *1* FreeVar(undefined)
-  ⚠️  unknown global
+- *1* unknown mutation
   ⚠️  This value might have side effects
-- *2* unknown mutation
-  ⚠️  This value might have side effects
-- *3* for-in variable currently not analyzed
-- *4* f
+- *2* for-in variable currently not analyzed
+- *3* f
   ⚠️  circular variable reference
 
 4779 -> 4780 call = (...) => undefined("scroll", (???*0* | ???*1*))
@@ -38573,15 +38346,12 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  This value might have side effects
 
 5000 -> 5008 conditional = ???*0*
-- *0* (???*1* | ???*2*)(???*3*)
+- *0* (undefined | ???*1*)(???*2*)
   ⚠️  non-function callee
   ⚠️  This value might have side effects
-- *1* FreeVar(undefined)
-  ⚠️  unknown global
+- *1* unknown mutation
   ⚠️  This value might have side effects
-- *2* unknown mutation
-  ⚠️  This value might have side effects
-- *3* max number of linking steps reached
+- *2* max number of linking steps reached
   ⚠️  This value might have side effects
 
 5008 -> 5009 call = (...) => undefined("scroll", ???*0*)
@@ -48355,7 +48125,7 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
 - *2* unsupported expression
   ⚠️  This value might have side effects
 
-0 -> 7137 call = (...) => (1 | ???*0* | ???*1* | a)((???*2* | ???*4* | ???*5*))
+0 -> 7137 call = (...) => (1 | ???*0* | ???*1* | a)((???*2* | undefined | ???*4*))
 - *0* unsupported expression
   ⚠️  This value might have side effects
 - *1* Ck
@@ -48365,10 +48135,7 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *3* arguments[1]
   ⚠️  function calls are not analysed yet
-- *4* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *5* unknown mutation
+- *4* unknown mutation
   ⚠️  This value might have side effects
 
 0 -> 7138 call = (...) => (Vf | bg(a, c, b) | b)(
@@ -48401,15 +48168,12 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
 - *12* d
   ⚠️  circular variable reference
 
-0 -> 7140 conditional = (null === (???*0* | ???*2* | ???*3*))
+0 -> 7140 conditional = (null === (???*0* | undefined | ???*2*))
 - *0* ???*1*["context"]
   ⚠️  unknown object
 - *1* arguments[1]
   ⚠️  function calls are not analysed yet
-- *2* FreeVar(undefined)
-  ⚠️  unknown global
-  ⚠️  This value might have side effects
-- *3* unknown mutation
+- *2* unknown mutation
   ⚠️  This value might have side effects
 
 0 -> 7143 call = (...) => {"eventTime": a, "lane": b, "tag": 0, "payload": null, "callback": null, "next": null}(
@@ -48419,17 +48183,16 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
       | ???*11*
       | ???*12*
       | ???*13*
-      | ???*15*
-      | ???*16*
-      | 0
-      | ???*17*
-      | 4
       | undefined
-      | ((???*18* | ???*20*) ? ???*21* : 4)
-      | (???*22* ? 16 : (???*23* | undefined | null | ???*30* | ???*31*))
+      | ???*15*
+      | 0
+      | ???*16*
+      | 4
+      | ((???*17* | ???*19*) ? ???*20* : 4)
+      | (???*21* ? 16 : (???*22* | undefined | null | ???*29* | ???*30*))
+      | ???*32*
       | ???*33*
-      | ???*34*
-      | (???*36* ? 16 : (1 | 4 | 16 | 536870912 | undefined))
+      | (???*35* ? 16 : (1 | 4 | 16 | 536870912 | undefined))
     )
 )
 - *0* (0 !== ???*1*)
@@ -48463,56 +48226,53 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *14* arguments[1]
   ⚠️  function calls are not analysed yet
-- *15* FreeVar(undefined)
-  ⚠️  unknown global
+- *15* unknown mutation
   ⚠️  This value might have side effects
-- *16* unknown mutation
-  ⚠️  This value might have side effects
-- *17* C
+- *16* C
   ⚠️  circular variable reference
-- *18* (0 !== ???*19*)
+- *17* (0 !== ???*18*)
   ⚠️  nested operation
-- *19* C
+- *18* C
   ⚠️  circular variable reference
-- *20* unsupported expression
+- *19* unsupported expression
   ⚠️  This value might have side effects
-- *21* C
+- *20* C
   ⚠️  circular variable reference
-- *22* unsupported expression
+- *21* unsupported expression
   ⚠️  This value might have side effects
-- *23* (???*24* ? ???*25* : 1)
+- *22* (???*23* ? ???*24* : 1)
   ⚠️  nested operation
-- *24* unsupported expression
+- *23* unsupported expression
   ⚠️  This value might have side effects
-- *25* (???*26* ? ???*27* : 4)
+- *24* (???*25* ? ???*26* : 4)
   ⚠️  nested operation
-- *26* unsupported expression
+- *25* unsupported expression
   ⚠️  This value might have side effects
-- *27* (???*28* ? 16 : 536870912)
+- *26* (???*27* ? 16 : 536870912)
   ⚠️  nested operation
-- *28* (0 !== ???*29*)
+- *27* (0 !== ???*28*)
   ⚠️  nested operation
-- *29* unsupported expression
+- *28* unsupported expression
   ⚠️  This value might have side effects
-- *30* arguments[0]
+- *29* arguments[0]
   ⚠️  function calls are not analysed yet
-- *31* ???*32*["value"]
+- *30* ???*31*["value"]
   ⚠️  unknown object
-- *32* arguments[1]
+- *31* arguments[1]
   ⚠️  function calls are not analysed yet
-- *33* arguments[0]
+- *32* arguments[0]
   ⚠️  function calls are not analysed yet
-- *34* ???*35*["event"]
+- *33* ???*34*["event"]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *35* FreeVar(window)
+- *34* FreeVar(window)
   ⚠️  unknown global
   ⚠️  This value might have side effects
-- *36* (???*37* === ???*38*)
+- *35* (???*36* === ???*37*)
   ⚠️  nested operation
-- *37* unsupported expression
+- *36* unsupported expression
   ⚠️  This value might have side effects
-- *38* a
+- *37* a
   ⚠️  circular variable reference
 
 0 -> 7145 conditional = (???*0* === (???*1* | ???*2*))
@@ -48532,25 +48292,25 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  circular variable reference
 
 0 -> 7147 call = (...) => (null | Zg(a, c))(
-    (???*0* | ???*2* | ???*3*),
+    (???*0* | undefined | ???*2*),
     (
-      | ???*4*
+      | ???*3*
       | {
-            "eventTime": (???*5* ? ???*7* : ???*8*),
+            "eventTime": (???*4* ? ???*6* : ???*7*),
             "lane": (
               | 1
+              | ???*15*
               | ???*16*
               | ???*17*
-              | ???*18*
               | 0
-              | ???*20*
+              | ???*19*
               | 4
               | undefined
-              | ((???*21* | ???*23*) ? ???*24* : 4)
-              | (???*25* ? 16 : (???*26* | undefined | null | ???*33* | ???*34*))
+              | ((???*20* | ???*22*) ? ???*23* : 4)
+              | (???*24* ? 16 : (???*25* | undefined | null | ???*32* | ???*33*))
+              | ???*35*
               | ???*36*
-              | ???*37*
-              | (???*39* ? 16 : (1 | 4 | 16 | 536870912 | undefined))
+              | (???*38* ? 16 : (1 | 4 | 16 | 536870912 | undefined))
             ),
             "tag": 0,
             "payload": null,
@@ -48560,192 +48320,184 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
     ),
     (
       | 1
+      | ???*41*
       | ???*42*
       | ???*43*
-      | ???*44*
-      | ???*46*
-      | ???*47*
-      | 0
-      | ???*48*
-      | 4
       | undefined
-      | ((???*49* | ???*51*) ? ???*52* : 4)
-      | (???*53* ? 16 : (???*54* | undefined | null | ???*61* | ???*62*))
-      | ???*64*
-      | ???*65*
-      | (???*67* ? 16 : (1 | 4 | 16 | 536870912 | undefined))
+      | ???*45*
+      | 0
+      | ???*46*
+      | 4
+      | ((???*47* | ???*49*) ? ???*50* : 4)
+      | (???*51* ? 16 : (???*52* | undefined | null | ???*59* | ???*60*))
+      | ???*62*
+      | ???*63*
+      | (???*65* ? 16 : (1 | 4 | 16 | 536870912 | undefined))
     )
 )
 - *0* ???*1*["current"]
   ⚠️  unknown object
 - *1* arguments[1]
   ⚠️  function calls are not analysed yet
-- *2* FreeVar(undefined)
-  ⚠️  unknown global
+- *2* unknown mutation
   ⚠️  This value might have side effects
-- *3* unknown mutation
-  ⚠️  This value might have side effects
-- *4* arguments[1]
+- *3* arguments[1]
   ⚠️  function calls are not analysed yet
-- *5* (0 !== ???*6*)
+- *4* (0 !== ???*5*)
   ⚠️  nested operation
-- *6* unsupported expression
+- *5* unsupported expression
   ⚠️  This value might have side effects
-- *7* module<scheduler, {}>["unstable_now"]()
+- *6* module<scheduler, {}>["unstable_now"]()
   ⚠️  nested operation
-- *8* (???*9* ? (???*13* | ???*14*) : ???*15*)
+- *7* (???*8* ? (???*12* | ???*13*) : ???*14*)
   ⚠️  nested operation
-- *9* (???*10* !== (???*11* | ???*12*))
+- *8* (???*9* !== (???*10* | ???*11*))
   ⚠️  nested operation
+- *9* unsupported expression
+  ⚠️  This value might have side effects
 - *10* unsupported expression
   ⚠️  This value might have side effects
-- *11* unsupported expression
-  ⚠️  This value might have side effects
-- *12* module<scheduler, {}>["unstable_now"]()
+- *11* module<scheduler, {}>["unstable_now"]()
   ⚠️  nested operation
-- *13* unsupported expression
+- *12* unsupported expression
   ⚠️  This value might have side effects
-- *14* module<scheduler, {}>["unstable_now"]()
+- *13* module<scheduler, {}>["unstable_now"]()
   ⚠️  nested operation
+- *14* unsupported expression
+  ⚠️  This value might have side effects
 - *15* unsupported expression
   ⚠️  This value might have side effects
-- *16* unsupported expression
-  ⚠️  This value might have side effects
-- *17* Ck
+- *16* Ck
   ⚠️  sequence with side effects
   ⚠️  This value might have side effects
-- *18* ???*19*["current"]
+- *17* ???*18*["current"]
   ⚠️  unknown object
-- *19* b
+- *18* b
   ⚠️  circular variable reference
-- *20* C
+- *19* C
   ⚠️  circular variable reference
-- *21* (0 !== ???*22*)
+- *20* (0 !== ???*21*)
   ⚠️  nested operation
-- *22* C
+- *21* C
   ⚠️  circular variable reference
-- *23* unsupported expression
+- *22* unsupported expression
   ⚠️  This value might have side effects
-- *24* C
+- *23* C
   ⚠️  circular variable reference
-- *25* unsupported expression
+- *24* unsupported expression
   ⚠️  This value might have side effects
-- *26* (???*27* ? ???*28* : 1)
+- *25* (???*26* ? ???*27* : 1)
   ⚠️  nested operation
-- *27* unsupported expression
+- *26* unsupported expression
   ⚠️  This value might have side effects
-- *28* (???*29* ? ???*30* : 4)
+- *27* (???*28* ? ???*29* : 4)
   ⚠️  nested operation
-- *29* unsupported expression
+- *28* unsupported expression
   ⚠️  This value might have side effects
-- *30* (???*31* ? 16 : 536870912)
+- *29* (???*30* ? 16 : 536870912)
   ⚠️  nested operation
-- *31* (0 !== ???*32*)
+- *30* (0 !== ???*31*)
   ⚠️  nested operation
-- *32* unsupported expression
+- *31* unsupported expression
   ⚠️  This value might have side effects
-- *33* arguments[0]
+- *32* arguments[0]
   ⚠️  function calls are not analysed yet
-- *34* ???*35*["value"]
+- *33* ???*34*["value"]
   ⚠️  unknown object
-- *35* arguments[1]
+- *34* arguments[1]
   ⚠️  function calls are not analysed yet
-- *36* arguments[0]
+- *35* arguments[0]
   ⚠️  function calls are not analysed yet
-- *37* ???*38*["event"]
+- *36* ???*37*["event"]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *38* FreeVar(window)
+- *37* FreeVar(window)
   ⚠️  unknown global
   ⚠️  This value might have side effects
-- *39* (???*40* === ???*41*)
+- *38* (???*39* === ???*40*)
   ⚠️  nested operation
-- *40* unsupported expression
+- *39* unsupported expression
   ⚠️  This value might have side effects
-- *41* a
+- *40* a
   ⚠️  circular variable reference
-- *42* unsupported expression
+- *41* unsupported expression
   ⚠️  This value might have side effects
-- *43* Ck
+- *42* Ck
   ⚠️  sequence with side effects
   ⚠️  This value might have side effects
-- *44* ???*45*["current"]
+- *43* ???*44*["current"]
   ⚠️  unknown object
-- *45* arguments[1]
+- *44* arguments[1]
   ⚠️  function calls are not analysed yet
-- *46* FreeVar(undefined)
-  ⚠️  unknown global
+- *45* unknown mutation
   ⚠️  This value might have side effects
-- *47* unknown mutation
-  ⚠️  This value might have side effects
+- *46* C
+  ⚠️  circular variable reference
+- *47* (0 !== ???*48*)
+  ⚠️  nested operation
 - *48* C
   ⚠️  circular variable reference
-- *49* (0 !== ???*50*)
-  ⚠️  nested operation
+- *49* unsupported expression
+  ⚠️  This value might have side effects
 - *50* C
   ⚠️  circular variable reference
 - *51* unsupported expression
   ⚠️  This value might have side effects
-- *52* C
-  ⚠️  circular variable reference
+- *52* (???*53* ? ???*54* : 1)
+  ⚠️  nested operation
 - *53* unsupported expression
   ⚠️  This value might have side effects
-- *54* (???*55* ? ???*56* : 1)
+- *54* (???*55* ? ???*56* : 4)
   ⚠️  nested operation
 - *55* unsupported expression
   ⚠️  This value might have side effects
-- *56* (???*57* ? ???*58* : 4)
+- *56* (???*57* ? 16 : 536870912)
   ⚠️  nested operation
-- *57* unsupported expression
+- *57* (0 !== ???*58*)
+  ⚠️  nested operation
+- *58* unsupported expression
   ⚠️  This value might have side effects
-- *58* (???*59* ? 16 : 536870912)
-  ⚠️  nested operation
-- *59* (0 !== ???*60*)
-  ⚠️  nested operation
-- *60* unsupported expression
-  ⚠️  This value might have side effects
-- *61* arguments[0]
+- *59* arguments[0]
   ⚠️  function calls are not analysed yet
-- *62* ???*63*["value"]
+- *60* ???*61*["value"]
   ⚠️  unknown object
-- *63* arguments[1]
+- *61* arguments[1]
   ⚠️  function calls are not analysed yet
-- *64* arguments[0]
+- *62* arguments[0]
   ⚠️  function calls are not analysed yet
-- *65* ???*66*["event"]
+- *63* ???*64*["event"]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *66* FreeVar(window)
+- *64* FreeVar(window)
   ⚠️  unknown global
   ⚠️  This value might have side effects
-- *67* (???*68* === ???*69*)
+- *65* (???*66* === ???*67*)
   ⚠️  nested operation
-- *68* unsupported expression
+- *66* unsupported expression
   ⚠️  This value might have side effects
-- *69* a
+- *67* a
   ⚠️  circular variable reference
 
 0 -> 7148 call = (...) => undefined(
     ???*0*,
-    (???*1* | ???*3* | ???*4*),
+    (???*1* | undefined | ???*3*),
     (
       | 1
+      | ???*4*
       | ???*5*
       | ???*6*
-      | ???*7*
-      | ???*9*
-      | ???*10*
-      | 0
-      | ???*11*
-      | 4
       | undefined
-      | ((???*12* | ???*14*) ? ???*15* : 4)
-      | (???*16* ? 16 : (???*17* | undefined | null | ???*24* | ???*25*))
-      | ???*27*
-      | ???*28*
-      | (???*30* ? 16 : (1 | 4 | 16 | 536870912 | undefined))
+      | ???*8*
+      | 0
+      | ???*9*
+      | 4
+      | ((???*10* | ???*12*) ? ???*13* : 4)
+      | (???*14* ? 16 : (???*15* | undefined | null | ???*22* | ???*23*))
+      | ???*25*
+      | ???*26*
+      | (???*28* ? 16 : (1 | 4 | 16 | 536870912 | undefined))
     ),
-    (???*33* ? ???*35* : ???*36*)
+    (???*31* ? ???*33* : ???*34*)
 )
 - *0* max number of linking steps reached
   ⚠️  This value might have side effects
@@ -48753,113 +48505,106 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *2* arguments[1]
   ⚠️  function calls are not analysed yet
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
+- *3* unknown mutation
   ⚠️  This value might have side effects
-- *4* unknown mutation
+- *4* unsupported expression
   ⚠️  This value might have side effects
-- *5* unsupported expression
-  ⚠️  This value might have side effects
-- *6* Ck
+- *5* Ck
   ⚠️  sequence with side effects
   ⚠️  This value might have side effects
-- *7* ???*8*["current"]
+- *6* ???*7*["current"]
   ⚠️  unknown object
-- *8* arguments[1]
+- *7* arguments[1]
   ⚠️  function calls are not analysed yet
-- *9* FreeVar(undefined)
-  ⚠️  unknown global
+- *8* unknown mutation
   ⚠️  This value might have side effects
-- *10* unknown mutation
-  ⚠️  This value might have side effects
+- *9* C
+  ⚠️  circular variable reference
+- *10* (0 !== ???*11*)
+  ⚠️  nested operation
 - *11* C
   ⚠️  circular variable reference
-- *12* (0 !== ???*13*)
-  ⚠️  nested operation
+- *12* unsupported expression
+  ⚠️  This value might have side effects
 - *13* C
   ⚠️  circular variable reference
 - *14* unsupported expression
   ⚠️  This value might have side effects
-- *15* C
-  ⚠️  circular variable reference
+- *15* (???*16* ? ???*17* : 1)
+  ⚠️  nested operation
 - *16* unsupported expression
   ⚠️  This value might have side effects
-- *17* (???*18* ? ???*19* : 1)
+- *17* (???*18* ? ???*19* : 4)
   ⚠️  nested operation
 - *18* unsupported expression
   ⚠️  This value might have side effects
-- *19* (???*20* ? ???*21* : 4)
+- *19* (???*20* ? 16 : 536870912)
   ⚠️  nested operation
-- *20* unsupported expression
+- *20* (0 !== ???*21*)
+  ⚠️  nested operation
+- *21* unsupported expression
   ⚠️  This value might have side effects
-- *21* (???*22* ? 16 : 536870912)
-  ⚠️  nested operation
-- *22* (0 !== ???*23*)
-  ⚠️  nested operation
-- *23* unsupported expression
-  ⚠️  This value might have side effects
-- *24* arguments[0]
+- *22* arguments[0]
   ⚠️  function calls are not analysed yet
-- *25* ???*26*["value"]
+- *23* ???*24*["value"]
   ⚠️  unknown object
-- *26* arguments[1]
+- *24* arguments[1]
   ⚠️  function calls are not analysed yet
-- *27* arguments[0]
+- *25* arguments[0]
   ⚠️  function calls are not analysed yet
-- *28* ???*29*["event"]
+- *26* ???*27*["event"]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *29* FreeVar(window)
+- *27* FreeVar(window)
   ⚠️  unknown global
   ⚠️  This value might have side effects
-- *30* (???*31* === ???*32*)
+- *28* (???*29* === ???*30*)
   ⚠️  nested operation
-- *31* unsupported expression
+- *29* unsupported expression
   ⚠️  This value might have side effects
-- *32* a
+- *30* a
   ⚠️  circular variable reference
-- *33* (0 !== ???*34*)
+- *31* (0 !== ???*32*)
   ⚠️  nested operation
-- *34* unsupported expression
+- *32* unsupported expression
   ⚠️  This value might have side effects
-- *35* module<scheduler, {}>["unstable_now"]()
+- *33* module<scheduler, {}>["unstable_now"]()
   ⚠️  nested operation
-- *36* (???*37* ? (???*41* | ???*42*) : ???*43*)
+- *34* (???*35* ? (???*39* | ???*40*) : ???*41*)
   ⚠️  nested operation
-- *37* (???*38* !== (???*39* | ???*40*))
+- *35* (???*36* !== (???*37* | ???*38*))
   ⚠️  nested operation
-- *38* unsupported expression
+- *36* unsupported expression
   ⚠️  This value might have side effects
+- *37* unsupported expression
+  ⚠️  This value might have side effects
+- *38* module<scheduler, {}>["unstable_now"]()
+  ⚠️  nested operation
 - *39* unsupported expression
   ⚠️  This value might have side effects
 - *40* module<scheduler, {}>["unstable_now"]()
   ⚠️  nested operation
 - *41* unsupported expression
   ⚠️  This value might have side effects
-- *42* module<scheduler, {}>["unstable_now"]()
-  ⚠️  nested operation
-- *43* unsupported expression
-  ⚠️  This value might have side effects
 
 0 -> 7149 call = (...) => undefined(
     ???*0*,
-    (???*1* | ???*3* | ???*4*),
+    (???*1* | undefined | ???*3*),
     (
       | 1
+      | ???*4*
       | ???*5*
       | ???*6*
-      | ???*7*
-      | ???*9*
-      | ???*10*
-      | 0
-      | ???*11*
-      | 4
       | undefined
-      | ((???*12* | ???*14*) ? ???*15* : 4)
-      | (???*16* ? 16 : (???*17* | undefined | null | ???*24* | ???*25*))
-      | ???*27*
-      | ???*28*
-      | (???*30* ? 16 : (1 | 4 | 16 | 536870912 | undefined))
+      | ???*8*
+      | 0
+      | ???*9*
+      | 4
+      | ((???*10* | ???*12*) ? ???*13* : 4)
+      | (???*14* ? 16 : (???*15* | undefined | null | ???*22* | ???*23*))
+      | ???*25*
+      | ???*26*
+      | (???*28* ? 16 : (1 | 4 | 16 | 536870912 | undefined))
     )
 )
 - *0* max number of linking steps reached
@@ -48868,70 +48613,64 @@ ${(???*50* | ???*51* | undefined | ???*55* | undefined[1] | "")}${(???*59* | ???
   ⚠️  unknown object
 - *2* arguments[1]
   ⚠️  function calls are not analysed yet
-- *3* FreeVar(undefined)
-  ⚠️  unknown global
+- *3* unknown mutation
   ⚠️  This value might have side effects
-- *4* unknown mutation
+- *4* unsupported expression
   ⚠️  This value might have side effects
-- *5* unsupported expression
-  ⚠️  This value might have side effects
-- *6* Ck
+- *5* Ck
   ⚠️  sequence with side effects
   ⚠️  This value might have side effects
-- *7* ???*8*["current"]
+- *6* ???*7*["current"]
   ⚠️  unknown object
-- *8* arguments[1]
+- *7* arguments[1]
   ⚠️  function calls are not analysed yet
-- *9* FreeVar(undefined)
-  ⚠️  unknown global
+- *8* unknown mutation
   ⚠️  This value might have side effects
-- *10* unknown mutation
-  ⚠️  This value might have side effects
+- *9* C
+  ⚠️  circular variable reference
+- *10* (0 !== ???*11*)
+  ⚠️  nested operation
 - *11* C
   ⚠️  circular variable reference
-- *12* (0 !== ???*13*)
-  ⚠️  nested operation
+- *12* unsupported expression
+  ⚠️  This value might have side effects
 - *13* C
   ⚠️  circular variable reference
 - *14* unsupported expression
   ⚠️  This value might have side effects
-- *15* C
-  ⚠️  circular variable reference
+- *15* (???*16* ? ???*17* : 1)
+  ⚠️  nested operation
 - *16* unsupported expression
   ⚠️  This value might have side effects
-- *17* (???*18* ? ???*19* : 1)
+- *17* (???*18* ? ???*19* : 4)
   ⚠️  nested operation
 - *18* unsupported expression
   ⚠️  This value might have side effects
-- *19* (???*20* ? ???*21* : 4)
+- *19* (???*20* ? 16 : 536870912)
   ⚠️  nested operation
-- *20* unsupported expression
+- *20* (0 !== ???*21*)
+  ⚠️  nested operation
+- *21* unsupported expression
   ⚠️  This value might have side effects
-- *21* (???*22* ? 16 : 536870912)
-  ⚠️  nested operation
-- *22* (0 !== ???*23*)
-  ⚠️  nested operation
-- *23* unsupported expression
-  ⚠️  This value might have side effects
-- *24* arguments[0]
+- *22* arguments[0]
   ⚠️  function calls are not analysed yet
-- *25* ???*26*["value"]
+- *23* ???*24*["value"]
   ⚠️  unknown object
-- *26* arguments[1]
+- *24* arguments[1]
   ⚠️  function calls are not analysed yet
-- *27* arguments[0]
+- *25* arguments[0]
   ⚠️  function calls are not analysed yet
-- *28* ???*29*["event"]
+- *26* ???*27*["event"]
   ⚠️  unknown object
   ⚠️  This value might have side effects
-- *29* FreeVar(window)
+- *27* FreeVar(window)
   ⚠️  unknown global
   ⚠️  This value might have side effects
-- *30* (???*31* === ???*32*)
+- *28* (???*29* === ???*30*)
   ⚠️  nested operation
-- *31* unsupported expression
+- *29* unsupported expression
   ⚠️  This value might have side effects
-- *32* a
+- *30* a
   ⚠️  circular variable reference
 
 0 -> 7150 unreachable = ???*0*
