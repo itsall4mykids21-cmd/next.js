@@ -100,6 +100,7 @@ export const CONFIG_FILES = [
   'next.config.js',
   'next.config.mjs',
   'next.config.ts',
+  'next.config.mts',
 ]
 export const BUILD_ID_FILE = 'BUILD_ID'
 export const BLOCKED_PAGES = ['/_document', '/_app', '/_error']
