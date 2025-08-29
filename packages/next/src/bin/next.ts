@@ -4,6 +4,7 @@ import '../server/require-hook'
 
 import { Argument, Command, Option } from 'next/dist/compiled/commander'
 
+import { spawnSync } from 'child_process'
 import { warn } from '../build/output/log'
 import semver from 'next/dist/compiled/semver'
 import { bold, cyan, italic } from '../lib/picocolors'
@@ -38,6 +39,26 @@ if (
     `You are using Node.js ${process.versions.node}. For Next.js, Node.js version "${process.env.__NEXT_REQUIRED_NODE_VERSION_RANGE}" is required.`
   )
   process.exit(1)
+}
+
+// Native TypeScript resolution is supported with a flag
+// since v22.7.0, and is enabled by default since v23.6.0.
+// TODO: Remove this once we drop support for Node.js 22.
+if (
+  semver.gte(process.versions.node, '22.7.0') &&
+  semver.lt(process.versions.node, '23.6.0')
+) {
+  const result = spawnSync(
+    process.argv[0],
+    [
+      '--experimental-transform-types',
+      '--disable-warning=ExperimentalWarning',
+      ...process.execArgv,
+      ...process.argv.slice(1),
+    ],
+    { stdio: 'inherit' }
+  )
+  process.exit(result.status ?? 0)
 }
 
 // Start performance profiling after Node.js version is checked
