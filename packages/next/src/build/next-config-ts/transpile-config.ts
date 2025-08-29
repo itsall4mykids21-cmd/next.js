@@ -147,8 +147,8 @@ export async function transpileConfig({
       pkgJson = JSON.parse(await readFile(join(cwd, 'package.json'), 'utf8'))
     } catch {}
 
-    if (pkgJson.type === 'module') {
-      return handleESM({ cwd, nextConfigPath, compilerOptions })
+    if (configFileName.endsWith('.mts') || pkgJson.type === 'module') {
+      return handleESM({ cwd, compilerOptions, nextConfigPath })
     }
 
     return handleCJS({ cwd, nextConfigPath, compilerOptions })

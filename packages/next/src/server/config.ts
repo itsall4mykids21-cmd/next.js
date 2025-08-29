@@ -1389,7 +1389,9 @@ export default async function loadConfig(
     let userConfigModule: any
     try {
       const envBefore = Object.assign({}, process.env)
-      const shouldTranspile = configFileName === 'next.config.ts'
+      const shouldTranspile =
+        configFileName === 'next.config.ts' ||
+        configFileName === 'next.config.mts'
 
       // `import()` expects url-encoded strings, so the path must be properly
       // escaped and (especially on Windows) absolute paths must pe prefixed
@@ -1593,6 +1595,7 @@ export default async function loadConfig(
       [
         `${configBaseName}.cjs`,
         `${configBaseName}.cts`,
+        `${configBaseName}.mts`,
         `${configBaseName}.json`,
         `${configBaseName}.jsx`,
         `${configBaseName}.tsx`,
