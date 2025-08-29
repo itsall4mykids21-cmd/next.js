@@ -2,7 +2,8 @@ use proc_macro::TokenStream;
 use proc_macro2::{Ident, TokenStream as TokenStream2};
 use quote::{quote, quote_spanned};
 use syn::{
-    FnArg, ItemTrait, Pat, TraitItem, TraitItemFn, parse_macro_input, parse_quote, spanned::Spanned,
+    FnArg, ItemTrait, Pat, Receiver, TraitItem, TraitItemFn, parse_macro_input, parse_quote,
+    spanned::Spanned,
 };
 use turbo_tasks_macros_shared::{
     ValueTraitArguments, get_trait_default_impl_function_ident, get_trait_type_ident, is_self_used,
@@ -11,7 +12,7 @@ use turbo_tasks_macros_shared::{
 use crate::{
     func::{
         DefinitionContext, FunctionArguments, NativeFn, TurboFn, filter_inline_attributes,
-        split_function_attributes,
+        get_receiver_style, split_function_attributes,
     },
     global_name::global_name,
 };
@@ -100,9 +101,22 @@ pub fn value_trait(args: TokenStream, input: TokenStream) -> TokenStream {
                 // impl for `turbo_tasks::Dynamic<Box<dyn T>>`
                 // This will have the same signature, but simply forward the call
                 let mut args = Vec::new();
+                let mut is_vc_receiver = false;
                 for arg in &sig.inputs {
                     let ident = match arg {
-                        FnArg::Receiver(_) => {
+                        FnArg::Receiver(Receiver { ty, .. }) => {
+                            match get_receiver_style(ty, &DefinitionContext::ValueTrait) {
+                                crate::func::ReceiverStyle::Reference => {
+                                    is_vc_receiver = false;
+                                }
+                                crate::func::ReceiverStyle::Vc => {
+                                    is_vc_receiver = true;
+                                }
+                                crate::func::ReceiverStyle::Error => {}
+                            }
+                            // We allow either `&self` or `self: Vc<Self>`
+                            // we cannot really validate Vc<Self> so instead we simply assume that
+                            // any type
                             continue;
                         }
                         FnArg::Typed(pat) => match &*pat.pat {
@@ -122,18 +136,22 @@ pub fn value_trait(args: TokenStream, input: TokenStream) -> TokenStream {
                 }
                 // Add a dummy implementation that derefences the box and delegates to the
                 // actual implementation.
-                dynamic_trait_fns.push(if sig.asyncness.is_some() {
-                    quote! {
-                        #sig {
-                            let reference: &dyn #trait_ident = &*self;
-                            reference.#ident(#(#args),*).await
+                dynamic_trait_fns.push(match (is_vc_receiver, sig.asyncness.is_some()) {
+                    (true, true) | (true, false) => quote! { #item },
+                    (false, true) => {
+                        quote! {
+                            #sig {
+                                let reference: &dyn #trait_ident = &*self;
+                                reference.#ident(#(#args),*).await
+                            }
                         }
                     }
-                } else {
-                    quote! {
-                        #sig {
-                            let reference: &dyn #trait_ident = &*self;
-                            reference.#ident(#(#args),*)
+                    (false, false) => {
+                        quote! {
+                            #sig {
+                                let reference: &dyn #trait_ident = &*self;
+                                reference.#ident(#(#args),*)
+                            }
                         }
                     }
                 });

@@ -344,14 +344,16 @@ pub trait EcmascriptAnalyzable: Module + Asset {
         async_module_info: Option<Vc<AsyncModuleInfo>>,
     ) -> Result<Vc<EcmascriptModuleContentOptions>>;
 
-    #[turbo_tasks::function]
     fn module_content(
         self: Vc<Self>,
         chunking_context: Vc<Box<dyn ChunkingContext>>,
         async_module_info: Option<Vc<AsyncModuleInfo>>,
-    ) -> Result<Vc<EcmascriptModuleContent>> {
+    ) -> Vc<EcmascriptModuleContent>
+    where
+        Self: Sized,
+    {
         let own_options = self.module_content_options(chunking_context, async_module_info);
-        Ok(EcmascriptModuleContent::new(own_options))
+        EcmascriptModuleContent::new(own_options)
     }
 }
 
