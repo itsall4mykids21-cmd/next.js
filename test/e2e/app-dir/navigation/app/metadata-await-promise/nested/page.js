@@ -1,9 +1,9 @@
+import { connection } from 'next/server'
 import React from 'react'
 
-// ensure this page is dynamically rendered so we always trigger a loading state
-export const dynamic = 'force-dynamic'
-
-export default function Page() {
+export default async function Page() {
+  // ensure this page is dynamically rendered so we always trigger a loading state
+  await connection()
   return <div id="page-content">Content</div>
 }
 
