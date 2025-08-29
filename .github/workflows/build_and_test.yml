@@ -521,6 +521,48 @@ jobs:
 
     secrets: inherit
 
+  # TODO: Remove this once we drop support for Node.js 22.
+  test-next-config-ts-dev:
+    name: test next-config-ts native dev
+    needs: ['changes', 'build-next', 'build-native']
+    if: ${{ needs.changes.outputs.docs-only == 'false' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+
+    uses: ./.github/workflows/build_reusable.yml
+    with:
+      nodeVersion: ${{ matrix.node }}
+      afterBuild: |
+        export NEXT_TEST_MODE=dev
+        node run-tests.js test/e2e/app-dir/next-config-ts/**/*.test.ts
+      stepName: 'test-next-config-ts-dev-${{ matrix.node }}'
+
+    secrets: inherit
+
+  # TODO: Remove this once we drop support for Node.js 22.
+  test-next-config-ts-prod:
+    name: test next-config-ts native prod
+    needs: ['changes', 'build-next', 'build-native']
+    if: ${{ needs.changes.outputs.docs-only == 'false' }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+
+    uses: ./.github/workflows/build_reusable.yml
+    with:
+      nodeVersion: ${{ matrix.node }}
+      afterBuild: |
+        export NEXT_TEST_MODE=start
+        node run-tests.js test/e2e/app-dir/next-config-ts/**/*.test.ts
+      stepName: 'test-next-config-ts-prod-${{ matrix.node }}'
+
+    secrets: inherit
+
   test-unit-windows:
     name: test unit windows
     needs: ['changes', 'build-native', 'build-native-windows']
@@ -956,6 +998,8 @@ jobs:
         'validate-docs-links',
         'check-types-precompiled',
         'test-unit',
+        'test-next-config-ts-dev',
+        'test-next-config-ts-prod',
         'test-dev',
         'test-prod',
         'test-integration',
