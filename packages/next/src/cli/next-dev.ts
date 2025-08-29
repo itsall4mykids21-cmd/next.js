@@ -38,6 +38,7 @@ import { once } from 'node:events'
 import { clearTimeout } from 'timers'
 import { flushAllTraces, trace } from '../trace'
 import { traceId } from '../trace/shared'
+import semver from 'next/dist/compiled/semver'
 
 export type NextDevOptions = {
   disableSourceMaps: boolean
@@ -278,6 +279,16 @@ const nextDev = async (
         const address = getParsedDebugAddress()
         address.port = address.port + 1
         nodeOptions[nodeDebugType] = formatDebugAddress(address)
+      }
+
+      // Native TypeScript resolution is supported with a flag
+      // since v22.7.0, and is enabled by default since v23.6.0
+      const nodeVersion = process.versions.node
+      if (
+        semver.gte(nodeVersion, '22.7.0') &&
+        semver.lt(nodeVersion, '23.6.0')
+      ) {
+        nodeOptions['experimental-transform-types'] = true
       }
 
       child = fork(startServerPath, {

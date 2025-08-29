@@ -8,6 +8,7 @@ import {
   getParsedDebugAddress,
   getParsedNodeOptionsWithoutInspect,
 } from '../server/lib/utils'
+import semver from 'next/dist/compiled/semver'
 
 type FarmOptions = NonNullable<ConstructorParameters<typeof JestWorker>[1]>
 
@@ -100,6 +101,13 @@ export class Worker {
     if (isolatedMemory) {
       delete nodeOptions['max-old-space-size']
       delete nodeOptions['max_old_space_size']
+    }
+
+    // Native TypeScript resolution is supported with a flag
+    // since v22.7.0, and is enabled by default since v23.6.0
+    const nodeVersion = process.versions.node
+    if (semver.gte(nodeVersion, '22.7.0') && semver.lt(nodeVersion, '23.6.0')) {
+      nodeOptions['experimental-transform-types'] = true
     }
 
     const createWorker = () => {
