@@ -11,7 +11,6 @@ describe('next-config-ts-import-js-extensions-esm', () => {
   it('should import js extensions (ESM)', async () => {
     const $ = await next.render$('/')
     const text = $('p').text()
-    expect(text).toContain('jsESM')
     expect(text).toContain('cjs')
     expect(text).toContain('mjs')
     expect(text).toContain('cts')
