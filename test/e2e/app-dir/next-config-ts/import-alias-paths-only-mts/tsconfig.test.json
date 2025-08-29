@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "paths": {
+      // path should be relative when baseUrl is not set
+      "@/*": ["./src/*"]
+    }
+  }
+}
