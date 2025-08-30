@@ -4,10 +4,12 @@ mod storage;
 
 use std::{
     borrow::Cow,
+    cmp::min,
     fmt::{self, Write},
     future::Future,
     hash::BuildHasherDefault,
     mem::take,
+    ops::Range,
     pin::Pin,
     sync::{
         Arc,
@@ -23,13 +25,13 @@ use parking_lot::{Condvar, Mutex};
 use rustc_hash::{FxHashMap, FxHashSet, FxHasher};
 use smallvec::{SmallVec, smallvec};
 use tokio::time::{Duration, Instant};
-use tracing::field::Empty;
+use tracing::{field::Empty, info_span};
 use turbo_tasks::{
-    CellId, FxDashMap, KeyValuePair, RawVc, ReadCellOptions, ReadConsistency, SessionId,
-    TRANSIENT_TASK_BIT, TaskExecutionReason, TaskId, TraitTypeId, TurboTasksBackendApi,
+    CellId, FxDashMap, FxIndexMap, KeyValuePair, RawVc, ReadCellOptions, ReadConsistency,
+    SessionId, TRANSIENT_TASK_BIT, TaskExecutionReason, TaskId, TraitTypeId, TurboTasksBackendApi,
     ValueTypeId,
     backend::{
-        Backend, BackendJobId, CachedTaskType, CellContent, TaskExecutionSpec, TransientTaskRoot,
+        Backend, CachedTaskType, CellContent, TaskExecutionSpec, TransientTaskRoot,
         TransientTaskType, TurboTasksExecutionError, TypedCellContent,
     },
     event::{Event, EventListener},
@@ -38,7 +40,7 @@ use turbo_tasks::{
     task_statistics::TaskStatisticsApi,
     trace::TraceRawVcs,
     turbo_tasks,
-    util::IdFactoryWithReuse,
+    util::{IdFactoryWithReuse, good_chunk_size},
 };
 
 pub use self::{operation::AnyOperation, storage::TaskDataCategory};
@@ -68,9 +70,6 @@ use crate::{
         ptr_eq_arc::PtrEqArc, sharded::Sharded, swap_retain,
     },
 };
-
-const BACKEND_JOB_INITIAL_SNAPSHOT: BackendJobId = unsafe { BackendJobId::new_unchecked(1) };
-const BACKEND_JOB_FOLLOW_UP_SNAPSHOT: BackendJobId = unsafe { BackendJobId::new_unchecked(2) };
 
 const SNAPSHOT_REQUESTED_BIT: usize = 1 << (usize::BITS - 1);
 
@@ -157,6 +156,15 @@ impl Default for BackendOptions {
     }
 }
 
+pub enum TurboTasksBackendJob {
+    InitialSnapshot,
+    FollowUpSnapshot,
+    Prefetch {
+        data: Arc<FxIndexMap<TaskId, bool>>,
+        range: Option<Range<usize>>,
+    },
+}
+
 pub struct TurboTasksBackend<B: BackingStorage>(Arc<TurboTasksBackendInner<B>>);
 
 type TaskCacheLog = Sharded<ChunkedVec<(Arc<CachedTaskType>, TaskId)>>;
@@ -175,6 +183,9 @@ struct TurboTasksBackendInner<B: BackingStorage> {
     transient_tasks: FxDashMap<TaskId, Arc<TransientTask>>,
 
     storage: Storage,
+
+    /// When true, the backing_storage has data that is not in the local storage.
+    local_is_partial: AtomicBool,
 
     /// Number of executing operations + Highest bit is set when snapshot is
     /// requested. When that bit is set, operations should pause until the
@@ -231,6 +242,9 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
             options.active_tracking = false;
         }
         let small_preallocation = options.small_preallocation;
+        let next_task_id = backing_storage
+            .next_free_task_id()
+            .expect("Failed to get task id");
         Self {
             options,
             start_time: Instant::now(),
@@ -238,9 +252,7 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
                 .next_session_id()
                 .expect("Failed get session id"),
             persisted_task_id_factory: IdFactoryWithReuse::new(
-                backing_storage
-                    .next_free_task_id()
-                    .expect("Failed to get task id"),
+                next_task_id,
                 TaskId::try_from(TRANSIENT_TASK_BIT - 1).unwrap(),
             ),
             transient_task_id_factory: IdFactoryWithReuse::new(
@@ -250,6 +262,7 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
             persisted_task_cache_log: need_log.then(|| Sharded::new(shard_amount)),
             task_cache: BiMap::new(),
             transient_tasks: FxDashMap::default(),
+            local_is_partial: AtomicBool::new(next_task_id != TaskId::MIN),
             storage: Storage::new(small_preallocation),
             in_progress_operations: AtomicUsize::new(0),
             snapshot_request: Mutex::new(SnapshotRequest::new()),
@@ -739,7 +752,7 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
         // It's not possible that the task is InProgress at this point. If it is InProgress {
         // done: true } it must have Output and would early return.
         task.add_new(item);
-        turbo_tasks.schedule(task_id);
+        ctx.schedule_task(task);
 
         Ok(Err(listener))
     }
@@ -868,7 +881,7 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
                 || self.get_task_desc_fn(task_id),
             ))
         {
-            turbo_tasks.schedule(task_id);
+            ctx.schedule_task(task);
         }
 
         Ok(Err(listener))
@@ -910,6 +923,7 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
             return Some(task_type);
         }
         if self.should_restore()
+            && self.local_is_partial.load(Ordering::Acquire)
             && !task_id.is_transient()
             && let Some(task_type) = unsafe {
                 self.backing_storage
@@ -1201,7 +1215,7 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
 
         if self.should_persist() {
             // Schedule the snapshot job
-            turbo_tasks.schedule_backend_background_job(BACKEND_JOB_INITIAL_SNAPSHOT);
+            turbo_tasks.schedule_backend_background_job(TurboTasksBackendJob::InitialSnapshot);
         }
     }
 
@@ -1216,6 +1230,9 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
         {
             self.is_idle.store(false, Ordering::Release);
             self.verify_aggregation_graph(turbo_tasks, false);
+        }
+        if self.should_persist() {
+            self.snapshot();
         }
         self.task_cache.drop_contents();
         drop_contents(&self.transient_tasks);
@@ -1271,16 +1288,21 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
             return task_id;
         }
 
-        let tx = self
-            .should_restore()
+        let check_backing_storage =
+            self.should_restore() && self.local_is_partial.load(Ordering::Acquire);
+        let tx = check_backing_storage
             .then(|| self.backing_storage.start_read_transaction())
             .flatten();
         let task_id = {
             // Safety: `tx` is a valid transaction from `self.backend.backing_storage`.
             if let Some(task_id) = unsafe {
-                self.backing_storage
-                    .forward_lookup_task_cache(tx.as_ref(), &task_type)
-                    .expect("Failed to lookup task id")
+                check_backing_storage
+                    .then(|| {
+                        self.backing_storage
+                            .forward_lookup_task_cache(tx.as_ref(), &task_type)
+                            .expect("Failed to lookup task id")
+                    })
+                    .flatten()
             } {
                 self.track_cache_hit(&task_type);
                 let _ = self.task_cache.try_insert(Arc::new(task_type), task_id);
@@ -2121,79 +2143,118 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
 
     fn run_backend_job<'a>(
         self: &'a Arc<Self>,
-        id: BackendJobId,
+        job: TurboTasksBackendJob,
         turbo_tasks: &'a dyn TurboTasksBackendApi<TurboTasksBackend<B>>,
     ) -> Pin<Box<dyn Future<Output = ()> + Send + 'a>> {
         Box::pin(async move {
-            if id == BACKEND_JOB_INITIAL_SNAPSHOT || id == BACKEND_JOB_FOLLOW_UP_SNAPSHOT {
-                debug_assert!(self.should_persist());
+            match job {
+                TurboTasksBackendJob::InitialSnapshot | TurboTasksBackendJob::FollowUpSnapshot => {
+                    debug_assert!(self.should_persist());
 
-                let last_snapshot = self.last_snapshot.load(Ordering::Relaxed);
-                let mut last_snapshot = self.start_time + Duration::from_millis(last_snapshot);
-                loop {
-                    const FIRST_SNAPSHOT_WAIT: Duration = Duration::from_secs(300);
-                    const SNAPSHOT_INTERVAL: Duration = Duration::from_secs(120);
-                    const IDLE_TIMEOUT: Duration = Duration::from_secs(2);
+                    let last_snapshot = self.last_snapshot.load(Ordering::Relaxed);
+                    let mut last_snapshot = self.start_time + Duration::from_millis(last_snapshot);
+                    loop {
+                        const FIRST_SNAPSHOT_WAIT: Duration = Duration::from_secs(300);
+                        const SNAPSHOT_INTERVAL: Duration = Duration::from_secs(120);
+                        const IDLE_TIMEOUT: Duration = Duration::from_secs(2);
 
-                    let time = if id == BACKEND_JOB_INITIAL_SNAPSHOT {
-                        FIRST_SNAPSHOT_WAIT
-                    } else {
-                        SNAPSHOT_INTERVAL
-                    };
-
-                    let until = last_snapshot + time;
-                    if until > Instant::now() {
-                        let mut stop_listener = self.stopping_event.listen();
-                        if self.stopping.load(Ordering::Acquire) {
-                            return;
-                        }
-                        let mut idle_start_listener = self.idle_start_event.listen();
-                        let mut idle_end_listener = self.idle_end_event.listen();
-                        let mut idle_time = if turbo_tasks.is_idle() {
-                            Instant::now() + IDLE_TIMEOUT
+                        let time = if matches!(job, TurboTasksBackendJob::InitialSnapshot) {
+                            FIRST_SNAPSHOT_WAIT
                         } else {
-                            far_future()
+                            SNAPSHOT_INTERVAL
                         };
-                        loop {
-                            tokio::select! {
-                                _ = &mut stop_listener => {
-                                    return;
-                                },
-                                _ = &mut idle_start_listener => {
-                                    idle_time = Instant::now() + IDLE_TIMEOUT;
-                                    idle_start_listener = self.idle_start_event.listen()
-                                },
-                                _ = &mut idle_end_listener => {
-                                    idle_time = until + IDLE_TIMEOUT;
-                                    idle_end_listener = self.idle_end_event.listen()
-                                },
-                                _ = tokio::time::sleep_until(until) => {
-                                    break;
-                                },
-                                _ = tokio::time::sleep_until(idle_time) => {
-                                    if turbo_tasks.is_idle() {
+
+                        let until = last_snapshot + time;
+                        if until > Instant::now() {
+                            let mut stop_listener = self.stopping_event.listen();
+                            if self.stopping.load(Ordering::Acquire) {
+                                return;
+                            }
+                            let mut idle_start_listener = self.idle_start_event.listen();
+                            let mut idle_end_listener = self.idle_end_event.listen();
+                            let mut idle_time = if turbo_tasks.is_idle() {
+                                Instant::now() + IDLE_TIMEOUT
+                            } else {
+                                far_future()
+                            };
+                            loop {
+                                tokio::select! {
+                                    _ = &mut stop_listener => {
+                                        return;
+                                    },
+                                    _ = &mut idle_start_listener => {
+                                        idle_time = Instant::now() + IDLE_TIMEOUT;
+                                        idle_start_listener = self.idle_start_event.listen()
+                                    },
+                                    _ = &mut idle_end_listener => {
+                                        idle_time = until + IDLE_TIMEOUT;
+                                        idle_end_listener = self.idle_end_event.listen()
+                                    },
+                                    _ = tokio::time::sleep_until(until) => {
                                         break;
-                                    }
-                                },
+                                    },
+                                    _ = tokio::time::sleep_until(idle_time) => {
+                                        if turbo_tasks.is_idle() {
+                                            break;
+                                        }
+                                    },
+                                }
                             }
                         }
-                    }
 
-                    let this = self.clone();
-                    let snapshot = this.snapshot();
-                    if let Some((snapshot_start, new_data)) = snapshot {
-                        last_snapshot = snapshot_start;
-                        if new_data {
-                            continue;
+                        let this = self.clone();
+                        let snapshot = this.snapshot();
+                        if let Some((snapshot_start, new_data)) = snapshot {
+                            last_snapshot = snapshot_start;
+                            if new_data {
+                                continue;
+                            }
+                            let last_snapshot = last_snapshot.duration_since(self.start_time);
+                            self.last_snapshot.store(
+                                last_snapshot.as_millis().try_into().unwrap(),
+                                Ordering::Relaxed,
+                            );
+
+                            turbo_tasks.schedule_backend_background_job(
+                                TurboTasksBackendJob::FollowUpSnapshot,
+                            );
+                            return;
                         }
-                        let last_snapshot = last_snapshot.duration_since(self.start_time);
-                        self.last_snapshot.store(
-                            last_snapshot.as_millis().try_into().unwrap(),
-                            Ordering::Relaxed,
-                        );
+                    }
+                }
+                TurboTasksBackendJob::Prefetch { data, range } => {
+                    let range = if let Some(range) = range {
+                        range
+                    } else {
+                        if data.len() > 128 {
+                            let chunk_size = good_chunk_size(data.len());
+                            let chunks = data.len().div_ceil(chunk_size);
+                            for i in 0..chunks {
+                                turbo_tasks.schedule_backend_foreground_job(
+                                    TurboTasksBackendJob::Prefetch {
+                                        data: data.clone(),
+                                        range: Some(
+                                            (i * chunk_size)..min(data.len(), (i + 1) * chunk_size),
+                                        ),
+                                    },
+                                );
+                            }
+                            return;
+                        }
+                        0..data.len()
+                    };
 
-                        turbo_tasks.schedule_backend_background_job(BACKEND_JOB_FOLLOW_UP_SNAPSHOT);
-                        return;
+                    let _span = info_span!("prefetching").entered();
+                    let mut ctx = self.execute_context(turbo_tasks);
+                    for i in range {
+                        let (&task, &with_data) = data.get_index(i).unwrap();
+                        let category = if with_data {
+                            TaskDataCategory::All
+                        } else {
+                            TaskDataCategory::Meta
+                        };
+                        // Prefetch the task
+                        drop(ctx.task(task, category));
                     }
                 }
             }
@@ -2884,12 +2945,14 @@ impl<B: BackingStorage> Backend for TurboTasksBackend<B> {
         )
     }
 
+    type BackendJob = TurboTasksBackendJob;
+
     fn run_backend_job<'a>(
         &'a self,
-        id: BackendJobId,
+        job: Self::BackendJob,
         turbo_tasks: &'a dyn TurboTasksBackendApi<Self>,
     ) -> Pin<Box<dyn Future<Output = ()> + Send + 'a>> {
-        self.0.run_backend_job(id, turbo_tasks)
+        self.0.run_backend_job(job, turbo_tasks)
     }
 
     fn try_read_task_output(

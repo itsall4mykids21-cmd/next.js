@@ -153,7 +153,7 @@ import { createInitialRouterState } from '../../client/components/router-reducer
 import { createMutableActionQueue } from '../../client/components/app-router-instance'
 import { getRevalidateReason } from '../instrumentation/utils'
 import { PAGE_SEGMENT_KEY } from '../../shared/lib/segment'
-import type { FallbackRouteParams } from '../request/fallback-params'
+import type { OpaqueFallbackRouteParams } from '../request/fallback-params'
 import {
   prerenderAndAbortInSequentialTasksWithStages,
   processPrelude,
@@ -343,16 +343,19 @@ function parseRequestHeaders(
 function createNotFoundLoaderTree(loaderTree: LoaderTree): LoaderTree {
   const components = loaderTree[2]
   const hasGlobalNotFound = !!components['global-not-found']
+  const notFoundTreeComponents: LoaderTree[2] = hasGlobalNotFound
+    ? {
+        layout: components['global-not-found']!,
+        page: [() => null, 'next/dist/client/components/builtin/empty-stub'],
+      }
+    : {
+        page: components['not-found'],
+      }
+
   return [
     '',
     {
-      children: [
-        PAGE_SEGMENT_KEY,
-        {},
-        {
-          page: components['global-not-found'] ?? components['not-found'],
-        },
-      ],
+      children: [PAGE_SEGMENT_KEY, {}, notFoundTreeComponents],
     },
     // When global-not-found is present, skip layout from components
     hasGlobalNotFound ? components : {},
@@ -365,7 +368,7 @@ function createNotFoundLoaderTree(loaderTree: LoaderTree): LoaderTree {
 function makeGetDynamicParamFromSegment(
   params: { [key: string]: any },
   pagePath: string,
-  fallbackRouteParams: FallbackRouteParams | null
+  fallbackRouteParams: OpaqueFallbackRouteParams | null
 ): GetDynamicParamFromSegment {
   return function getDynamicParamFromSegment(
     // [slug] / [[slug]] / [...slug]
@@ -430,7 +433,9 @@ async function generateDynamicRSCPayload(
 
   const {
     componentMod: {
-      tree: loaderTree,
+      routeModule: {
+        userland: { loaderTree },
+      },
       createMetadataComponents,
       MetadataBoundary,
       ViewportBoundary,
@@ -619,10 +624,14 @@ async function generateRuntimePrefetchResult(
   const generatePayload = () => generateDynamicRSCPayload(ctx, undefined)
 
   const {
-    componentMod: { tree },
+    componentMod: {
+      routeModule: {
+        userland: { loaderTree },
+      },
+    },
     getDynamicParamFromSegment,
   } = ctx
-  const rootParams = getRootParams(tree, getDynamicParamFromSegment)
+  const rootParams = getRootParams(loaderTree, getDynamicParamFromSegment)
 
   // We need to share caches between the prospective prerender and the final prerender,
   // but we're not going to persist this anywhere.
@@ -953,7 +962,7 @@ async function warmupDevRender(
   }
 
   const rootParams = getRootParams(
-    ComponentMod.tree,
+    ComponentMod.routeModule.userland.loaderTree,
     getDynamicParamFromSegment
   )
 
@@ -1171,7 +1180,6 @@ async function getRSCPayload(
     // See the comment above the `Preloads` component (below) for why this is part of the payload
     P: <Preloads preloadCallbacks={preloadCallbacks} />,
     b: ctx.sharedContext.buildId,
-    p: ctx.assetPrefix,
     c: prepareInitialCanonicalUrl(url),
     i: !!couldBeIntercepted,
     f: [
@@ -1280,6 +1288,7 @@ async function getErrorRSCPayload(
     {},
     null,
     false,
+    false, // We don't currently support runtime prefetching for error pages.
   ]
 
   const { GlobalError, styles: globalErrorStyles } = await getGlobalErrorStyles(
@@ -1293,7 +1302,6 @@ async function getErrorRSCPayload(
 
   return {
     b: ctx.sharedContext.buildId,
-    p: ctx.assetPrefix,
     c: prepareInitialCanonicalUrl(url),
     m: undefined,
     i: false,
@@ -1372,11 +1380,7 @@ function App<T>({
       }}
     >
       <ServerInsertedHTMLProvider>
-        <AppRouter
-          actionQueue={actionQueue}
-          globalErrorState={response.G}
-          assetPrefix={response.p}
-        />
+        <AppRouter actionQueue={actionQueue} globalErrorState={response.G} />
       </ServerInsertedHTMLProvider>
     </HeadManagerContext.Provider>
   )
@@ -1426,11 +1430,7 @@ function ErrorApp<T>({
 
   return (
     <ServerInsertedHTMLProvider>
-      <AppRouter
-        actionQueue={actionQueue}
-        globalErrorState={response.G}
-        assetPrefix={response.p}
-      />
+      <AppRouter actionQueue={actionQueue} globalErrorState={response.G} />
     </ServerInsertedHTMLProvider>
   )
 }
@@ -1454,7 +1454,7 @@ async function renderToHTMLOrFlightImpl(
   postponedState: PostponedState | null,
   serverComponentsHmrCache: ServerComponentsHmrCache | undefined,
   sharedContext: AppSharedContext,
-  fallbackRouteParams: FallbackRouteParams | null
+  fallbackRouteParams: OpaqueFallbackRouteParams | null
 ) {
   const isNotFoundPath = pagePath === '/404'
   if (isNotFoundPath) {
@@ -1542,7 +1542,7 @@ async function renderToHTMLOrFlightImpl(
   if (process.env.NODE_ENV === 'development') {
     // reset isr status at start of request
     const { pathname } = new URL(req.url || '/', 'http://n')
-    renderOpts.setIsrStatus?.(pathname, null)
+    renderOpts.setIsrStatus?.(pathname, false)
   }
 
   if (
@@ -1599,7 +1599,12 @@ async function renderToHTMLOrFlightImpl(
   ComponentMod.patchFetch()
 
   // Pull out the hooks/references from the component.
-  const { tree: loaderTree, taintObjectReference } = ComponentMod
+  const {
+    routeModule: {
+      userland: { loaderTree },
+    },
+    taintObjectReference,
+  } = ComponentMod
   if (enableTainting) {
     taintObjectReference(
       'Do not pass process.env to Client Components since it will leak sensitive data',
@@ -1777,7 +1782,9 @@ async function renderToHTMLOrFlightImpl(
   } else {
     // We're rendering dynamically
     const renderResumeDataCache =
-      renderOpts.renderResumeDataCache ?? postponedState?.renderResumeDataCache
+      renderOpts.renderResumeDataCache ??
+      postponedState?.renderResumeDataCache ??
+      null
 
     const rootParams = getRootParams(loaderTree, ctx.getDynamicParamFromSegment)
     const devValidatingFallbackParams =
@@ -1838,6 +1845,9 @@ async function renderToHTMLOrFlightImpl(
 
     let formState: null | any = null
     if (isPossibleActionRequest) {
+      // For action requests, we don't want to use the resume data cache.
+      requestStore.renderResumeDataCache = null
+
       // For action requests, we handle them differently with a special render result.
       const actionRequestResult = await handleAction({
         req,
@@ -1882,6 +1892,9 @@ async function renderToHTMLOrFlightImpl(
           }
         }
       }
+
+      // Restore the resume data cache
+      requestStore.renderResumeDataCache = renderResumeDataCache
     }
 
     const options: RenderResultOptions = {
@@ -1937,7 +1950,7 @@ export type AppPageRender = (
   res: BaseNextResponse,
   pagePath: string,
   query: NextParsedUrlQuery,
-  fallbackRouteParams: FallbackRouteParams | null,
+  fallbackRouteParams: OpaqueFallbackRouteParams | null,
   renderOpts: RenderOpts,
   serverComponentsHmrCache: ServerComponentsHmrCache | undefined,
   isDevWarmup: boolean,
@@ -1984,6 +1997,7 @@ export const renderToHTMLOrFlight: AppPageRender = (
 
     postponedState = parsePostponedState(
       renderOpts.postponed,
+      pagePath,
       renderOpts.params
     )
   }
@@ -2065,7 +2079,7 @@ function applyMetadataFromPrerenderResult(
   }
 
   // provide bailout info for debugging
-  if (metadata.cacheControl?.revalidate === 0) {
+  if (metadata.cacheControl.revalidate === 0) {
     metadata.staticBailoutInfo = {
       description: workStore.dynamicUsageDescription,
       stack: workStore.dynamicUsageStack,
@@ -2082,7 +2096,7 @@ async function renderToStream(
   formState: any,
   postponedState: PostponedState | null,
   metadata: AppPageRenderResultMetadata,
-  devValidatingFallbackParams: FallbackRouteParams | null
+  devValidatingFallbackParams: OpaqueFallbackRouteParams | null
 ): Promise<ReadableStream<Uint8Array>> {
   const { assetPrefix, nonce, pagePath, renderOpts } = ctx
 
@@ -2591,7 +2605,7 @@ async function spawnDynamicValidationInDev(
   isNotFound: boolean,
   clientReferenceManifest: NonNullable<RenderOpts['clientReferenceManifest']>,
   requestStore: RequestStore,
-  fallbackRouteParams: FallbackRouteParams | null
+  fallbackRouteParams: OpaqueFallbackRouteParams | null
 ): Promise<void> {
   const {
     componentMod: ComponentMod,
@@ -2610,7 +2624,7 @@ async function spawnDynamicValidationInDev(
   const { ServerInsertedHTMLProvider } = createServerInsertedHTML()
 
   const rootParams = getRootParams(
-    ComponentMod.tree,
+    ComponentMod.routeModule.userland.loaderTree,
     getDynamicParamFromSegment
   )
 
@@ -3203,7 +3217,7 @@ async function prerenderToStream(
   ctx: AppRenderContext,
   metadata: AppPageRenderResultMetadata,
   tree: LoaderTree,
-  fallbackRouteParams: FallbackRouteParams | null
+  fallbackRouteParams: OpaqueFallbackRouteParams | null
 ): Promise<PrerenderToStreamResult> {
   // When prerendering formState is always null. We still include it
   // because some shared APIs expect a formState value and this is slightly
@@ -3510,6 +3524,7 @@ async function prerenderToStream(
         'abort',
         () => {
           initialServerRenderController.abort()
+          initialServerPrerenderController.abort()
         },
         { once: true }
       )
@@ -3926,12 +3941,15 @@ async function prerenderToStream(
               ? DynamicHTMLPreludeState.Empty
               : DynamicHTMLPreludeState.Full,
             fallbackRouteParams,
-            resumeDataCache
+            resumeDataCache,
+            experimental.cacheComponents
           )
         } else {
           // Dynamic Data case
-          metadata.postponed =
-            await getDynamicDataPostponedState(resumeDataCache)
+          metadata.postponed = await getDynamicDataPostponedState(
+            resumeDataCache,
+            experimental.cacheComponents
+          )
         }
         reactServerResult.consume()
         return {
@@ -4149,12 +4167,14 @@ async function prerenderToStream(
               ? DynamicHTMLPreludeState.Empty
               : DynamicHTMLPreludeState.Full,
             fallbackRouteParams,
-            prerenderResumeDataCache
+            prerenderResumeDataCache,
+            experimental.cacheComponents
           )
         } else {
           // Dynamic Data case.
           metadata.postponed = await getDynamicDataPostponedState(
-            prerenderResumeDataCache
+            prerenderResumeDataCache,
+            experimental.cacheComponents
           )
         }
         // Regardless of whether this is the Dynamic HTML or Dynamic Data case we need to ensure we include
@@ -4179,7 +4199,8 @@ async function prerenderToStream(
       } else if (fallbackRouteParams && fallbackRouteParams.size > 0) {
         // Rendering the fallback case.
         metadata.postponed = await getDynamicDataPostponedState(
-          prerenderResumeDataCache
+          prerenderResumeDataCache,
+          experimental.cacheComponents
         )
 
         return {

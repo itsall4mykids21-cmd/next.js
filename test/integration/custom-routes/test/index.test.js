@@ -2428,8 +2428,10 @@ const runTests = (isDev = false) => {
            "fallback": [],
          },
          "rsc": {
+           "clientParamParsing": false,
            "contentTypeHeader": "text/x-component",
            "didPostponeHeader": "x-nextjs-postponed",
+           "dynamicRSCPrerender": false,
            "header": "rsc",
            "prefetchHeader": "next-router-prefetch",
            "prefetchSegmentDirSuffix": ".segments",
