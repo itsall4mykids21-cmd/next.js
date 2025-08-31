@@ -116,7 +116,7 @@ pub fn value_trait(args: TokenStream, input: TokenStream) -> TokenStream {
                             }
                             // We allow either `&self` or `self: Vc<Self>`
                             // we cannot really validate Vc<Self> so instead we simply assume that
-                            // any type
+                            // any type that isn't a reference is Vc<Self>
                             continue;
                         }
                         FnArg::Typed(pat) => match &*pat.pat {
