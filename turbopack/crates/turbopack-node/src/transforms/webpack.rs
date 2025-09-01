@@ -521,6 +521,13 @@ impl EvaluateContext for WebpackLoaderContext {
                             .await
                     })
                     .try_join();
+
+                println!(
+                    "glob {:?}\n{:#?}\n{:#?}",
+                    self.cwd.value_to_string().await?,
+                    file_paths,
+                    directories
+                );
                 let build_paths = build_file_paths
                     .iter()
                     .map(|path| async move { self.cwd.join(path) })
