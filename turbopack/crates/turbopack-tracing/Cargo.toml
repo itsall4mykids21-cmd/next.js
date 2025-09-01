@@ -32,7 +32,6 @@ turbo-tasks-malloc = { workspace = true, default-features = false }
 turbo-tasks-backend = { workspace = true }
 turbopack-core = { workspace = true }
 turbopack-resolve = { workspace = true }
-turbopack = { workspace = true }
 
 criterion = { workspace = true, features = ["async_tokio"] }
 difference = "2.0"
