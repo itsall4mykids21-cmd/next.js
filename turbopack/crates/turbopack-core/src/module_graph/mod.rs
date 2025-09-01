@@ -2111,7 +2111,7 @@ pub mod tests {
     impl Module for MockModule {
         #[turbo_tasks::function]
         fn ident(&self) -> Vc<AssetIdent> {
-            AssetIdent::from_path(self.path.clone())
+            AssetIdent::new(AssetIdent::from_path(self.path.clone()))
         }
 
         #[turbo_tasks::function]

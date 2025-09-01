@@ -126,15 +126,13 @@ impl ProcessCss for CssModuleAsset {
 impl Module for CssModuleAsset {
     #[turbo_tasks::function]
     async fn ident(&self) -> Result<Vc<AssetIdent>> {
-        let mut ident = self
-            .source
-            .ident()
-            .with_modifier(rcstr!("css"))
-            .with_layer(self.asset_context.into_trait_ref().await?.layer());
+        let mut ident = self.source.ident().owned().await?;
+        ident.add_modifier(rcstr!("css"));
+        ident.layer = Some(self.asset_context.into_trait_ref().await?.layer());
         if let Some(import_context) = self.import_context {
-            ident = ident.with_modifier(import_context.modifier().owned().await?)
+            ident.add_modifier(import_context.modifier().owned().await?)
         }
-        Ok(ident)
+        Ok(AssetIdent::new(ident))
     }
 
     #[turbo_tasks::function]

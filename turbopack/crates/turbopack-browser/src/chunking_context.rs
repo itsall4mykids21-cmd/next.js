@@ -594,20 +594,19 @@ impl ChunkingContext for BrowserChunkingContext {
                 .await?;
 
             if this.enable_hot_module_replacement {
-                let mut ident = ident;
+                let mut ident = ident.owned().await?;
                 match input_availability_info {
                     AvailabilityInfo::Root => {}
                     AvailabilityInfo::Untracked => {
-                        ident = ident.with_modifier(rcstr!("untracked"));
+                        ident.add_modifier(rcstr!("untracked"));
                     }
                     AvailabilityInfo::Complete { available_modules } => {
-                        ident =
-                            ident.with_modifier(available_modules.hash().await?.to_string().into());
+                        ident.add_modifier(available_modules.hash().await?.to_string().into());
                     }
                 }
                 assets.push(
                     self.generate_chunk_list_register_chunk(
-                        ident,
+                        AssetIdent::new(ident),
                         EvaluatableAssets::empty(),
                         Vc::cell(assets.clone()),
                         EcmascriptDevChunkListSource::Dynamic,

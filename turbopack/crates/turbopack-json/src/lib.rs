@@ -47,8 +47,10 @@ impl JsonModuleAsset {
 #[turbo_tasks::value_impl]
 impl Module for JsonModuleAsset {
     #[turbo_tasks::function]
-    fn ident(&self) -> Vc<AssetIdent> {
-        self.source.ident().with_modifier(rcstr!("json"))
+    async fn ident(&self) -> Result<Vc<AssetIdent>> {
+        let mut ident = self.source.ident().owned().await?;
+        ident.add_modifier(rcstr!("json"));
+        Ok(AssetIdent::new(ident))
     }
 }
 

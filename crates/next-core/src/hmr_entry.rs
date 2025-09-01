@@ -29,12 +29,12 @@ use turbopack_ecmascript::{
 /// This produces the 'base' ident for the HMR entry point, which is then modified
 #[turbo_tasks::function]
 async fn hmr_entry_point_base_ident() -> Result<Vc<AssetIdent>> {
-    Ok(AssetIdent::from_path(
+    Ok(AssetIdent::new(AssetIdent::from_path(
         VirtualFileSystem::new_with_name(rcstr!("hmr-entry"))
             .root()
             .await?
             .join("hmr-entry.js")?,
-    ))
+    )))
 }
 
 #[turbo_tasks::value(shared)]
@@ -57,8 +57,10 @@ impl HmrEntryModule {
 #[turbo_tasks::value_impl]
 impl Module for HmrEntryModule {
     #[turbo_tasks::function]
-    fn ident(&self) -> Vc<AssetIdent> {
-        hmr_entry_point_base_ident().with_asset(rcstr!("ENTRY"), *self.ident)
+    async fn ident(&self) -> Result<Vc<AssetIdent>> {
+        let mut ident = hmr_entry_point_base_ident().owned().await?;
+        ident.add_asset(rcstr!("ENTRY"), self.ident);
+        Ok(AssetIdent::new(ident))
     }
 
     #[turbo_tasks::function]

@@ -51,10 +51,9 @@ impl Source for DataUriSource {
                 &self.encoding
             )))[0..6]
         );
-        Ok(
-            AssetIdent::from_path(self.lookup_path.join(&filename)?)
-                .with_content_type(content_type),
-        )
+        let mut ident = AssetIdent::from_path(self.lookup_path.join(&filename)?);
+        ident.content_type = Some(content_type);
+        Ok(AssetIdent::new(ident))
     }
 }
 

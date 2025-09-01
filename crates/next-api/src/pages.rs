@@ -759,7 +759,7 @@ impl PageEndpoint {
         ) && let Some(chunkable) = Vc::try_resolve_downcast(page_loader).await?
         {
             return Ok(Vc::upcast(HmrEntryModule::new(
-                AssetIdent::from_path(this.page.await?.base_path.clone()),
+                AssetIdent::new(AssetIdent::from_path(this.page.await?.base_path.clone())),
                 chunkable,
             )));
         }
@@ -859,7 +859,7 @@ impl PageEndpoint {
                 .map(|m| ResolvedVc::upcast(*m))
                 .collect();
             let client_chunk_group = client_chunking_context.evaluated_chunk_group(
-                AssetIdent::from_path(this.page.await?.base_path.clone()),
+                AssetIdent::new(AssetIdent::from_path(this.page.await?.base_path.clone())),
                 ChunkGroup::Entry(evaluatable_assets),
                 module_graph,
                 AvailabilityInfo::Root,

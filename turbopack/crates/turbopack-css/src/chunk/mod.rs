@@ -243,7 +243,9 @@ pub struct CssChunkContent {
 impl Chunk for CssChunk {
     #[turbo_tasks::function]
     async fn ident(self: Vc<Self>) -> Result<Vc<AssetIdent>> {
-        Ok(AssetIdent::from_path(self.path().owned().await?))
+        Ok(AssetIdent::new(AssetIdent::from_path(
+            self.path().owned().await?,
+        )))
     }
 
     #[turbo_tasks::function]

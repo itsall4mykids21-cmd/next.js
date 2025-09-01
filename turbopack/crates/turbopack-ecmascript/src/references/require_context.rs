@@ -400,10 +400,12 @@ fn modifier(dir: &RcStr, include_subdirs: bool) -> RcStr {
 #[turbo_tasks::value_impl]
 impl Module for RequireContextAsset {
     #[turbo_tasks::function]
-    fn ident(&self) -> Vc<AssetIdent> {
-        self.source
-            .ident()
-            .with_modifier(modifier(&self.dir, self.include_subdirs))
+    async fn ident(&self) -> Result<Vc<AssetIdent>> {
+        let mut ident = self.source.ident().owned().await?;
+        ident
+            .modifiers
+            .push(modifier(&self.dir, self.include_subdirs));
+        Ok(AssetIdent::new(ident))
     }
 
     #[turbo_tasks::function]

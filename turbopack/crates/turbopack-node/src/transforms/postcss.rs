@@ -285,12 +285,12 @@ impl JsonSource {
 impl Source for JsonSource {
     #[turbo_tasks::function]
     async fn ident(&self) -> Result<Vc<AssetIdent>> {
-        match &*self.key.await? {
-            Some(key) => Ok(AssetIdent::from_path(
-                self.path.append(".")?.append(key)?.append(".json")?,
-            )),
-            None => Ok(AssetIdent::from_path(self.path.append(".json")?)),
-        }
+        Ok(AssetIdent::new(AssetIdent::from_path(
+            match &*self.key.await? {
+                Some(key) => self.path.append(".")?.append(key)?.append(".json")?,
+                None => self.path.append(".json")?,
+            },
+        )))
     }
 }
 

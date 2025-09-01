@@ -190,10 +190,10 @@ pub fn ecmascript_client_reference_merge_tag_ssr() -> RcStr {
 impl Module for EcmascriptClientReferenceModule {
     #[turbo_tasks::function]
     async fn ident(&self) -> Result<Vc<AssetIdent>> {
-        Ok(self
-            .server_ident
-            .with_modifier(rcstr!("client reference proxy"))
-            .with_layer(self.server_asset_context.into_trait_ref().await?.layer()))
+        let mut ident = self.server_ident.owned().await?;
+        ident.add_modifier(rcstr!("client reference proxy"));
+        ident.layer = Some(self.server_asset_context.into_trait_ref().await?.layer());
+        Ok(AssetIdent::new(ident))
     }
 
     #[turbo_tasks::function]

@@ -98,9 +98,21 @@ impl AssetIdent {
 
     pub async fn rename_as_ref(&mut self, pattern: &str) -> Result<()> {
         let root = self.path.root().await?;
-        let path = self.path.clone();
-        self.path = root.join(&pattern.replace('*', &path.path))?;
+        self.path = root.join(&pattern.replace('*', &self.path.path))?;
         Ok(())
+    }
+    /// Creates an [AssetIdent] from a [FileSystemPath]
+    pub fn from_path(path: FileSystemPath) -> Self {
+        AssetIdent {
+            path,
+            query: RcStr::default(),
+            fragment: RcStr::default(),
+            assets: Vec::new(),
+            modifiers: Vec::new(),
+            parts: Vec::new(),
+            layer: None,
+            content_type: None,
+        }
     }
 }
 
@@ -117,84 +129,6 @@ impl AssetIdent {
             "query should be empty or start with a `?`"
         );
         ReadRef::cell(ident)
-    }
-
-    /// Creates an [AssetIdent] from a [FileSystemPath]
-    #[turbo_tasks::function]
-    pub fn from_path(path: FileSystemPath) -> Vc<Self> {
-        Self::new(AssetIdent {
-            path,
-            query: RcStr::default(),
-            fragment: RcStr::default(),
-            assets: Vec::new(),
-            modifiers: Vec::new(),
-            parts: Vec::new(),
-            layer: None,
-            content_type: None,
-        })
-    }
-
-    #[turbo_tasks::function]
-    pub fn with_query(&self, query: RcStr) -> Vc<Self> {
-        let mut this = self.clone();
-        this.query = query;
-        Self::new(this)
-    }
-
-    #[turbo_tasks::function]
-    pub fn with_fragment(&self, fragment: RcStr) -> Vc<Self> {
-        let mut this = self.clone();
-        this.fragment = fragment;
-        Self::new(this)
-    }
-
-    #[turbo_tasks::function]
-    pub fn with_modifier(&self, modifier: RcStr) -> Vc<Self> {
-        let mut this = self.clone();
-        this.add_modifier(modifier);
-        Self::new(this)
-    }
-
-    #[turbo_tasks::function]
-    pub fn with_part(&self, part: ModulePart) -> Vc<Self> {
-        let mut this = self.clone();
-        this.parts.push(part);
-        Self::new(this)
-    }
-
-    #[turbo_tasks::function]
-    pub fn with_path(&self, path: FileSystemPath) -> Vc<Self> {
-        let mut this = self.clone();
-        this.path = path;
-        Self::new(this)
-    }
-
-    #[turbo_tasks::function]
-    pub fn with_layer(&self, layer: Layer) -> Vc<Self> {
-        let mut this = self.clone();
-        this.layer = Some(layer);
-        Self::new(this)
-    }
-
-    #[turbo_tasks::function]
-    pub fn with_content_type(&self, content_type: RcStr) -> Vc<Self> {
-        let mut this = self.clone();
-        this.content_type = Some(content_type);
-        Self::new(this)
-    }
-
-    #[turbo_tasks::function]
-    pub fn with_asset(&self, key: RcStr, asset: ResolvedVc<AssetIdent>) -> Vc<Self> {
-        let mut this = self.clone();
-        this.add_asset(key, asset);
-        Self::new(this)
-    }
-
-    #[turbo_tasks::function]
-    pub async fn rename_as(&self, pattern: RcStr) -> Result<Vc<Self>> {
-        let mut this = self.clone();
-        this.rename_as_ref(&pattern).await?;
-        Ok(Self::new(this))
     }
 
     #[turbo_tasks::function]

@@ -145,11 +145,12 @@ impl PageLoaderAsset {
     async fn ident_for_path(&self) -> Result<Vc<AssetIdent>> {
         let rebase_prefix_path = self.rebase_prefix_path.await?;
         let root = rebase_prefix_path.as_ref().unwrap_or(&self.server_root);
-        Ok(AssetIdent::from_path(root.join(&format!(
+        let mut ident = AssetIdent::from_path(root.join(&format!(
             "static/chunks/pages{}",
             get_asset_path_from_pathname(&self.pathname, ".js")
-        ))?)
-        .with_modifier(rcstr!("page loader asset")))
+        ))?);
+        ident.add_modifier(rcstr!("page loader asset"));
+        Ok(AssetIdent::new(ident))
     }
 }
 

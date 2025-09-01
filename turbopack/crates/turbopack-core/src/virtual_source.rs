@@ -20,7 +20,9 @@ impl VirtualSource {
     #[turbo_tasks::function]
     pub async fn new(path: FileSystemPath, content: ResolvedVc<AssetContent>) -> Result<Vc<Self>> {
         Ok(Self::cell(VirtualSource {
-            ident: AssetIdent::from_path(path).to_resolved().await?,
+            ident: AssetIdent::new(AssetIdent::from_path(path))
+                .to_resolved()
+                .await?,
             content,
         }))
     }

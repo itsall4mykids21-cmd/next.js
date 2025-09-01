@@ -123,11 +123,10 @@ impl WebAssemblyModuleAsset {
 impl Module for WebAssemblyModuleAsset {
     #[turbo_tasks::function]
     async fn ident(&self) -> Result<Vc<AssetIdent>> {
-        Ok(self
-            .source
-            .ident()
-            .with_modifier(rcstr!("wasm module"))
-            .with_layer(self.asset_context.into_trait_ref().await?.layer()))
+        let mut ident = self.source.ident().owned().await?;
+        ident.add_modifier(rcstr!("wasm module"));
+        ident.layer = Some(self.asset_context.into_trait_ref().await?.layer());
+        Ok(AssetIdent::new(ident))
     }
 
     #[turbo_tasks::function]

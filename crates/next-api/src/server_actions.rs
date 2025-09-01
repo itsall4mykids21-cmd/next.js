@@ -129,7 +129,11 @@ pub(crate) async fn build_server_actions_loader(
     let path = project_path.join(&format!(".next-internal/server/app{page_name}/actions.js"))?;
     let file = File::from(contents.build());
     let source = VirtualSource::new_with_ident(
-        AssetIdent::from_path(path).with_modifier(rcstr!("server actions loader")),
+        {
+            let mut ident = AssetIdent::from_path(path);
+            ident.add_modifier(rcstr!("server actions loader"));
+            AssetIdent::new(ident)
+        },
         AssetContent::file(file.into()),
     );
     let import_map = import_map.into_iter().map(|(k, v)| (v, k)).collect();

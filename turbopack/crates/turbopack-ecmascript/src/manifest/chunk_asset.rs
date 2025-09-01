@@ -96,11 +96,13 @@ impl ManifestAsyncModule {
 
     #[turbo_tasks::function]
     pub async fn content_ident(&self) -> Result<Vc<AssetIdent>> {
-        let mut ident = self.inner.ident();
+        let mut ident = self.inner.ident().owned().await?;
         if let Some(available_modules) = self.availability_info.available_modules() {
-            ident = ident.with_modifier(available_modules.hash().await?.to_string().into());
+            ident
+                .modifiers
+                .push(available_modules.hash().await?.to_string().into());
         }
-        Ok(ident)
+        Ok(AssetIdent::new(ident))
     }
 }
 
@@ -111,10 +113,10 @@ fn manifest_chunk_reference_description() -> RcStr {
 #[turbo_tasks::value_impl]
 impl Module for ManifestAsyncModule {
     #[turbo_tasks::function]
-    fn ident(&self) -> Vc<AssetIdent> {
-        self.inner
-            .ident()
-            .with_modifier(manifest_chunk_reference_description())
+    async fn ident(&self) -> Result<Vc<AssetIdent>> {
+        let mut ident = self.inner.ident().owned().await?;
+        ident.add_modifier(manifest_chunk_reference_description());
+        Ok(AssetIdent::new(ident))
     }
 
     #[turbo_tasks::function]

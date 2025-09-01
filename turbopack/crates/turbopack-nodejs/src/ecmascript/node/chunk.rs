@@ -5,6 +5,7 @@ use turbo_tasks_fs::FileSystemPath;
 use turbopack_core::{
     asset::{Asset, AssetContent},
     chunk::{Chunk, ChunkingContext},
+    ident::AssetIdent,
     introspect::{Introspectable, IntrospectableChildren},
     output::{OutputAsset, OutputAssets},
     source_map::{GenerateSourceMap, OptionStringifiedSourceMap, SourceMapAsset},
@@ -42,7 +43,11 @@ impl EcmascriptBuildNodeChunk {
         let this = self.await?;
         Ok(SourceMapAsset::new(
             Vc::upcast(*this.chunking_context),
-            this.chunk.ident().with_modifier(modifier()),
+            {
+                let mut ident = this.chunk.ident().owned().await?;
+                ident.add_modifier(modifier());
+                AssetIdent::new(ident)
+            },
             Vc::upcast(self),
         ))
     }
@@ -79,10 +84,14 @@ impl OutputAsset for EcmascriptBuildNodeChunk {
     #[turbo_tasks::function]
     async fn path(self: Vc<Self>) -> Result<Vc<FileSystemPath>> {
         let this = self.await?;
-        let ident = this.chunk.ident().with_modifier(modifier());
-        Ok(this
-            .chunking_context
-            .chunk_path(Some(Vc::upcast(self)), ident, None, rcstr!(".js")))
+        let mut ident = this.chunk.ident().owned().await?;
+        ident.add_modifier(modifier());
+        Ok(this.chunking_context.chunk_path(
+            Some(Vc::upcast(self)),
+            AssetIdent::new(ident),
+            None,
+            rcstr!(".js"),
+        ))
     }
 
     #[turbo_tasks::function]

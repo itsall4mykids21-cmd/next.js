@@ -306,8 +306,10 @@ async fn follow_reexports_with_side_effects(
 #[turbo_tasks::value_impl]
 impl Module for EcmascriptModulePartAsset {
     #[turbo_tasks::function]
-    fn ident(&self) -> Vc<AssetIdent> {
-        self.full_module.ident().with_part(self.part.clone())
+    async fn ident(&self) -> Result<Vc<AssetIdent>> {
+        let mut ident = self.full_module.ident().owned().await?;
+        ident.parts.push(self.part.clone());
+        Ok(AssetIdent::new(ident))
     }
 
     #[turbo_tasks::function]

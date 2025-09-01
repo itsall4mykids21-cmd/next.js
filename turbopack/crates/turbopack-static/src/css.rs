@@ -1,3 +1,4 @@
+use anyhow::Result;
 use turbo_rcstr::rcstr;
 use turbo_tasks::{ResolvedVc, Vc};
 use turbopack_core::{
@@ -37,8 +38,10 @@ impl StaticUrlCssModule {
 #[turbo_tasks::value_impl]
 impl Module for StaticUrlCssModule {
     #[turbo_tasks::function]
-    fn ident(&self) -> Vc<AssetIdent> {
-        self.source.ident().with_modifier(rcstr!("static in css"))
+    async fn ident(&self) -> Result<Vc<AssetIdent>> {
+        let mut ident = self.source.ident().owned().await?;
+        ident.add_modifier(rcstr!("static in css"));
+        Ok(AssetIdent::new(ident))
     }
 }
 

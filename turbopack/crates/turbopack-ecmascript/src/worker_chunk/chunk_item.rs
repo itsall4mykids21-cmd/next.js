@@ -37,7 +37,11 @@ impl WorkerLoaderChunkItem {
         let module = self.module.await?;
 
         Ok(self.chunking_context.evaluated_chunk_group_assets(
-            module.inner.ident().with_modifier(rcstr!("worker")),
+            {
+                let mut ident = module.inner.ident().owned().await?;
+                ident.modifiers.push(rcstr!("worker"));
+                AssetIdent::new(ident)
+            },
             ChunkGroup::Isolated(ResolvedVc::upcast(module.inner)),
             *self.module_graph,
             AvailabilityInfo::Root,

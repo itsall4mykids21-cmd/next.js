@@ -109,8 +109,10 @@ struct MdxTransformedAsset {
 #[turbo_tasks::value_impl]
 impl Source for MdxTransformedAsset {
     #[turbo_tasks::function]
-    fn ident(&self) -> Vc<AssetIdent> {
-        self.source.ident().rename_as(rcstr!("*.tsx"))
+    async fn ident(&self) -> Result<Vc<AssetIdent>> {
+        let mut ident = self.source.ident().owned().await?;
+        ident.rename_as_ref("*.tsx").await?;
+        Ok(AssetIdent::new(ident))
     }
 }
 

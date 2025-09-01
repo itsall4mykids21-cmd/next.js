@@ -31,8 +31,10 @@ impl WorkerLoaderModule {
     }
 
     #[turbo_tasks::function]
-    pub fn asset_ident_for(module: Vc<Box<dyn ChunkableModule>>) -> Vc<AssetIdent> {
-        module.ident().with_modifier(rcstr!("worker loader"))
+    pub async fn asset_ident_for(module: Vc<Box<dyn ChunkableModule>>) -> Result<Vc<AssetIdent>> {
+        let mut ident = module.ident().owned().await?;
+        ident.add_modifier(rcstr!("worker loader"));
+        Ok(AssetIdent::new(ident))
     }
 }
 

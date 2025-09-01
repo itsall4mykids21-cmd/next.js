@@ -46,10 +46,10 @@ impl NextServerComponentModule {
 #[turbo_tasks::value_impl]
 impl Module for NextServerComponentModule {
     #[turbo_tasks::function]
-    fn ident(&self) -> Vc<AssetIdent> {
-        self.module
-            .ident()
-            .with_modifier(rcstr!("Next.js Server Component"))
+    async fn ident(&self) -> Result<Vc<AssetIdent>> {
+        let mut ident = self.module.ident().owned().await?;
+        ident.add_modifier(rcstr!("Next.js Server Component"));
+        Ok(AssetIdent::new(ident))
     }
 
     #[turbo_tasks::function]

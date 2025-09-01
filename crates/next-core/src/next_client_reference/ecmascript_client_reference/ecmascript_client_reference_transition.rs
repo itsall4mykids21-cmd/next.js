@@ -4,6 +4,7 @@ use turbopack::{ModuleAssetContext, transition::Transition};
 use turbopack_core::{
     context::ProcessResult,
     file_source::FileSource,
+    ident::AssetIdent,
     reference_type::{EcmaScriptModulesReferenceSubType, EntryReferenceSubType, ReferenceType},
     source::Source,
 };
@@ -52,22 +53,19 @@ impl Transition for NextEcmascriptClientReferenceTransition {
 
         let this = self.await?;
 
-        let ident = match part {
-            Some(part) => source.ident().with_part(part.clone()),
-            None => source.ident(),
-        };
-        let ident_ref = ident.await?;
-        let ident_path = ident_ref.path.clone();
-        let client_source = if ident_path.path.contains("next/dist/esm/") {
-            let path = ident_ref
+        let source_ident = source.ident();
+        let ident = source_ident.await?;
+
+        let client_source = if ident.path.path.contains("next/dist/esm/") {
+            let path = ident
                 .path
                 .root()
                 .await?
-                .join(&ident_path.path.replace("next/dist/esm/", "next/dist/"))?;
+                .join(&ident.path.path.replace("next/dist/esm/", "next/dist/"))?;
             Vc::upcast(FileSource::new_with_query_and_fragment(
                 path,
-                ident_ref.query.clone(),
-                ident_ref.fragment.clone(),
+                ident.query.clone(),
+                ident.fragment.clone(),
             ))
         } else {
             source
@@ -116,7 +114,14 @@ impl Transition for NextEcmascriptClientReferenceTransition {
 
         Ok(ProcessResult::Module(ResolvedVc::upcast(
             EcmascriptClientReferenceModule::new(
-                ident,
+                match part {
+                    Some(part) => {
+                        let mut ident = (&*ident).clone();
+                        ident.parts.push(part);
+                        AssetIdent::new(ident)
+                    }
+                    None => source_ident,
+                },
                 Vc::upcast(server_context),
                 *client_module,
                 *ssr_module,

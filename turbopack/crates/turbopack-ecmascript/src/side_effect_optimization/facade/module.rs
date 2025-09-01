@@ -149,8 +149,10 @@ impl EcmascriptModuleFacadeModule {
 #[turbo_tasks::value_impl]
 impl Module for EcmascriptModuleFacadeModule {
     #[turbo_tasks::function]
-    fn ident(&self) -> Vc<AssetIdent> {
-        self.module.ident().with_part(self.part.clone())
+    async fn ident(&self) -> Result<Vc<AssetIdent>> {
+        let mut ident = self.module.ident().owned().await?;
+        ident.parts.push(self.part.clone());
+        Ok(AssetIdent::new(ident))
     }
 
     #[turbo_tasks::function]

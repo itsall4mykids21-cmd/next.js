@@ -45,10 +45,10 @@ fn dynamic_ref_description() -> RcStr {
 #[turbo_tasks::value_impl]
 impl Module for NextDynamicEntryModule {
     #[turbo_tasks::function]
-    fn ident(&self) -> Vc<AssetIdent> {
-        self.module
-            .ident()
-            .with_modifier(rcstr!("next/dynamic entry"))
+    async fn ident(&self) -> Result<Vc<AssetIdent>> {
+        let mut ident = self.module.ident().owned().await?;
+        ident.add_modifier(rcstr!("next/dynamic entry"));
+        Ok(AssetIdent::new(ident))
     }
 
     #[turbo_tasks::function]

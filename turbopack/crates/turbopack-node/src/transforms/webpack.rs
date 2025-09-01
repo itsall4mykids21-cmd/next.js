@@ -158,7 +158,9 @@ impl Source for WebpackLoadersProcessedAsset {
     async fn ident(&self) -> Result<Vc<AssetIdent>> {
         Ok(
             if let Some(rename_as) = self.transform.await?.rename_as.as_deref() {
-                self.source.ident().rename_as(rename_as.into())
+                let mut ident = self.source.ident().owned().await?;
+                ident.rename_as_ref(rename_as).await?;
+                AssetIdent::new(ident)
             } else {
                 self.source.ident()
             },

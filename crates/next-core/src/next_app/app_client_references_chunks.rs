@@ -4,6 +4,7 @@ use turbo_rcstr::rcstr;
 use turbo_tasks::{FxIndexMap, ResolvedVc, TryFlatJoinIterExt, TryJoinIterExt, Vc};
 use turbopack_core::{
     chunk::{ChunkingContext, availability_info::AvailabilityInfo},
+    ident::AssetIdent,
     module::Module,
     module_graph::{ModuleGraph, chunk_group_info::ChunkGroup},
     output::OutputAssets,
@@ -177,7 +178,7 @@ pub async fn get_app_client_references_chunks(
                     )))
                     .await?;
 
-                let base_ident = server_component.ident();
+                let base_ident = server_component.ident().await?;
 
                 let server_path = server_component.server_path().owned().await?;
                 let is_layout = server_path.file_stem() == Some("layout");
@@ -212,7 +213,11 @@ pub async fn get_app_client_references_chunks(
                         .entered();
 
                         ssr_chunking_context.chunk_group(
-                            base_ident.with_modifier(rcstr!("ssr modules")),
+                            {
+                                let mut ident = (&*base_ident).clone();
+                                ident.add_modifier(rcstr!("ssr modules"));
+                                AssetIdent::new(ident)
+                            },
                             ChunkGroup::IsolatedMerged {
                                 parent: parent_chunk_group,
                                 merge_tag: ecmascript_client_reference_merge_tag_ssr(),
@@ -250,7 +255,11 @@ pub async fn get_app_client_references_chunks(
                     .entered();
 
                     Some(client_chunking_context.chunk_group(
-                        base_ident.with_modifier(rcstr!("client modules")),
+                        {
+                            let mut ident = (&*base_ident).clone();
+                            ident.add_modifier(rcstr!("client modules"));
+                            AssetIdent::new(ident)
+                        },
                         ChunkGroup::IsolatedMerged {
                             parent: parent_chunk_group,
                             merge_tag: ecmascript_client_reference_merge_tag(),

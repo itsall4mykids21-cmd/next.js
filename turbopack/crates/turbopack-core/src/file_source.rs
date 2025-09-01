@@ -49,12 +49,12 @@ impl Source for FileSource {
     fn ident(&self) -> Vc<AssetIdent> {
         let mut ident = AssetIdent::from_path(self.path.clone());
         if !self.query.is_empty() {
-            ident = ident.with_query(self.query.clone());
+            ident.query = self.query.clone();
         }
         if !self.fragment.is_empty() {
-            ident = ident.with_fragment(self.fragment.clone());
+            ident.fragment = self.fragment.clone();
         }
-        ident
+        AssetIdent::new(ident)
     }
 }
 
