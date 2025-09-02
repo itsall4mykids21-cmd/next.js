@@ -15,19 +15,15 @@ import { join } from 'path'
 const fixturesDir = join(__dirname, '../..', 'css-fixtures')
 
 describe('CSS Support', () => {
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
-      describe('CSS Import from node_modules', () => {
-        const appDir = join(fixturesDir, 'npm-import-bad')
-        const nextConfig = new File(join(appDir, 'next.config.js'))
+  describe('production mode', () => {
+    describe('CSS Import from node_modules', () => {
+      const appDir = join(fixturesDir, 'npm-import-bad')
+      const nextConfig = new File(join(appDir, 'next.config.js'))
 
-        describe.each([true, false])(
-          `useLightnincsss(%s)`,
-          (useLightningcss) => {
-            beforeAll(async () => {
-              nextConfig.write(
-                `
+      describe.each([true, false])(`useLightnincsss(%s)`, (useLightningcss) => {
+        beforeAll(async () => {
+          nextConfig.write(
+            `
 const config = require('../next.config.js');
 module.exports = {
   ...config,
@@ -35,28 +31,24 @@ module.exports = {
     useLightningcss: ${useLightningcss}
   }
 }`
-              )
-            })
-            beforeAll(async () => {
-              await remove(join(appDir, '.next'))
-            })
+          )
+        })
+        beforeAll(async () => {
+          await remove(join(appDir, '.next'))
+        })
 
-            it('should fail the build', async () => {
-              const { code, stderr } = await nextBuild(appDir, [], {
-                stderr: true,
-              })
+        it('should fail the build', async () => {
+          const { code, stderr } = await nextBuild(appDir, [], {
+            stderr: true,
+          })
 
-              expect(code).toBe(0)
-              expect(stderr).not.toMatch(
-                /Can't resolve '[^']*?nprogress[^']*?'/
-              )
-              expect(stderr).not.toMatch(/Build error occurred/)
-            })
-          }
-        )
+          expect(code).toBe(0)
+          expect(stderr).not.toMatch(/Can't resolve '[^']*?nprogress[^']*?'/)
+          expect(stderr).not.toMatch(/Build error occurred/)
+        })
       })
-    }
-  )
+    })
+  })
 
   // https://github.com/vercel/next.js/issues/18557
   describe('CSS page transition inject <style> with nonce so it works with CSP header', () => {
@@ -208,24 +200,21 @@ module.exports = {
       })
     }
 
-    ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-      'production mode',
-      () => {
-        beforeAll(async () => {
-          await remove(join(appDir, '.next'))
-        })
-        beforeAll(async () => {
-          await nextBuild(appDir, [], {})
-          appPort = await findPort()
-          app = await nextStart(appDir, appPort)
-        })
-        afterAll(async () => {
-          await killApp(app)
-        })
+    describe('production mode', () => {
+      beforeAll(async () => {
+        await remove(join(appDir, '.next'))
+      })
+      beforeAll(async () => {
+        await nextBuild(appDir, [], {})
+        appPort = await findPort()
+        app = await nextStart(appDir, appPort)
+      })
+      afterAll(async () => {
+        await killApp(app)
+      })
 
-        tests()
-      }
-    )
+      tests()
+    })
   })
 
   // Turbopack keeps styles which mirrors development with webpack. This test only checks a behavior for webpack.
@@ -293,24 +282,21 @@ module.exports = {
           })
         }
 
-        ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-          'production mode',
-          () => {
-            beforeAll(async () => {
-              await remove(join(appDir, '.next'))
-            })
-            beforeAll(async () => {
-              await nextBuild(appDir, [], {})
-              appPort = await findPort()
-              app = await nextStart(appDir, appPort)
-            })
-            afterAll(async () => {
-              await killApp(app)
-            })
+        describe('production mode', () => {
+          beforeAll(async () => {
+            await remove(join(appDir, '.next'))
+          })
+          beforeAll(async () => {
+            await nextBuild(appDir, [], {})
+            appPort = await findPort()
+            app = await nextStart(appDir, appPort)
+          })
+          afterAll(async () => {
+            await killApp(app)
+          })
 
-            tests()
-          }
-        )
+          tests()
+        })
       })
     }
   )
@@ -478,38 +464,35 @@ module.exports = {
         })
       }
 
-      ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-        'production mode',
-        () => {
-          beforeAll(async () => {
-            await remove(join(appDir, '.next'))
-          })
-          beforeAll(async () => {
-            await nextBuild(appDir, [], {})
-            appPort = await findPort()
-            app = await nextStart(appDir, appPort)
+      describe('production mode', () => {
+        beforeAll(async () => {
+          await remove(join(appDir, '.next'))
+        })
+        beforeAll(async () => {
+          await nextBuild(appDir, [], {})
+          appPort = await findPort()
+          app = await nextStart(appDir, appPort)
 
-            const buildId = (
-              await readFile(join(appDir, '.next', 'BUILD_ID'), 'utf8')
-            ).trim()
-            const fileName = join(
-              appDir,
-              '.next/static/',
-              buildId,
-              '_buildManifest.js'
-            )
-            if (!(await pathExists(fileName))) {
-              throw new Error('Missing build manifest')
-            }
-            await remove(fileName)
-          })
-          afterAll(async () => {
-            await killApp(app)
-          })
+          const buildId = (
+            await readFile(join(appDir, '.next', 'BUILD_ID'), 'utf8')
+          ).trim()
+          const fileName = join(
+            appDir,
+            '.next/static/',
+            buildId,
+            '_buildManifest.js'
+          )
+          if (!(await pathExists(fileName))) {
+            throw new Error('Missing build manifest')
+          }
+          await remove(fileName)
+        })
+        afterAll(async () => {
+          await killApp(app)
+        })
 
-          tests()
-        }
-      )
+        tests()
+      })
     })
   })
 })

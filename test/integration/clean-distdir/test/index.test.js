@@ -30,35 +30,32 @@ const runTests = () => {
 }
 
 describe('Cleaning distDir', () => {
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
-      beforeAll(() => {
-        fs.removeSync(nextDir)
-      })
+  describe('production mode', () => {
+    beforeAll(() => {
+      fs.removeSync(nextDir)
+    })
 
-      runTests()
+    runTests()
 
-      describe('disabled write', () => {
-        beforeAll(async () => {
-          nextConfigContent = await fs.readFile(nextConfig, 'utf8')
-          await fs.writeFile(
-            nextConfig,
-            `
+    describe('disabled write', () => {
+      beforeAll(async () => {
+        nextConfigContent = await fs.readFile(nextConfig, 'utf8')
+        await fs.writeFile(
+          nextConfig,
+          `
           module.exports = {
             cleanDistDir: false
           }
         `
-          )
-        })
-        afterAll(async () => {
-          await fs.writeFile(nextConfig, nextConfigContent)
-        })
-
-        it('should not clean up .next before build start', async () => {
-          await checkFileWrite(true)
-        })
+        )
       })
-    }
-  )
+      afterAll(async () => {
+        await fs.writeFile(nextConfig, nextConfigContent)
+      })
+
+      it('should not clean up .next before build start', async () => {
+        await checkFileWrite(true)
+      })
+    })
+  })
 })

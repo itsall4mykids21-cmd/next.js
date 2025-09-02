@@ -136,21 +136,18 @@ describe('Unoptimized Image Tests', () => {
 
     runTests('/', 'dev')
   })
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode - component',
-    () => {
-      beforeAll(async () => {
-        await nextBuild(appDir)
-        appPort = await findPort()
-        app = await nextStart(appDir, appPort)
-      })
-      afterAll(async () => {
-        await killApp(app)
-      })
+  describe('production mode - component', () => {
+    beforeAll(async () => {
+      await nextBuild(appDir)
+      appPort = await findPort()
+      app = await nextStart(appDir, appPort)
+    })
+    afterAll(async () => {
+      await killApp(app)
+    })
 
-      runTests('/', 'server')
-    }
-  )
+    runTests('/', 'server')
+  })
   describe('development mode - getImageProps', () => {
     beforeAll(async () => {
       appPort = await findPort()
@@ -162,19 +159,16 @@ describe('Unoptimized Image Tests', () => {
 
     runTests('/get-img-props', 'dev')
   })
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode - getImageProps',
-    () => {
-      beforeAll(async () => {
-        await nextBuild(appDir)
-        appPort = await findPort()
-        app = await nextStart(appDir, appPort)
-      })
-      afterAll(async () => {
-        await killApp(app)
-      })
+  describe('production mode - getImageProps', () => {
+    beforeAll(async () => {
+      await nextBuild(appDir)
+      appPort = await findPort()
+      app = await nextStart(appDir, appPort)
+    })
+    afterAll(async () => {
+      await killApp(app)
+    })
 
-      runTests('/get-img-props', 'server')
-    }
-  )
+    runTests('/get-img-props', 'server')
+  })
 })

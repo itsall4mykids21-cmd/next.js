@@ -42,16 +42,13 @@ const runTests = () => {
     runTests()
   }
 )
-;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-  'production mode',
-  () => {
-    beforeAll(async () => {
-      await nextBuild(appDir)
-      buildId = await fs.readFile(join(appDir, '.next/BUILD_ID'), 'utf8')
-      appPort = await findPort()
-      app = await nextStart(appDir, appPort)
-    })
-    afterAll(() => killApp(app))
-    runTests()
-  }
-)
+describe('production mode', () => {
+  beforeAll(async () => {
+    await nextBuild(appDir)
+    buildId = await fs.readFile(join(appDir, '.next/BUILD_ID'), 'utf8')
+    appPort = await findPort()
+    app = await nextStart(appDir, appPort)
+  })
+  afterAll(() => killApp(app))
+  runTests()
+})

@@ -196,22 +196,19 @@ const runTests = () => {
 }
 
 describe('SSG notFound revalidate', () => {
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
-      beforeAll(async () => {
-        await fs.remove(join(appDir, '.next'))
-        await nextBuild(appDir, undefined, {
-          cwd: appDir,
-        })
-        appPort = await findPort()
-        app = await nextStart(appDir, appPort, {
-          cwd: appDir,
-        })
+  describe('production mode', () => {
+    beforeAll(async () => {
+      await fs.remove(join(appDir, '.next'))
+      await nextBuild(appDir, undefined, {
+        cwd: appDir,
       })
-      afterAll(() => killApp(app))
+      appPort = await findPort()
+      app = await nextStart(appDir, appPort, {
+        cwd: appDir,
+      })
+    })
+    afterAll(() => killApp(app))
 
-      runTests()
-    }
-  )
+    runTests()
+  })
 })

@@ -86,31 +86,28 @@ describe('Custom _error', () => {
       expect(html).toContain('An error 404 occurred on server')
     })
   })
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
-      let buildOutput = ''
+  describe('production mode', () => {
+    let buildOutput = ''
 
-      beforeAll(async () => {
-        const { stdout, stderr } = await nextBuild(appDir, undefined, {
-          stdout: true,
-          stderr: true,
-        })
-        buildOutput = (stdout || '') + (stderr || '')
-        appPort = await findPort()
-        app = await nextStart(appDir, appPort)
+    beforeAll(async () => {
+      const { stdout, stderr } = await nextBuild(appDir, undefined, {
+        stdout: true,
+        stderr: true,
       })
-      afterAll(() => killApp(app))
+      buildOutput = (stdout || '') + (stderr || '')
+      appPort = await findPort()
+      app = await nextStart(appDir, appPort)
+    })
+    afterAll(() => killApp(app))
 
-      it('should not contain /_error in build output', async () => {
-        expect(buildOutput).toMatch(/ƒ .*?\/404/)
-        expect(buildOutput).not.toMatch(/ƒ .*?\/_error/)
-      })
+    it('should not contain /_error in build output', async () => {
+      expect(buildOutput).toMatch(/ƒ .*?\/404/)
+      expect(buildOutput).not.toMatch(/ƒ .*?\/_error/)
+    })
 
-      it('renders custom _error successfully', async () => {
-        const html = await renderViaHTTP(appPort, '/')
-        expect(html).toMatch(/Custom error/)
-      })
-    }
-  )
+    it('renders custom _error successfully', async () => {
+      const html = await renderViaHTTP(appPort, '/')
+      expect(html).toMatch(/Custom error/)
+    })
+  })
 })

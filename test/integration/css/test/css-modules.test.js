@@ -134,80 +134,74 @@ useLightningcss: ${useLightningcss}
 })
 
 describe('should handle unresolved files gracefully', () => {
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
-      const workDir = join(fixturesDir, 'unresolved-css-url')
+  describe('production mode', () => {
+    const workDir = join(fixturesDir, 'unresolved-css-url')
 
-      it('should build correctly', async () => {
-        await remove(join(workDir, '.next'))
-        const { code } = await nextBuild(workDir)
-        expect(code).toBe(0)
-      })
+    it('should build correctly', async () => {
+      await remove(join(workDir, '.next'))
+      const { code } = await nextBuild(workDir)
+      expect(code).toBe(0)
+    })
 
-      it('should have correct file references in CSS output', async () => {
-        const cssFolder = join(workDir, '.next', 'static')
-        const cssFiles = nodeFs
-          .readdirSync(cssFolder, {
-            recursive: true,
-            encoding: 'utf8',
-          })
-          .filter((f) => f.endsWith('.css'))
-          // Ensure the loop is more deterministic
-          .sort()
+    it('should have correct file references in CSS output', async () => {
+      const cssFolder = join(workDir, '.next', 'static')
+      const cssFiles = nodeFs
+        .readdirSync(cssFolder, {
+          recursive: true,
+          encoding: 'utf8',
+        })
+        .filter((f) => f.endsWith('.css'))
+        // Ensure the loop is more deterministic
+        .sort()
 
-        expect(cssFiles).not.toBeEmpty()
+      expect(cssFiles).not.toBeEmpty()
 
-        for (const file of cssFiles) {
-          const content = await readFile(join(cssFolder, file), 'utf8')
+      for (const file of cssFiles) {
+        const content = await readFile(join(cssFolder, file), 'utf8')
 
-          const svgCount = content.match(/\(\/vercel\.svg/g).length
-          expect(svgCount === 1 || svgCount === 2).toBe(true)
+        const svgCount = content.match(/\(\/vercel\.svg/g).length
+        expect(svgCount === 1 || svgCount === 2).toBe(true)
 
-          if (process.env.IS_TURBOPACK_TEST) {
-            // With Turbopack these are combined and the path is relative.
-            const mediaCount = content.match(/\(\.\.\/media/g).length
-            expect(mediaCount === 1 || mediaCount === 2).toBe(true)
-          } else {
-            expect(content.match(/\(\/_next\/static\/media/g).length).toBe(1)
-          }
-          const httpsCount = content.match(/\(https:\/\//g).length
-          expect(httpsCount === 1 || httpsCount === 2).toBe(true)
+        if (process.env.IS_TURBOPACK_TEST) {
+          // With Turbopack these are combined and the path is relative.
+          const mediaCount = content.match(/\(\.\.\/media/g).length
+          expect(mediaCount === 1 || mediaCount === 2).toBe(true)
+        } else {
+          expect(content.match(/\(\/_next\/static\/media/g).length).toBe(1)
         }
-      })
-    }
-  )
+        const httpsCount = content.match(/\(https:\/\//g).length
+        expect(httpsCount === 1 || httpsCount === 2).toBe(true)
+      }
+    })
+  })
 })
 
 describe('Data URLs', () => {
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
-      const workDir = join(fixturesDir, 'data-url')
+  describe('production mode', () => {
+    const workDir = join(fixturesDir, 'data-url')
 
-      it('should compile successfully', async () => {
-        await remove(join(workDir, '.next'))
-        const { code } = await nextBuild(workDir)
-        expect(code).toBe(0)
-      })
+    it('should compile successfully', async () => {
+      await remove(join(workDir, '.next'))
+      const { code } = await nextBuild(workDir)
+      expect(code).toBe(0)
+    })
 
-      it('should have emitted expected files', async () => {
-        const cssFolder = join(workDir, '.next', 'static')
-        const cssFiles = nodeFs
-          .readdirSync(cssFolder, {
-            recursive: true,
-            encoding: 'utf8',
-          })
-          .filter((f) => f.endsWith('.css'))
+    it('should have emitted expected files', async () => {
+      const cssFolder = join(workDir, '.next', 'static')
+      const cssFiles = nodeFs
+        .readdirSync(cssFolder, {
+          recursive: true,
+          encoding: 'utf8',
+        })
+        .filter((f) => f.endsWith('.css'))
 
-        expect(cssFiles.length).toBe(1)
-        const cssContent = await readFile(join(cssFolder, cssFiles[0]), 'utf8')
-        expect(cssContent.replace(/\/\*.*?\*\/n/g, '').trim()).toMatch(
-          /background:url\("?data:[^"]+"?\)/
-        )
-      })
-    }
-  )
+      expect(cssFiles.length).toBe(1)
+      const cssContent = await readFile(join(cssFolder, cssFiles[0]), 'utf8')
+      expect(cssContent.replace(/\/\*.*?\*\/n/g, '').trim()).toMatch(
+        /background:url\("?data:[^"]+"?\)/
+      )
+    })
+  })
 })
 
 describe('Ordering with Global CSS and Modules (dev)', () => {
@@ -310,16 +304,14 @@ useLightningcss: ${useLightningcss}
 })
 
 describe('Ordering with Global CSS and Modules (prod)', () => {
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
-      const appDir = join(fixturesDir, 'global-and-module-ordering')
-      const nextConfig = new File(join(appDir, 'next.config.js'))
+  describe('production mode', () => {
+    const appDir = join(fixturesDir, 'global-and-module-ordering')
+    const nextConfig = new File(join(appDir, 'next.config.js'))
 
-      describe.each([true, false])(`useLightnincsss(%s)`, (useLightningcss) => {
-        beforeAll(async () => {
-          nextConfig.write(
-            `
+    describe.each([true, false])(`useLightnincsss(%s)`, (useLightningcss) => {
+      beforeAll(async () => {
+        nextConfig.write(
+          `
 const config = require('../next.config.js');
 module.exports = {
   ...config,
@@ -327,41 +319,40 @@ module.exports = {
     useLightningcss: ${useLightningcss}
   }
 }`
-          )
-        })
-
-        let appPort
-        let app
-        let stdout
-        let code
-        beforeAll(async () => {
-          await remove(join(appDir, '.next'))
-          ;({ code, stdout } = await nextBuild(appDir, [], {
-            stdout: true,
-          }))
-          appPort = await findPort()
-          app = await nextStart(appDir, appPort)
-        })
-        afterAll(async () => {
-          await killApp(app)
-        })
-
-        it('should have compiled successfully', () => {
-          expect(code).toBe(0)
-          expect(stdout).toMatch(/Compiled successfully/)
-        })
-
-        it('should have the correct color (css ordering)', async () => {
-          const browser = await webdriver(appPort, '/')
-
-          const currentColor = await browser.eval(
-            `window.getComputedStyle(document.querySelector('#blueText')).color`
-          )
-          expect(currentColor).toMatchInlineSnapshot(`"rgb(0, 0, 255)"`)
-        })
+        )
       })
-    }
-  )
+
+      let appPort
+      let app
+      let stdout
+      let code
+      beforeAll(async () => {
+        await remove(join(appDir, '.next'))
+        ;({ code, stdout } = await nextBuild(appDir, [], {
+          stdout: true,
+        }))
+        appPort = await findPort()
+        app = await nextStart(appDir, appPort)
+      })
+      afterAll(async () => {
+        await killApp(app)
+      })
+
+      it('should have compiled successfully', () => {
+        expect(code).toBe(0)
+        expect(stdout).toMatch(/Compiled successfully/)
+      })
+
+      it('should have the correct color (css ordering)', async () => {
+        const browser = await webdriver(appPort, '/')
+
+        const currentColor = await browser.eval(
+          `window.getComputedStyle(document.querySelector('#blueText')).color`
+        )
+        expect(currentColor).toMatchInlineSnapshot(`"rgb(0, 0, 255)"`)
+      })
+    })
+  })
 })
 
 // https://github.com/vercel/next.js/issues/12445
@@ -521,41 +512,35 @@ module.exports = {
         })
       }
 
-      ;(process.env.TURBOPACK_BUILD ? describe.skip : describe)(
-        'development mode',
-        () => {
-          beforeAll(async () => {
-            await remove(join(appDir, '.next'))
-          })
-          beforeAll(async () => {
-            appPort = await findPort()
-            app = await launchApp(appDir, appPort)
-          })
-          afterAll(async () => {
-            await killApp(app)
-          })
+      describe('development mode', () => {
+        beforeAll(async () => {
+          await remove(join(appDir, '.next'))
+        })
+        beforeAll(async () => {
+          appPort = await findPort()
+          app = await launchApp(appDir, appPort)
+        })
+        afterAll(async () => {
+          await killApp(app)
+        })
 
-          tests(true)
-        }
-      )
-      ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-        'production mode',
-        () => {
-          beforeAll(async () => {
-            await remove(join(appDir, '.next'))
-          })
-          beforeAll(async () => {
-            await nextBuild(appDir, [], {})
-            appPort = await findPort()
-            app = await nextStart(appDir, appPort)
-          })
-          afterAll(async () => {
-            await killApp(app)
-          })
+        tests(true)
+      })
+      describe('production mode', () => {
+        beforeAll(async () => {
+          await remove(join(appDir, '.next'))
+        })
+        beforeAll(async () => {
+          await nextBuild(appDir, [], {})
+          appPort = await findPort()
+          app = await nextStart(appDir, appPort)
+        })
+        afterAll(async () => {
+          await killApp(app)
+        })
 
-          tests()
-        }
-      )
+        tests()
+      })
     })
   }
 )

@@ -22,38 +22,32 @@ const runTests = () => {
 }
 
 describe('PORT environment variable', () => {
-  ;(process.env.TURBOPACK_BUILD ? describe.skip : describe)(
-    'development mode',
-    () => {
-      beforeAll(async () => {
-        appPort = await findPort()
-        app = await runNextCommandDev([appDir], undefined, {
-          env: {
-            PORT: appPort,
-          },
-        })
+  describe('development mode', () => {
+    beforeAll(async () => {
+      appPort = await findPort()
+      app = await runNextCommandDev([appDir], undefined, {
+        env: {
+          PORT: appPort,
+        },
       })
-      afterAll(() => killApp(app))
+    })
+    afterAll(() => killApp(app))
 
-      runTests()
-    }
-  )
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
-      beforeAll(async () => {
-        await nextBuild(appDir)
-        appPort = await findPort()
-        app = await runNextCommandDev(['start', appDir], undefined, {
-          env: {
-            PORT: appPort,
-          },
-          nextStart: true,
-        })
+    runTests()
+  })
+  describe('production mode', () => {
+    beforeAll(async () => {
+      await nextBuild(appDir)
+      appPort = await findPort()
+      app = await runNextCommandDev(['start', appDir], undefined, {
+        env: {
+          PORT: appPort,
+        },
+        nextStart: true,
       })
-      afterAll(() => killApp(app))
+    })
+    afterAll(() => killApp(app))
 
-      runTests()
-    }
-  )
+    runTests()
+  })
 })

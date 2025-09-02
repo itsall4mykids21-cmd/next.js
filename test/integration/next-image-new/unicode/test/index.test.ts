@@ -108,39 +108,33 @@ function runTests(mode: 'server' | 'dev') {
 }
 
 describe('Image Component Unicode Image URL', () => {
-  ;(process.env.TURBOPACK_BUILD ? describe.skip : describe)(
-    'development mode',
-    () => {
-      beforeAll(async () => {
-        appPort = await findPort()
-        app = await launchApp(appDir, appPort)
-        browser = await webdriver(appPort, '/')
-      })
-      afterAll(async () => {
-        await killApp(app)
-        if (browser) {
-          browser.close()
-        }
-      })
-      runTests('dev')
-    }
-  )
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
-      beforeAll(async () => {
-        await nextBuild(appDir)
-        appPort = await findPort()
-        app = await nextStart(appDir, appPort)
-        browser = await webdriver(appPort, '/')
-      })
-      afterAll(async () => {
-        await killApp(app)
-        if (browser) {
-          browser.close()
-        }
-      })
-      runTests('server')
-    }
-  )
+  describe('development mode', () => {
+    beforeAll(async () => {
+      appPort = await findPort()
+      app = await launchApp(appDir, appPort)
+      browser = await webdriver(appPort, '/')
+    })
+    afterAll(async () => {
+      await killApp(app)
+      if (browser) {
+        browser.close()
+      }
+    })
+    runTests('dev')
+  })
+  describe('production mode', () => {
+    beforeAll(async () => {
+      await nextBuild(appDir)
+      appPort = await findPort()
+      app = await nextStart(appDir, appPort)
+      browser = await webdriver(appPort, '/')
+    })
+    afterAll(async () => {
+      await killApp(app)
+      if (browser) {
+        browser.close()
+      }
+    })
+    runTests('server')
+  })
 })

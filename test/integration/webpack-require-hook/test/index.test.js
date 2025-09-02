@@ -29,24 +29,21 @@ const appDir = path.join(__dirname, '..')
         expect(stdout).toMatch(/Initialized config/)
       })
     })
-    ;(process.env.TURBOPACK_BUILD ? describe.skip : describe)(
-      'development mode',
-      () => {
-        it('Applies and does not error during development', async () => {
-          let output
-          const handleOutput = (msg) => {
-            output += msg
-          }
-          const appPort = await findPort()
-          const app = await launchApp(appDir, appPort, {
-            onStdout: handleOutput,
-            onStderr: handleOutput,
-          })
-          await renderViaHTTP(appPort, '/')
-          await killApp(app)
-          expect(output).toMatch(/Initialized config/)
+    describe('development mode', () => {
+      it('Applies and does not error during development', async () => {
+        let output
+        const handleOutput = (msg) => {
+          output += msg
+        }
+        const appPort = await findPort()
+        const app = await launchApp(appDir, appPort, {
+          onStdout: handleOutput,
+          onStderr: handleOutput,
         })
-      }
-    )
+        await renderViaHTTP(appPort, '/')
+        await killApp(app)
+        expect(output).toMatch(/Initialized config/)
+      })
+    })
   }
 )

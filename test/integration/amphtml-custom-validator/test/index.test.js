@@ -32,26 +32,23 @@ const appDir = join(__dirname, '../')
         expect(html).toContain('Hello from AMP')
       })
     })
-    ;(process.env.TURBOPACK_BUILD ? describe.skip : describe)(
-      'development mode',
-      () => {
-        it('should run in development mode successfully', async () => {
-          let stderr = ''
+    describe('development mode', () => {
+      it('should run in development mode successfully', async () => {
+        let stderr = ''
 
-          appPort = await findPort()
-          app = await launchApp(appDir, appPort, {
-            onStderr(msg) {
-              stderr += msg || ''
-            },
-          })
-
-          const html = await renderViaHTTP(appPort, '/')
-          await killApp(app)
-
-          expect(stderr).not.toContain('error')
-          expect(html).toContain('Hello from AMP')
+        appPort = await findPort()
+        app = await launchApp(appDir, appPort, {
+          onStderr(msg) {
+            stderr += msg || ''
+          },
         })
-      }
-    )
+
+        const html = await renderViaHTTP(appPort, '/')
+        await killApp(app)
+
+        expect(stderr).not.toContain('error')
+        expect(html).toContain('Hello from AMP')
+      })
+    })
   }
 )

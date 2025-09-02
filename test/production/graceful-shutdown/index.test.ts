@@ -34,9 +34,7 @@ describe('Graceful Shutdown', () => {
 
     runTests(true)
   })
-  ;(process.env.IS_TURBOPACK_TEST && !process.env.TURBOPACK_BUILD
-    ? describe.skip
-    : describe)('production (next start)', () => {
+  describe('production (next start)', () => {
     beforeAll(async () => {
       await nextBuild(appDir)
     })
@@ -48,9 +46,7 @@ describe('Graceful Shutdown', () => {
 
     runTests()
   })
-  ;(process.env.IS_TURBOPACK_TEST && !process.env.TURBOPACK_BUILD
-    ? describe.skip
-    : describe)('production (standalone mode)', () => {
+  describe('production (standalone mode)', () => {
     let next: NextInstance
     let serverFile
 

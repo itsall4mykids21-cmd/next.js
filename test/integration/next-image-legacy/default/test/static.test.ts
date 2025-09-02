@@ -114,49 +114,43 @@ const runTests = () => {
 }
 
 describe('Build Error Tests', () => {
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
-      it('should throw build error when import statement is used with missing file', async () => {
-        await indexPage.replace(
-          '../public/foo/test-rect.jpg',
-          '../public/foo/test-rect-broken.jpg'
-        )
+  describe('production mode', () => {
+    it('should throw build error when import statement is used with missing file', async () => {
+      await indexPage.replace(
+        '../public/foo/test-rect.jpg',
+        '../public/foo/test-rect-broken.jpg'
+      )
 
-        const { stderr } = await nextBuild(appDir, undefined, { stderr: true })
-        await indexPage.restore()
+      const { stderr } = await nextBuild(appDir, undefined, { stderr: true })
+      await indexPage.restore()
 
-        expect(stderr).toContain(
-          "Module not found: Can't resolve '../public/foo/test-rect-broken.jpg"
-        )
-        // should contain the importing module
-        if (process.env.IS_TURBOPACK_TEST) {
-          // For this test with Turbopack the root of the project is the root of the Next.js repository because it's not isolated.
-          expect(stderr).toContain('pages/static-img.js')
-        } else {
-          expect(stderr).toContain('./pages/static-img.js')
-        }
-        // should contain a import trace
-        expect(stderr).not.toContain('Import trace for requested module')
-      })
-    }
-  )
+      expect(stderr).toContain(
+        "Module not found: Can't resolve '../public/foo/test-rect-broken.jpg"
+      )
+      // should contain the importing module
+      if (process.env.IS_TURBOPACK_TEST) {
+        // For this test with Turbopack the root of the project is the root of the Next.js repository because it's not isolated.
+        expect(stderr).toContain('pages/static-img.js')
+      } else {
+        expect(stderr).toContain('./pages/static-img.js')
+      }
+      // should contain a import trace
+      expect(stderr).not.toContain('Import trace for requested module')
+    })
+  })
 })
 describe('Static Image Component Tests', () => {
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
-      beforeAll(async () => {
-        await nextBuild(appDir)
-        appPort = await findPort()
-        app = await nextStart(appDir, appPort)
-        html = await renderViaHTTP(appPort, '/static-img')
-        browser = await webdriver(appPort, '/static-img')
-      })
-      afterAll(async () => {
-        await killApp(app)
-      })
-      runTests()
-    }
-  )
+  describe('production mode', () => {
+    beforeAll(async () => {
+      await nextBuild(appDir)
+      appPort = await findPort()
+      app = await nextStart(appDir, appPort)
+      html = await renderViaHTTP(appPort, '/static-img')
+      browser = await webdriver(appPort, '/static-img')
+    })
+    afterAll(async () => {
+      await killApp(app)
+    })
+    runTests()
+  })
 })

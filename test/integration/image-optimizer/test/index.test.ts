@@ -691,17 +691,15 @@ describe('Image Optimizer', () => {
   })
 
   describe('Server support for headers in next.config.js', () => {
-    ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-      'production mode',
-      () => {
-        const size = 96 // defaults defined in server/config.ts
-        let app
-        let appPort
+    describe('production mode', () => {
+      const size = 96 // defaults defined in server/config.ts
+      let app
+      let appPort
 
-        beforeAll(async () => {
-          nextConfig.replace(
-            '{ /* replaceme */ }',
-            `{
+      beforeAll(async () => {
+        nextConfig.replace(
+          '{ /* replaceme */ }',
+          `{
         async headers() {
           return [
             {
@@ -716,62 +714,61 @@ describe('Image Optimizer', () => {
           ]
         },
       }`
-          )
-          await nextBuild(appDir)
-          await cleanImagesDir({ imagesDir })
-          appPort = await findPort()
-          app = await nextStart(appDir, appPort)
-        })
-        afterAll(async () => {
-          await killApp(app)
-          nextConfig.restore()
-        })
+        )
+        await nextBuild(appDir)
+        await cleanImagesDir({ imagesDir })
+        appPort = await findPort()
+        app = await nextStart(appDir, appPort)
+      })
+      afterAll(async () => {
+        await killApp(app)
+        nextConfig.restore()
+      })
 
-        it('should set max-age header', async () => {
-          const query = { url: '/test.png', w: size, q: 75 }
-          const opts = { headers: { accept: 'image/webp' } }
-          const res = await fetchViaHTTP(appPort, '/_next/image', query, opts)
-          expect(res.status).toBe(200)
-          expect(res.headers.get('Cache-Control')).toBe(
-            `public, max-age=86400, must-revalidate`
-          )
-          expect(res.headers.get('Content-Disposition')).toBe(
-            `attachment; filename="test.webp"`
-          )
+      it('should set max-age header', async () => {
+        const query = { url: '/test.png', w: size, q: 75 }
+        const opts = { headers: { accept: 'image/webp' } }
+        const res = await fetchViaHTTP(appPort, '/_next/image', query, opts)
+        expect(res.status).toBe(200)
+        expect(res.headers.get('Cache-Control')).toBe(
+          `public, max-age=86400, must-revalidate`
+        )
+        expect(res.headers.get('Content-Disposition')).toBe(
+          `attachment; filename="test.webp"`
+        )
 
-          await check(async () => {
-            const files = await fsToJson(imagesDir)
+        await check(async () => {
+          const files = await fsToJson(imagesDir)
 
-            let found = false
-            const maxAge = '86400'
+          let found = false
+          const maxAge = '86400'
 
-            Object.keys(files).forEach((dir) => {
-              if (
-                Object.keys(files[dir]).some((file) =>
-                  file.includes(`${maxAge}.`)
-                )
-              ) {
-                found = true
-              }
-            })
-            return found ? 'success' : 'failed'
-          }, 'success')
-        })
+          Object.keys(files).forEach((dir) => {
+            if (
+              Object.keys(files[dir]).some((file) =>
+                file.includes(`${maxAge}.`)
+              )
+            ) {
+              found = true
+            }
+          })
+          return found ? 'success' : 'failed'
+        }, 'success')
+      })
 
-        it('should not set max-age header when not matching next.config.js', async () => {
-          const query = { url: '/test.jpg', w: size, q: 75 }
-          const opts = { headers: { accept: 'image/webp' } }
-          const res = await fetchViaHTTP(appPort, '/_next/image', query, opts)
-          expect(res.status).toBe(200)
-          expect(res.headers.get('Cache-Control')).toBe(
-            `public, max-age=60, must-revalidate`
-          )
-          expect(res.headers.get('Content-Disposition')).toBe(
-            `attachment; filename="test.webp"`
-          )
-        })
-      }
-    )
+      it('should not set max-age header when not matching next.config.js', async () => {
+        const query = { url: '/test.jpg', w: size, q: 75 }
+        const opts = { headers: { accept: 'image/webp' } }
+        const res = await fetchViaHTTP(appPort, '/_next/image', query, opts)
+        expect(res.status).toBe(200)
+        expect(res.headers.get('Cache-Control')).toBe(
+          `public, max-age=60, must-revalidate`
+        )
+        expect(res.headers.get('Content-Disposition')).toBe(
+          `attachment; filename="test.webp"`
+        )
+      })
+    })
   })
 
   describe('dev support next.config.js cloudinary loader', () => {
@@ -865,14 +862,12 @@ describe('Image Optimizer', () => {
   })
 
   describe('External rewrite support with for serving static content in images', () => {
-    ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-      'production mode',
-      () => {
-        let app
-        let appPort
+    describe('production mode', () => {
+      let app
+      let appPort
 
-        beforeAll(async () => {
-          const newConfig = `{
+      beforeAll(async () => {
+        const newConfig = `{
         async rewrites() {
           return [
             {
@@ -882,54 +877,53 @@ describe('Image Optimizer', () => {
           ]
         },
       }`
-          nextConfig.replace('{ /* replaceme */ }', newConfig)
-          await nextBuild(appDir)
-          await cleanImagesDir({ imagesDir })
-          appPort = await findPort()
-          app = await nextStart(appDir, appPort)
-        })
-        afterAll(async () => {
-          await killApp(app)
-          nextConfig.restore()
-        })
+        nextConfig.replace('{ /* replaceme */ }', newConfig)
+        await nextBuild(appDir)
+        await cleanImagesDir({ imagesDir })
+        appPort = await findPort()
+        app = await nextStart(appDir, appPort)
+      })
+      afterAll(async () => {
+        await killApp(app)
+        nextConfig.restore()
+      })
 
-        it('should return response when image is served from an external rewrite', async () => {
-          await cleanImagesDir({ imagesDir })
+      it('should return response when image is served from an external rewrite', async () => {
+        await cleanImagesDir({ imagesDir })
 
-          const query = { url: '/next-js/next-js-bg.png', w: 64, q: 75 }
-          const opts = { headers: { accept: 'image/webp' } }
-          const res = await fetchViaHTTP(appPort, '/_next/image', query, opts)
-          expect(res.status).toBe(200)
-          expect(res.headers.get('Content-Type')).toBe('image/webp')
-          expect(res.headers.get('Cache-Control')).toBe(
-            `public, max-age=31536000, must-revalidate`
-          )
-          expect(res.headers.get('Vary')).toBe('Accept')
-          expect(res.headers.get('Content-Disposition')).toBe(
-            `attachment; filename="next-js-bg.webp"`
-          )
+        const query = { url: '/next-js/next-js-bg.png', w: 64, q: 75 }
+        const opts = { headers: { accept: 'image/webp' } }
+        const res = await fetchViaHTTP(appPort, '/_next/image', query, opts)
+        expect(res.status).toBe(200)
+        expect(res.headers.get('Content-Type')).toBe('image/webp')
+        expect(res.headers.get('Cache-Control')).toBe(
+          `public, max-age=31536000, must-revalidate`
+        )
+        expect(res.headers.get('Vary')).toBe('Accept')
+        expect(res.headers.get('Content-Disposition')).toBe(
+          `attachment; filename="next-js-bg.webp"`
+        )
 
-          await check(async () => {
-            const files = await fsToJson(imagesDir)
+        await check(async () => {
+          const files = await fsToJson(imagesDir)
 
-            let found = false
-            const maxAge = '31536000'
+          let found = false
+          const maxAge = '31536000'
 
-            Object.keys(files).forEach((dir) => {
-              if (
-                Object.keys(files[dir]).some((file) =>
-                  file.includes(`${maxAge}.`)
-                )
-              ) {
-                found = true
-              }
-            })
-            return found ? 'success' : 'failed'
-          }, 'success')
-          await expectWidth(res, 64)
-        })
-      }
-    )
+          Object.keys(files).forEach((dir) => {
+            if (
+              Object.keys(files[dir]).some((file) =>
+                file.includes(`${maxAge}.`)
+              )
+            ) {
+              found = true
+            }
+          })
+          return found ? 'success' : 'failed'
+        }, 'success')
+        await expectWidth(res, 64)
+      })
+    })
   })
 
   describe('dev support for dynamic blur placeholder', () => {

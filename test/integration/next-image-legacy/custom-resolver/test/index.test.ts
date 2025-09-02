@@ -30,33 +30,30 @@ function runTests() {
 }
 
 describe('Custom Resolver Tests', () => {
-  ;(process.env.TURBOPACK_DEV ? describe.skip : describe)(
-    'production mode',
-    () => {
+  describe('production mode', () => {
+    beforeAll(async () => {
+      await nextBuild(appDir)
+      appPort = await findPort()
+      app = await nextStart(appDir, appPort)
+    })
+    afterAll(() => killApp(app))
+    describe('SSR Custom Loader Tests', () => {
       beforeAll(async () => {
-        await nextBuild(appDir)
-        appPort = await findPort()
-        app = await nextStart(appDir, appPort)
+        browser = await webdriver(appPort, '/')
       })
-      afterAll(() => killApp(app))
-      describe('SSR Custom Loader Tests', () => {
-        beforeAll(async () => {
-          browser = await webdriver(appPort, '/')
-        })
-        afterAll(async () => {
-          browser = null
-        })
-        runTests()
+      afterAll(async () => {
+        browser = null
       })
-      describe('Client-side Custom Loader Tests', () => {
-        beforeAll(async () => {
-          browser = await webdriver(appPort, '/client-side')
-        })
-        afterAll(async () => {
-          browser = null
-        })
-        runTests()
+      runTests()
+    })
+    describe('Client-side Custom Loader Tests', () => {
+      beforeAll(async () => {
+        browser = await webdriver(appPort, '/client-side')
       })
-    }
-  )
+      afterAll(async () => {
+        browser = null
+      })
+      runTests()
+    })
+  })
 })
