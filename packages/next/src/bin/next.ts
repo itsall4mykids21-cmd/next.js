@@ -65,7 +65,7 @@ if (
     ],
     { stdio: 'inherit' }
   )
-  process.exit(result.status ?? 0)
+  process.exit(result.error ? 1 : result.status ?? 1)
 }
 
 // Start performance profiling after Node.js version is checked
