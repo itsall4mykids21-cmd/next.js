@@ -522,8 +522,8 @@ jobs:
     secrets: inherit
 
   # TODO: Remove this once we drop support for Node.js 22.
-  test-next-config-ts-dev:
-    name: test next-config-ts native dev
+  test-next-config-ts-native-ts-dev:
+    name: test next-config-ts-native-ts dev
     needs: ['changes', 'build-next', 'build-native']
     if: ${{ needs.changes.outputs.docs-only == 'false' }}
 
@@ -537,14 +537,14 @@ jobs:
       nodeVersion: ${{ matrix.node }}
       afterBuild: |
         export NEXT_TEST_MODE=dev
-        node run-tests.js test/e2e/app-dir/next-config-ts/**/*.test.ts
-      stepName: 'test-next-config-ts-dev-${{ matrix.node }}'
+        node run-tests.js test/e2e/app-dir/next-config-ts-native-ts/**/*.test.ts
+      stepName: 'test-next-config-ts-native-ts-dev-${{ matrix.node }}'
 
     secrets: inherit
 
   # TODO: Remove this once we drop support for Node.js 22.
-  test-next-config-ts-prod:
-    name: test next-config-ts native prod
+  test-next-config-ts-native-ts-prod:
+    name: test next-config-ts-native-ts prod
     needs: ['changes', 'build-next', 'build-native']
     if: ${{ needs.changes.outputs.docs-only == 'false' }}
 
@@ -558,8 +558,8 @@ jobs:
       nodeVersion: ${{ matrix.node }}
       afterBuild: |
         export NEXT_TEST_MODE=start
-        node run-tests.js test/e2e/app-dir/next-config-ts/**/*.test.ts
-      stepName: 'test-next-config-ts-prod-${{ matrix.node }}'
+        node run-tests.js test/e2e/app-dir/next-config-ts-native-ts/**/*.test.ts
+      stepName: 'test-next-config-ts-native-ts-prod-${{ matrix.node }}'
 
     secrets: inherit
 
@@ -998,8 +998,8 @@ jobs:
         'validate-docs-links',
         'check-types-precompiled',
         'test-unit',
-        'test-next-config-ts-dev',
-        'test-next-config-ts-prod',
+        'test-next-config-ts-native-ts-dev',
+        'test-next-config-ts-native-ts-prod',
         'test-dev',
         'test-prod',
         'test-integration',
