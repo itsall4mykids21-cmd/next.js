@@ -5,7 +5,7 @@ describe('next-config-ts-export-as-default-cjs', () => {
   // Skip tests if Node.js version is below 22.7.0
   // Native TypeScript resolution is supported with a flag
   // since v22.7.0, and is enabled by default since v23.6.0.
-  // TODO: Remove this once we drop support for Node.js 22.
+  // TODO: Remove this once we bump minimum Node.js version to v22
   if (!semver.gte(process.versions.node, '22.7.0')) {
     it.skip('requires Node.js 22.7.0+ for native TypeScript resolution', () => {})
     return
