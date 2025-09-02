@@ -297,7 +297,7 @@ jobs:
           --timings \
           -g ${{ matrix.group }} \
           --type integration
-      stepName: 'test-integration-${{ matrix.group }}-react-${{ matrix.react }}'
+      stepName: 'test-turbopack-integration-${{ matrix.group }}-react-${{ matrix.react }}'
     secrets: inherit
 
   test-turbopack-production:
@@ -965,7 +965,6 @@ jobs:
         'test-new-tests-start',
         'test-new-tests-deploy',
         'test-turbopack-production',
-        'test-turbopack-production-integration',
         'test-unit-windows',
         'test-dev-windows',
         'test-integration-windows',
