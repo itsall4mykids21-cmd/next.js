@@ -86,7 +86,7 @@ describe('app type checking - production mode', () => {
   })
 
   // Type validation is not supported in Turbopack yet.
-  if (!process.env.IS_TURBOPACK_TEST && !process.env.TURBOPACK_DEV) {
+  if (!process.env.IS_TURBOPACK_TEST) {
     it('should type check invalid entry exports', () => {
       // Can't export arbitrary things.
       expect(errors).toContain(`"foo" is not a valid Page export field.`)

@@ -247,7 +247,6 @@ jobs:
     with:
       afterBuild: |
         export IS_TURBOPACK_TEST=1
-        export TURBOPACK_DEV=1
         export NEXT_TEST_MODE=dev
         export NEXT_TEST_REACT_VERSION="${{ matrix.react }}"
 
@@ -323,7 +322,6 @@ jobs:
       nodeVersion: 18.18.2
       afterBuild: |
         export IS_TURBOPACK_TEST=1
-        export TURBOPACK_BUILD=1
         export NEXT_TEST_MODE=start
         export NEXT_TEST_REACT_VERSION="${{ matrix.react }}"
 
@@ -349,10 +347,6 @@ jobs:
         export NEXT_RSPACK=1
         export NEXT_TEST_USE_RSPACK=1
 
-        # HACK: Despite the name, this environment variable is only used to gate
-        # tests, so it's applicable to rspack
-        export TURBOPACK_DEV=1
-
         node run-tests.js \
           --test-pattern '^(test\/(development|e2e))/.*\.test\.(js|jsx|ts|tsx)$' \
           --timings \
@@ -377,10 +371,6 @@ jobs:
         # rspack flags
         export NEXT_RSPACK=1
         export NEXT_TEST_USE_RSPACK=1
-
-        # HACK: Despite the name, this environment variable is only used to gate
-        # tests, so it's applicable to rspack
-        export TURBOPACK_DEV=1
 
         node run-tests.js \
           --timings \
@@ -414,7 +404,6 @@ jobs:
 
         # HACK: Despite the name, this environment variable is only used to gate
         # tests, so it's applicable to rspack
-        export TURBOPACK_BUILD=1
 
         node run-tests.js --timings -g ${{ matrix.group }} --type production
       stepName: 'test-rspack-production-react-${{ matrix.react }}-${{ matrix.group }}'
@@ -440,7 +429,6 @@ jobs:
 
         # HACK: Despite the name, this environment variable is only used to gate
         # tests, so it's applicable to rspack
-        export TURBOPACK_BUILD=1
 
         node run-tests.js \
           --timings \

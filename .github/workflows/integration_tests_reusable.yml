@@ -125,14 +125,6 @@ jobs:
 
         export NEXT_TEST_CONTINUE_ON_ERROR=TRUE
 
-        # HACK: Despite the name, these environment variables are just used to
-        # gate tests, so they're applicable to both turbopack and rspack tests
-        export ${{
-          inputs.test_type == 'development' &&
-            'TURBOPACK_DEV=1' ||
-            'TURBOPACK_BUILD=1'
-        }}
-
         ${{ inputs.run_before_test }}
 
         node run-tests.js \

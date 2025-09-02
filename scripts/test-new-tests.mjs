@@ -154,7 +154,6 @@ async function main() {
           NEXT_TEST_MODE: testMode,
           NEXT_TEST_VERSION: nextTestVersion,
           IS_TURBOPACK_TEST: '1',
-          TURBOPACK_BUILD: testMode === 'start' ? '1' : undefined,
         },
       })
     }

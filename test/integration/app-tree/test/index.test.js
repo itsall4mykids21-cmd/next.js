@@ -28,7 +28,7 @@ const runTests = () => {
   it('should provide router context in AppTree on CSR', async () => {
     // [TODO] currently turbopack-generated output takes long time between
     // navigation, we'll optimize it in the future
-    const waitTime = process.env.TURBOPACK_BUILD ? 5000 : 500
+    const waitTime = process.env.IS_TURBOPACK_TEST ? 5000 : 500
 
     const browser = await webdriver(appPort, '/')
     let html = await browser.eval(`document.documentElement.innerHTML`)

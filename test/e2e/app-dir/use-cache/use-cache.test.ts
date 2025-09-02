@@ -55,7 +55,7 @@ describe('use-cache', () => {
     expect(await browser.waitForElementByCss('#r').text()).toContain('rnd')
   })
 
-  if (!process.env.TURBOPACK_BUILD) {
+  if (!process.env.IS_TURBOPACK_TEST) {
     it('should cache results custom handler', async () => {
       const browser = await next.browser(`/custom-handler?n=1`)
       expect(await browser.waitForElementByCss('#x').text()).toBe('1')

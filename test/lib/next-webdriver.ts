@@ -214,7 +214,7 @@ export default async function webdriver(
   // So we delay file changes to give it some time
   // to connect the WebSocket and start watching.
   // TODO: Is this still needed? Can we wait in a more useful way, like a socket connection event?
-  if (process.env.IS_TURBOPACK_TEST && process.env.TURBOPACK_DEV) {
+  if (process.env.IS_TURBOPACK_TEST) {
     console.log(`\n> Waiting for for turbopack watcher to start`)
     await waitFor(1000)
   }
