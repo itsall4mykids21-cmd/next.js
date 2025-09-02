@@ -74,3 +74,21 @@ pub async fn uri_from_file(root: FileSystemPath, path: Option<&str>) -> Result<S
 
     Ok(uri)
 }
+
+#[turbo_tasks::value_trait]
+trait MyTrait {
+    fn item(&self) -> bool;
+
+    #[turbo_tasks::function]
+    fn item2(&self) -> Vc<bool>;
+
+    #[turbo_tasks::function]
+    fn item3(&self) -> Vc<bool>;
+
+    fn item4(self: Vc<Self>) -> bool
+    where
+        Self: Sized,
+    {
+        true
+    }
+}

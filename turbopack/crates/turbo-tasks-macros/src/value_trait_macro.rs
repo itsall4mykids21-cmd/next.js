@@ -95,7 +95,8 @@ pub fn value_trait(args: TokenStream, input: TokenStream) -> TokenStream {
         let (func_args, attrs) = split_function_attributes(attrs);
         let func_args = match func_args {
             Ok(None) => {
-                // There is no turbo_tasks::function annotation, preserve this item
+                // There is no turbo_tasks::function annotation, preserve this item as is in the
+                // trait
                 items.push(item.clone());
                 // But we still need to add a forwarding implementation to the
                 // impl for `turbo_tasks::Dynamic<Box<dyn T>>`
@@ -133,6 +134,14 @@ pub fn value_trait(args: TokenStream, input: TokenStream) -> TokenStream {
                         },
                     };
                     args.push(ident);
+                }
+                // We only support `self: Vc<Self>` with a default implementation.  This is because
+                // we don't know how to generate an implementation for the dynamic case otherwise.
+                if is_vc_receiver && default.is_none() {
+                    item.span()
+                        .unwrap()
+                        .error("`self: Vc<Self>` is only supported with a default implementation")
+                        .emit();
                 }
                 // Add a dummy implementation that derefences the box and delegates to the
                 // actual implementation.

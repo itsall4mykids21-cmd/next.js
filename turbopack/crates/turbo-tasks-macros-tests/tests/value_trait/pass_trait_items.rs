@@ -13,6 +13,13 @@ trait MyTrait {
 
     #[turbo_tasks::function]
     fn item3(&self) -> Vc<bool>;
+
+    fn item4(self: Vc<Self>) -> bool
+    where
+        Self: Sized,
+    {
+        true
+    }
 }
 
 #[turbo_tasks::value]
