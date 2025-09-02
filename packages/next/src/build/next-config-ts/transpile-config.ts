@@ -124,9 +124,11 @@ export async function transpileConfig({
     try {
       if (
         useNodeNativeTSLoader &&
+        // Native TypeScript resolution is supported with a flag
+        // since v22.7.0, and is enabled by default since v23.6.0.
         semver.gte(process.versions.node, '22.7.0')
       ) {
-        return await import(pathToFileURL(nextConfigPath).href)
+        return (await import(pathToFileURL(nextConfigPath).href)).default
       }
     } catch (cause) {
       warn(
@@ -136,6 +138,7 @@ export async function transpileConfig({
         )}. Falling back to legacy resolution.`,
         { cause }
       )
+      // Once failed, fallback to legacy resolution for current session.
       useNodeNativeTSLoader = false
     }
 

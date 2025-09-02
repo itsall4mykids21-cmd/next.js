@@ -41,10 +41,17 @@ if (
   process.exit(1)
 }
 
+const hasTypeScriptFlag =
+  process.execArgv.some(
+    (arg) =>
+      arg === '--experimental-transform-types' ||
+      arg.startsWith('--experimental-transform-types=')
+  ) || process.env.NODE_OPTIONS?.includes('--experimental-transform-types')
 // Native TypeScript resolution is supported with a flag
 // since v22.7.0, and is enabled by default since v23.6.0.
 // TODO: Remove this once we drop support for Node.js 22.
 if (
+  !hasTypeScriptFlag &&
   semver.gte(process.versions.node, '22.7.0') &&
   semver.lt(process.versions.node, '23.6.0')
 ) {
