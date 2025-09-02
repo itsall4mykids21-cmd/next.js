@@ -1,1 +1,1 @@
-export default 'cts'
+module.exports = 'cts'

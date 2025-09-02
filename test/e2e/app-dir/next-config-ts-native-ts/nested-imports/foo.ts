@@ -1,3 +1,3 @@
-import { barbaz } from './bar'
+import { barbaz } from './bar.ts'
 
 export const foobarbaz = 'foo' + barbaz

@@ -2,7 +2,7 @@ import type { NextConfig } from 'next'
 import fs from 'node:fs'
 import { join } from 'node:path'
 
-const foo = fs.readFileSync(join(__dirname, 'foo.txt'), 'utf8')
+const foo = fs.readFileSync(join('.', 'foo.txt'), 'utf8')
 
 const nextConfig: NextConfig = {
   env: {
