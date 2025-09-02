@@ -521,7 +521,7 @@ jobs:
 
     secrets: inherit
 
-  # TODO: Remove this once we drop support for Node.js 22.
+  # TODO: Remove this once we bump minimum Node.js version to v22
   test-next-config-ts-native-ts-dev:
     name: test next-config-ts-native-ts dev
     needs: ['changes', 'build-next', 'build-native']
@@ -542,7 +542,7 @@ jobs:
 
     secrets: inherit
 
-  # TODO: Remove this once we drop support for Node.js 22.
+  # TODO: Remove this once we bump minimum Node.js version to v22
   test-next-config-ts-native-ts-prod:
     name: test next-config-ts-native-ts prod
     needs: ['changes', 'build-next', 'build-native']
