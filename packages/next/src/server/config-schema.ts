@@ -476,6 +476,7 @@ export const configSchema: zod.ZodType<NextConfig> = z.lazy(() =>
         turbopackUseSystemTlsCerts: z.boolean().optional(),
         turbopackUseBuiltinBabel: z.boolean().optional(),
         turbopackUseBuiltinSass: z.boolean().optional(),
+        turbopackUseWholeAppModuleGraphInDev: z.boolean().optional(),
         optimizePackageImports: z.array(z.string()).optional(),
         optimizeServerReact: z.boolean().optional(),
         clientTraceMetadata: z.array(z.string()).optional(),

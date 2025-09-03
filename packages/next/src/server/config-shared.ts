@@ -661,6 +661,11 @@ export interface ExperimentalConfig {
   turbopackUseBuiltinSass?: boolean
 
   /**
+   * Whether to use the whole app module graph in development mode.  This makes development mode chunking more like production but may come with an HMR performance regression.
+   */
+  turbopackUseWholeAppModuleGraphInDev?: boolean
+
+  /**
    * For use with `@next/mdx`. Compile MDX files using the new Rust compiler.
    * @see https://nextjs.org/docs/app/api-reference/next-config-js/mdxRs
    */
