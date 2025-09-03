@@ -1,13 +1,13 @@
 import type { Options as SWCOptions } from '@swc/core'
 import type { CompilerOptions } from 'typescript'
 
-import semver from 'next/dist/compiled/semver'
 import { resolve } from 'node:path'
 import { readFile } from 'node:fs/promises'
 import { pathToFileURL } from 'node:url'
 import { deregisterHook, registerHook, requireFromString } from './require-hook'
-import { warn } from '../output/log'
+import { warn, warnOnce } from '../output/log'
 import { installDependencies } from '../../lib/install-dependencies'
+import { getNodeOptionsArgs } from '../../server/lib/utils'
 
 function resolveSWCOptions(
   cwd: string,
@@ -121,25 +121,42 @@ export async function transpileConfig({
   cwd: string
 }) {
   try {
-    try {
-      if (
-        useNodeNativeTSLoader &&
-        // Native TypeScript resolution is supported with a flag
-        // since v22.7.0, and is enabled by default since v23.6.0.
-        semver.gte(process.versions.node, '22.7.0')
-      ) {
-        return (await import(pathToFileURL(nextConfigPath).href)).default
+    if (useNodeNativeTSLoader) {
+      try {
+        // Node.js v22.10.0+
+        // Value is 'strip' or 'transform' based on how the feature is enabled.
+        // https://nodejs.org/api/process.html#processfeaturestypescript
+        if ((process.features as any).typescript) {
+          return import(pathToFileURL(nextConfigPath).href)
+        }
+
+        if (
+          getNodeOptionsArgs().includes('--no-experimental-strip-types') ||
+          process.execArgv.includes('--no-experimental-strip-types')
+        ) {
+          // TODO: Add docs link.
+          warnOnce(
+            `Skipped resolving "${configFileName}" using ${createTerminalLink(
+              'Node.js native TypeScript resolution',
+              'https://nodejs.org/api/typescript.html'
+            )} because it was disabled by the "--no-experimental-strip-types" flag.` +
+              ' Falling back to legacy resolution.'
+          )
+        }
+
+        // Feature is not enabled, fallback to legacy resolution for current session.
+        useNodeNativeTSLoader = false
+      } catch (cause) {
+        warnOnce(
+          `Failed to import "${configFileName}" using ${createTerminalLink(
+            'Node.js native TypeScript resolution',
+            'https://nodejs.org/api/typescript.html'
+          )}. Falling back to legacy resolution.`,
+          { cause }
+        )
+        // Once failed, fallback to legacy resolution for current session.
+        useNodeNativeTSLoader = false
       }
-    } catch (cause) {
-      warn(
-        `Failed to import "${configFileName}" using ${createTerminalLink(
-          'Node.js native TypeScript resolution',
-          'https://nodejs.org/api/typescript.html'
-        )}. Falling back to legacy resolution.`,
-        { cause }
-      )
-      // Once failed, fallback to legacy resolution for current session.
-      useNodeNativeTSLoader = false
     }
 
     // Ensure TypeScript is installed to use the API.
