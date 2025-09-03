@@ -537,6 +537,7 @@ jobs:
       nodeVersion: ${{ matrix.node }}
       afterBuild: |
         export NEXT_TEST_MODE=dev
+        export NODE_OPTIONS=--experimental-transform-types
         node run-tests.js test/e2e/app-dir/next-config-ts-native-ts/**/*.test.ts
       stepName: 'test-next-config-ts-native-ts-dev-${{ matrix.node }}'
 
@@ -558,6 +559,7 @@ jobs:
       nodeVersion: ${{ matrix.node }}
       afterBuild: |
         export NEXT_TEST_MODE=start
+        export NODE_OPTIONS=--experimental-transform-types
         node run-tests.js test/e2e/app-dir/next-config-ts-native-ts/**/*.test.ts
       stepName: 'test-next-config-ts-native-ts-prod-${{ matrix.node }}'
 

@@ -6,7 +6,10 @@ describe('next-config-ts-import-js-extensions-cjs', () => {
   // Native TypeScript resolution is supported with a flag
   // since v22.7.0, and is enabled by default since v23.6.0.
   // TODO: Remove this once we bump minimum Node.js version to v22
-  if (!semver.gte(process.versions.node, '22.7.0')) {
+  if (
+    semver.lt(process.versions.node, '22.7.0') ||
+    !process.env.NODE_OPTIONS?.includes('--experimental-transform-types')
+  ) {
     it.skip('requires Node.js 22.7.0+ for native TypeScript resolution', () => {})
     return
   }
