@@ -1843,10 +1843,7 @@ impl NextConfig {
     #[turbo_tasks::function]
     pub async fn turbo_use_whole_app_module_graph(&self, mode: Vc<NextMode>) -> Result<Vc<bool>> {
         Ok(Vc::cell(match *mode.await? {
-            NextMode::Development => self
-                .experimental
-                .turbopack_use_whole_app_module_graph_in_dev
-                .unwrap_or(false),
+            NextMode::Development => true,
             NextMode::Build => true,
         }))
     }
