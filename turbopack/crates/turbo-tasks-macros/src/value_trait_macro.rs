@@ -146,7 +146,7 @@ pub fn value_trait(args: TokenStream, input: TokenStream) -> TokenStream {
                 // Add a dummy implementation that derefences the box and delegates to the
                 // actual implementation.
                 dynamic_trait_fns.push(match (is_vc_receiver, sig.asyncness.is_some()) {
-                    (true, true) | (true, false) => quote! { #item },
+                    (true, _) => quote! { #item },
                     (false, true) => {
                         quote! {
                             #sig {
