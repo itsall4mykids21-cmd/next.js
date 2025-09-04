@@ -42,6 +42,7 @@ import { normalizeMetadataRoute } from '../../../lib/metadata/get-metadata-route
 import { RSCPathnameNormalizer } from '../../normalizers/request/rsc'
 import { PrefetchRSCPathnameNormalizer } from '../../normalizers/request/prefetch-rsc'
 import { encodeURIPath } from '../../../shared/lib/encode-uri-path'
+import { isStaticMetadataFile } from '../../../lib/metadata/is-metadata-route'
 
 export type FsOutput = {
   type:
@@ -486,6 +487,18 @@ export async function setupFsCheck(opts: {
         return {
           itemPath,
           type: 'nextImage',
+        }
+      }
+
+      if (opts.dev && isStaticMetadataFile(itemPath)) {
+        const filePath = path.join(opts.dir, 'app', itemPath)
+        if (await fileExists(filePath, FileType.File)) {
+          return {
+            type: 'publicFolder',
+            fsPath: filePath,
+            itemsRoot: path.join(opts.dir, 'app'),
+            itemPath,
+          }
         }
       }
 
