@@ -105,10 +105,6 @@ async function getTsConfig(cwd: string): Promise<CompilerOptions> {
   return parsedCommandLine.options
 }
 
-const createTerminalLink = (text: string, url: string) => {
-  return `\u001b]8;;${url}\u001b\\${text}\u001b]8;;\u001b\\`
-}
-
 let useNodeNativeTSLoader = true
 
 export async function transpileConfig({
@@ -134,12 +130,9 @@ export async function transpileConfig({
           getNodeOptionsArgs().includes('--no-experimental-strip-types') ||
           process.execArgv.includes('--no-experimental-strip-types')
         ) {
-          // TODO: Add docs link.
+          // TODO: Add Next.js docs link.
           warnOnce(
-            `Skipped resolving "${configFileName}" using ${createTerminalLink(
-              'Node.js native TypeScript resolution',
-              'https://nodejs.org/api/typescript.html'
-            )} because it was disabled by the "--no-experimental-strip-types" flag.` +
+            `Skipped resolving "${configFileName}" using Node.js native TypeScript resolution because it was disabled by the "--no-experimental-strip-types" flag.` +
               ' Falling back to legacy resolution.'
           )
         }
@@ -148,10 +141,8 @@ export async function transpileConfig({
         useNodeNativeTSLoader = false
       } catch (cause) {
         warnOnce(
-          `Failed to import "${configFileName}" using ${createTerminalLink(
-            'Node.js native TypeScript resolution',
-            'https://nodejs.org/api/typescript.html'
-          )}. Falling back to legacy resolution.`,
+          `Failed to import "${configFileName}" using Node.js native TypeScript resolution.` +
+            ' Falling back to legacy resolution.',
           { cause }
         )
         // Once failed, fallback to legacy resolution for current session.
