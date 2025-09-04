@@ -151,8 +151,6 @@ pub async fn webpack_loader_options(
         .owned()
         .await?;
 
-    let config_file_path = async || project_path.join(&next_config.await?.config_file_name);
-
     let use_builtin_sass = next_config
         .experimental_turbopack_use_builtin_sass()
         .await?;
@@ -164,7 +162,10 @@ pub async fn webpack_loader_options(
                 glob,
                 loader: rcstr!("sass-loader"),
                 config_key: rcstr!("experimental.turbopackUseBuiltinSass"),
-                config_file_path: config_file_path().await?,
+                config_file_path: next_config
+                    .config_file_path(project_path.clone())
+                    .owned()
+                    .await?,
             }
             .resolved_cell()
             .emit()
@@ -172,37 +173,30 @@ pub async fn webpack_loader_options(
         rules.append(&mut get_sass_loader_rules(next_config.sass_config()).await?);
     }
 
-    // TODO: Enable this warning after babel configuration is fixed
-    // (https://github.com/vercel/next.js/pull/82676) and the react-compiler logic is moved into
-    // here. React-compiler is currently configured in JS before it gets to us, which could trigger
-    // false-positives.
     let use_builtin_babel = next_config
         .experimental_turbopack_use_builtin_babel()
         .await?;
-    if !builtin_conditions.contains(&WebpackLoaderBuiltinCondition::Foreign)
-        && use_builtin_babel.unwrap_or(true)
+    if use_builtin_babel.is_none()
+        && let Some(glob) = detect_likely_babel_loader(&rules).await?
     {
-        if use_builtin_babel.is_none()
-            && let Some(glob) = detect_likely_babel_loader(&rules).await?
-        {
-            let _ = glob;
-            // TODO: Enable this warning after babel configuration is fixed
-            // (https://github.com/vercel/next.js/pull/82676) and the react-compiler logic is moved into
-            // here. React-compiler is currently configured in JS before it gets to us, which could
-            // trigger false-positives.
-            /*
-            ManuallyConfiguredBuiltinLoaderIssue {
-                glob,
-                loader: rcstr!("babel-loader"),
-                disable_builtin_config_key: rcstr!("experimental.turbopackUseBuiltinBabel"),
-                config_file_path: config_file_path().await?,
-            }
-            .resolved_cell()
-            .emit()
-            */
+        ManuallyConfiguredBuiltinLoaderIssue {
+            glob,
+            loader: rcstr!("babel-loader"),
+            config_key: rcstr!("experimental.turbopackUseBuiltinBabel"),
+            config_file_path: next_config
+                .config_file_path(project_path.clone())
+                .owned()
+                .await?,
         }
-        rules.append(&mut get_babel_loader_rules(project_path.clone()).await?);
+        .resolved_cell()
+        .emit()
     }
+
+    // Call this even if `use_builtin_babel` is false: we might still enable it if React Compiler is
+    // enabled. This will emit `ManuallyConfiguredBuiltinLoaderIssue` as needed.
+    rules.append(
+        &mut get_babel_loader_rules(next_config, &project_path, &builtin_conditions).await?,
+    );
 
     if rules.is_empty() {
         return Ok(Vc::cell(None));
