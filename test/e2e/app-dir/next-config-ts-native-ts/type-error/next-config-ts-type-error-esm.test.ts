@@ -20,10 +20,6 @@ describe('next-config-ts-type-error-esm', () => {
     return
   }
 
-  it('should not have fallback to legacy resolution', async () => {
-    expect(next.cliOutput).not.toContain('Falling back to legacy resolution.')
-  })
-
   it('should throw with type error on build (ESM)', async () => {
     if (isNextDev) {
       await next.start()

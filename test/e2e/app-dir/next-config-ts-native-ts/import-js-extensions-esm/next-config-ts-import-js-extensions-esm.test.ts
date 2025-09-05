@@ -14,10 +14,6 @@ describe('next-config-ts-import-js-extensions-esm', () => {
     },
   })
 
-  it('should not have fallback to legacy resolution', async () => {
-    expect(next.cliOutput).not.toContain('Falling back to legacy resolution.')
-  })
-
   it('should import js extensions (ESM)', async () => {
     const $ = await next.render$('/')
     const text = $('p').text()

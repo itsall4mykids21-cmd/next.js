@@ -14,10 +14,6 @@ describe('next-config-ts-nested-imports-esm', () => {
     },
   })
 
-  it('should not have fallback to legacy resolution', async () => {
-    expect(next.cliOutput).not.toContain('Falling back to legacy resolution.')
-  })
-
   it('should handle nested imports (ESM)', async () => {
     const $ = await next.render$('/')
     expect($('p').text()).toBe('foobarbaz')

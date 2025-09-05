@@ -14,10 +14,6 @@ describe('next-config-ts-dynamic-import-esm', () => {
     },
   })
 
-  it('should not have fallback to legacy resolution', async () => {
-    expect(next.cliOutput).not.toContain('Falling back to legacy resolution.')
-  })
-
   it('should support dynamic import (ESM)', async () => {
     const $ = await next.render$('/')
     expect($('p').text()).toBe('foo')

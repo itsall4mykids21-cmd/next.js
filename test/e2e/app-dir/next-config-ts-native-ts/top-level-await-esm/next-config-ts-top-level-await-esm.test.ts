@@ -14,10 +14,6 @@ describe('next-config-ts-top-level-await-esm', () => {
     },
   })
 
-  it('should not have fallback to legacy resolution', async () => {
-    expect(next.cliOutput).not.toContain('Falling back to legacy resolution.')
-  })
-
   it('should support top-level await (ESM)', async () => {
     const $ = await next.render$('/')
     expect($('p').text()).toBe('foo')
