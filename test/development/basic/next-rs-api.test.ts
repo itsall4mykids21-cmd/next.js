@@ -235,7 +235,7 @@ describe('next.rs api writeToDisk multiple times', () => {
     const route = entrypoints.routes.get('/app-nodejs')
 
     if (route.type === 'app-page') {
-      for (let i = 0; i < Infinity; i++) {
+      for (let i = 0; i < 100; i++) {
         console.log(i)
         await route.pages[0].htmlEndpoint.writeToDisk()
       }
