@@ -180,6 +180,7 @@ describe('next.rs api writeToDisk multiple times', () => {
         'app/route-edge/route.ts':
           'export function GET() { return Response.json({ hello: "world" }) }\nexport const runtime = "edge"',
         'server.js': `
+        process.title = 'next.rs api run test'
         const path = require('path')
         const {PHASE_DEVELOPMENT_SERVER} = require('next/constants')
         const loadConfig = require('next/dist/server/config')
@@ -235,7 +236,7 @@ describe('next.rs api writeToDisk multiple times', () => {
     const route = entrypoints.routes.get('/app-nodejs')
 
     if (route.type === 'app-page') {
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < Infinity; i++) {
         console.log(i)
         await route.pages[0].htmlEndpoint.writeToDisk()
       }
