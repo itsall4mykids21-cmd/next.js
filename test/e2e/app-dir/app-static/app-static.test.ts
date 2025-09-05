@@ -1577,6 +1577,7 @@ describe('app-dir static/dynamic handling', () => {
            ],
            "initialExpireSeconds": 31536000,
            "initialRevalidateSeconds": 60,
+           "prefetchDataRoute": null,
            "srcRoute": "/multiple-stale-tags",
          },
          "/no-config-fetch": {
@@ -2242,6 +2243,7 @@ describe('app-dir static/dynamic handling', () => {
            ],
            "initialExpireSeconds": 31536000,
            "initialRevalidateSeconds": 60,
+           "prefetchDataRoute": null,
            "srcRoute": "/stale-tag-test",
          },
          "/strip-w3c-trace-context-headers": {
