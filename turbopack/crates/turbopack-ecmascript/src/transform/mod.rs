@@ -147,7 +147,6 @@ impl EcmascriptInputTransform {
                     program,
                     helpers,
                     inline_globals(
-                        unresolved_mark,
                         Default::default(),
                         Default::default(),
                         Default::default(),
