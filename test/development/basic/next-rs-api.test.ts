@@ -147,6 +147,106 @@ function appPageCode(text) {
 export default () => <div>${text}<Client /></div>;`
 }
 
+describe('next.rs api writeToDisk multiple times', () => {
+  let project: Project
+  let next: NextInstance
+  beforeAll(async () => {
+    await trace('setup next instance').traceAsyncFn(async (rootSpan) => {
+      next = await createNext({
+        skipStart: true,
+        files: {
+          'pages/index.js': pagesIndexCode('hello world'),
+          'lib/props.js': 'export default {}',
+          'pages/page-nodejs.js': 'export default () => <div>hello world</div>',
+          'pages/page-edge.js':
+            'export default () => <div>hello world</div>\nexport const config = { runtime: "experimental-edge" }',
+          'pages/api/nodejs.js':
+            'export default () => Response.json({ hello: "world" })',
+          'pages/api/edge.js':
+            'export default () => Response.json({ hello: "world" })\nexport const config = { runtime: "edge" }',
+          'app/layout.tsx':
+            'export default function RootLayout({ children }: { children: any }) { return (<html><body>{children}</body></html>)}',
+          'app/loading.tsx':
+            'export default function Loading() { return <>Loading</> }',
+          'app/app/page.tsx': appPageCode('hello world'),
+          'app/app/client.tsx':
+            '"use client";\nexport default () => <div>hello world</div>',
+          'app/app-edge/page.tsx':
+            'export default () => <div>hello world</div>\nexport const runtime = "edge"',
+          'app/app-nodejs/page.tsx':
+            'export default () => <div>hello world</div>',
+          'app/route-nodejs/route.ts':
+            'export function GET() { return Response.json({ hello: "world" }) }',
+          'app/route-edge/route.ts':
+            'export function GET() { return Response.json({ hello: "world" }) }\nexport const runtime = "edge"',
+        },
+      })
+      const nextConfig = await loadConfig(
+        PHASE_DEVELOPMENT_SERVER,
+        next.testDir
+      )
+      const bindings = await loadBindings()
+      const rootPath = process.env.NEXT_SKIP_ISOLATE
+        ? path.resolve(__dirname, '../../..')
+        : next.testDir
+      const distDir = '.next'
+      project = await bindings.turbo.createProject({
+        env: {},
+        nextConfig: nextConfig,
+        rootPath,
+        projectPath: path.relative(rootPath, next.testDir) || '.',
+        distDir,
+        watch: {
+          enable: true,
+        },
+        dev: true,
+        defineEnv: createDefineEnv({
+          projectPath: next.testDir,
+          isTurbopack: true,
+          clientRouterFilters: undefined,
+          config: nextConfig,
+          dev: true,
+          distDir: path.join(rootPath, distDir),
+          fetchCacheKeyPrefix: undefined,
+          hasRewrites: false,
+          middlewareMatchers: undefined,
+          rewrites: {
+            beforeFiles: [],
+            afterFiles: [],
+            fallback: [],
+          },
+        }),
+        buildId: 'development',
+        encryptionKey: '12345',
+        previewProps: {
+          previewModeId: 'development',
+          previewModeEncryptionKey: '12345',
+          previewModeSigningKey: '12345',
+        },
+        browserslistQuery: 'last 2 versions',
+        noMangling: false,
+        currentNodeJsVersion: '18.0.0',
+      })
+    })
+  })
+  afterAll(() => next.destroy())
+
+  it('should allow to write to disk multiple times', async () => {
+    const entrypointsSubscription = project.entrypointsSubscribe()
+    const entrypoints: TurbopackResult<RawEntrypoints> = (
+      await entrypointsSubscription.next()
+    ).value
+    const route = entrypoints.routes.get('/app-nodejs')
+
+    if (route.type === 'app-page') {
+      for (let i = 0; i < 100; i++) {
+        console.log(i)
+        await route.pages[0].htmlEndpoint.writeToDisk()
+      }
+    }
+  })
+})
+
 describe('next.rs api', () => {
   let next: NextInstance
   beforeAll(async () => {
