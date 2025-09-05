@@ -35,7 +35,7 @@ import type { Revalidate } from '../cache-control'
 import { getPreviouslyRevalidatedTags } from '../../server-utils'
 import { workAsyncStorage } from '../../app-render/work-async-storage.external'
 import { DetachedPromise } from '../../../lib/detached-promise'
-import { isStale as isTagsStale } from './tags-manifest.external'
+import { isStaleOrExpired } from './tags-manifest.external'
 
 export interface CacheHandlerContext {
   fs?: CacheFs
@@ -578,8 +578,14 @@ export class IncrementalCache implements IncrementalCacheType {
 
         if (typeof tagsHeader === 'string') {
           const cacheTags = tagsHeader.split(',')
-          if (cacheTags.length > 0 && isTagsStale(cacheTags, lastModified)) {
-            isStale = -1
+          const { state } = isStaleOrExpired(cacheTags, lastModified)
+
+          if (cacheTags.length > 0) {
+            if (state === 'STALE') {
+              isStale = true
+            } else if (state === 'EXPIRED') {
+              isStale = -1
+            }
           }
         }
       }
