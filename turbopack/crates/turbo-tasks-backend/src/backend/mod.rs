@@ -2022,7 +2022,7 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
         };
         let InProgressState::InProgress(box InProgressStateInner {
             done_event,
-            once_task: _,
+            once_task,
             stale,
             session_dependent,
             done: _,
@@ -2137,6 +2137,15 @@ impl<B: BackingStorage> TurboTasksBackendInner<B> {
         task.shrink_to_fit(CachedDataItemType::OutputDependency);
         task.shrink_to_fit(CachedDataItemType::CollectiblesDependency);
         drop(task);
+
+        // ✅ ADD: Remove Once tasks from transient_tasks after completion
+        if once_task && !stale {
+            self.transient_tasks.remove(&task_id);
+            // CRITICAL: Return the task ID to the factory for reuse
+            unsafe {
+                self.transient_task_id_factory.reuse(task_id);
+            }
+        }
 
         false
     }

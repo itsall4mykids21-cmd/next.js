@@ -595,7 +595,11 @@ impl<B: Backend + 'static> TurboTasks<B> {
         )
         .await?;
 
-        Ok(rx.await?)
+        let result = rx.await?;
+
+        self.dispose_root_task(task_id);
+
+        Ok(result)
     }
 
     pub(crate) fn native_call(
