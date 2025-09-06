@@ -214,7 +214,7 @@ pub async fn get_app_client_references_chunks(
 
                         ssr_chunking_context.chunk_group(
                             {
-                                let mut ident = (&*base_ident).clone();
+                                let mut ident = (*base_ident).clone();
                                 ident.add_modifier(rcstr!("ssr modules"));
                                 AssetIdent::new(ident)
                             },
@@ -256,7 +256,7 @@ pub async fn get_app_client_references_chunks(
 
                     Some(client_chunking_context.chunk_group(
                         {
-                            let mut ident = (&*base_ident).clone();
+                            let mut ident = (*base_ident).clone();
                             ident.add_modifier(rcstr!("client modules"));
                             AssetIdent::new(ident)
                         },

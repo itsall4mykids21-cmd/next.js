@@ -116,7 +116,7 @@ impl Transition for NextEcmascriptClientReferenceTransition {
             EcmascriptClientReferenceModule::new(
                 match part {
                     Some(part) => {
-                        let mut ident = (&*ident).clone();
+                        let mut ident = (*ident).clone();
                         ident.parts.push(part);
                         AssetIdent::new(ident)
                     }
