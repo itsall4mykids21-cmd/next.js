@@ -1,1 +1,3 @@
-packages/next/README.md
+permissions:
+  contents: write
+  pull-requests: write
