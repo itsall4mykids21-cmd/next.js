@@ -36,7 +36,7 @@ For example, a Client Component with `usePathname` will be rendered into HTML on
 > - Reading the current URL from a [Server Component](/docs/app/getting-started/server-and-client-components) is not supported. This design is intentional to support layout state being preserved across page navigations.
 > - Compatibility mode:
 >   - `usePathname` can return `null` when a [fallback route](/docs/pages/api-reference/functions/get-static-paths#fallback-true) is being rendered or when a `pages` directory page has been [automatically statically optimized](/docs/pages/building-your-application/rendering/automatic-static-optimization) by Next.js and the router is not ready.
->   - When using `usePathname` with rewrites in [`next.config`](/docs/app/api-reference/config/next-config-js/rewrites) or [`Middleware`](/docs/app/api-reference/file-conventions/middleware), `useState` and `useEffect` must also be used in order to avoid hydration mismatch errors.
+>   - When using `usePathname` with rewrites in [`next.config`](/docs/app/api-reference/config/next-config-js/rewrites) or [`Proxy`](/docs/app/api-reference/file-conventions/proxy), `useState` and `useEffect` must also be used in order to avoid hydration mismatch errors.
 >   - Next.js will automatically update your types if it detects both an `app` and `pages` directory in your project.
 
 ## Parameters
@@ -65,6 +65,7 @@ const pathname = usePathname()
 ```tsx filename="app/example-client-component.tsx" switcher
 'use client'
 
+import { useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
 function ExampleClientComponent() {
@@ -79,6 +80,7 @@ function ExampleClientComponent() {
 ```jsx filename="app/example-client-component.js" switcher
 'use client'
 
+import { useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
 function ExampleClientComponent() {
@@ -87,6 +89,56 @@ function ExampleClientComponent() {
   useEffect(() => {
     // Do something here...
   }, [pathname, searchParams])
+}
+```
+
+### Avoid hydration mismatch with rewrites
+
+When a page is pre-rendered, the HTML is generated for the source pathname. If the page is then reached through a rewrite using `next.config` or `Proxy`, the browser URL may differ, and `usePathname()` will read the rewritten pathname on the client.
+
+To avoid hydration mismatches, design the UI so that only a small, isolated part depends on the client pathname. Render a stable fallback on the server and update that part after mount.
+
+```tsx filename="app/example-client-component.tsx" switcher
+'use client'
+
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+
+export default function PathnameBadge() {
+  const pathname = usePathname()
+  const [clientPathname, setClientPathname] = useState('')
+
+  useEffect(() => {
+    setClientPathname(pathname)
+  }, [pathname])
+
+  return (
+    <p>
+      Current pathname: <span>{clientPathname}</span>
+    </p>
+  )
+}
+```
+
+```jsx filename="app/example-client-component.js" switcher
+'use client'
+
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+
+export default function PathnameBadge() {
+  const pathname = usePathname()
+  const [clientPathname, setClientPathname] = useState('')
+
+  useEffect(() => {
+    setClientPathname(pathname)
+  }, [pathname])
+
+  return (
+    <p>
+      Current pathname: <span>{clientPathname}</span>
+    </p>
+  )
 }
 ```
 

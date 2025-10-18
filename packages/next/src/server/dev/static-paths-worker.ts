@@ -3,7 +3,6 @@ import type { NextConfigComplete } from '../config-shared'
 import '../require-hook'
 import '../node-environment'
 
-import { reduceAppConfig } from '../../build/utils'
 import { collectSegments } from '../../build/segment-config/app/app-segments'
 import type { StaticPathsResult } from '../../build/static-paths/types'
 import { loadComponents } from '../load-components'
@@ -25,8 +24,6 @@ import type { AppRouteRouteModule } from '../route-modules/app-route/module'
 type RuntimeConfig = {
   pprConfig: ExperimentalPPRConfig | undefined
   configFileName: string
-  publicRuntimeConfig: { [key: string]: any }
-  serverRuntimeConfig: { [key: string]: any }
   cacheComponents: boolean
 }
 
@@ -92,9 +89,6 @@ export async function loadStaticPaths({
   })
 
   // update work memory runtime-config
-  ;(
-    require('../../shared/lib/runtime-config.external') as typeof import('../../shared/lib/runtime-config.external')
-  ).setConfig(config)
   setHttpClientAndAgentOptions({
     httpAgentOptions,
   })
@@ -119,7 +113,7 @@ export async function loadStaticPaths({
 
     const isRoutePPREnabled =
       isAppPageRouteModule(routeModule) &&
-      checkIsRoutePPREnabled(config.pprConfig, reduceAppConfig(segments))
+      checkIsRoutePPREnabled(config.pprConfig)
 
     const rootParamKeys = collectRootParamKeys(routeModule)
 

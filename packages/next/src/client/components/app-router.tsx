@@ -1,5 +1,3 @@
-'use client'
-
 import React, {
   useEffect,
   useMemo,
@@ -12,12 +10,12 @@ import {
   LayoutRouterContext,
   GlobalLayoutRouterContext,
 } from '../../shared/lib/app-router-context.shared-runtime'
-import type {
-  CacheNode,
-  FlightRouterState,
-} from '../../shared/lib/app-router-types'
+import type { CacheNode } from '../../shared/lib/app-router-types'
 import { ACTION_RESTORE } from './router-reducer/router-reducer-types'
-import type { AppRouterState } from './router-reducer/router-reducer-types'
+import type {
+  AppHistoryState,
+  AppRouterState,
+} from './router-reducer/router-reducer-types'
 import { createHrefFromUrl } from './router-reducer/create-href-from-url'
 import {
   SearchParamsContext,
@@ -25,8 +23,6 @@ import {
   PathParamsContext,
 } from '../../shared/lib/hooks-client-context.shared-runtime'
 import { dispatchAppRouterAction, useActionQueue } from './use-action-queue'
-import { isBot } from '../../shared/lib/router/utils/is-bot'
-import { addBasePath } from '../add-base-path'
 import { AppRouterAnnouncer } from './app-router-announcer'
 import { RedirectBoundary } from './redirect-boundary'
 import { findHeadInCache } from './router-reducer/reducers/find-head-in-cache'
@@ -53,47 +49,6 @@ const globalMutable: {
   pendingMpaPath?: string
 } = {}
 
-export function isExternalURL(url: URL) {
-  return url.origin !== window.location.origin
-}
-
-/**
- * Given a link href, constructs the URL that should be prefetched. Returns null
- * in cases where prefetching should be disabled, like external URLs, or
- * during development.
- * @param href The href passed to <Link>, router.prefetch(), or similar
- * @returns A URL object to prefetch, or null if prefetching should be disabled
- */
-export function createPrefetchURL(href: string): URL | null {
-  // Don't prefetch for bots as they don't navigate.
-  if (isBot(window.navigator.userAgent)) {
-    return null
-  }
-
-  let url: URL
-  try {
-    url = new URL(addBasePath(href), window.location.href)
-  } catch (_) {
-    // TODO: Does this need to throw or can we just console.error instead? Does
-    // anyone rely on this throwing? (Seems unlikely.)
-    throw new Error(
-      `Cannot prefetch '${href}' because it cannot be converted to a URL.`
-    )
-  }
-
-  // Don't prefetch during development (improves compilation performance)
-  if (process.env.NODE_ENV === 'development') {
-    return null
-  }
-
-  // External urls can't be prefetched in the same way.
-  if (isExternalURL(url)) {
-    return null
-  }
-
-  return url
-}
-
 function HistoryUpdater({
   appRouterState,
 }: {
@@ -106,14 +61,20 @@ function HistoryUpdater({
       window.next.__pendingUrl = undefined
     }
 
-    const { tree, pushRef, canonicalUrl } = appRouterState
+    const { tree, pushRef, canonicalUrl, renderedSearch } = appRouterState
+
+    const appHistoryState: AppHistoryState = {
+      tree,
+      renderedSearch,
+    }
+
     const historyState = {
       ...(pushRef.preserveCustomHistoryState ? window.history.state : {}),
       // Identifier is shortened intentionally.
       // __NA is used to identify if the history entry can be handled by the app-router.
       // __N is used to identify if the history entry can be handled by the old router.
       __NA: true,
-      __PRIVATE_NEXTJS_INTERNALS_TREE: tree,
+      __PRIVATE_NEXTJS_INTERNALS_TREE: appHistoryState,
     }
     if (
       pushRef.pendingPush &&
@@ -225,8 +186,7 @@ function Router({
   }, [canonicalUrl])
 
   if (process.env.NODE_ENV !== 'production') {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { cache, prefetchCache, tree } = state
+    const { cache, tree } = state
 
     // This hook is in a conditional but that is ok because `process.env.NODE_ENV` never changes
     // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -237,10 +197,9 @@ function Router({
       window.nd = {
         router: publicAppRouterInstance,
         cache,
-        prefetchCache,
         tree,
       }
-    }, [cache, prefetchCache, tree])
+    }, [cache, tree])
   }
 
   useEffect(() => {
@@ -264,7 +223,7 @@ function Router({
       dispatchAppRouterAction({
         type: ACTION_RESTORE,
         url: new URL(window.location.href),
-        tree: window.history.state.__PRIVATE_NEXTJS_INTERNALS_TREE,
+        historyState: window.history.state.__PRIVATE_NEXTJS_INTERNALS_TREE,
       })
     }
 
@@ -347,14 +306,14 @@ function Router({
       url: string | URL | null | undefined
     ) => {
       const href = window.location.href
-      const tree: FlightRouterState | undefined =
+      const appHistoryState: AppHistoryState | undefined =
         window.history.state?.__PRIVATE_NEXTJS_INTERNALS_TREE
 
       startTransition(() => {
         dispatchAppRouterAction({
           type: ACTION_RESTORE,
           url: new URL(url ?? href, href),
-          tree,
+          historyState: appHistoryState,
         })
       })
     }
@@ -441,7 +400,7 @@ function Router({
     }
   }, [])
 
-  const { cache, tree, nextUrl, focusAndScrollRef } = state
+  const { cache, tree, nextUrl, focusAndScrollRef, previousNextUrl } = state
 
   const matchingHead = useMemo(() => {
     return findHeadInCache(cache, tree[1])
@@ -468,8 +427,9 @@ function Router({
       tree,
       focusAndScrollRef,
       nextUrl,
+      previousNextUrl,
     }
-  }, [tree, focusAndScrollRef, nextUrl])
+  }, [tree, focusAndScrollRef, nextUrl, previousNextUrl])
 
   let head
   if (matchingHead !== null) {

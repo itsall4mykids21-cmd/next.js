@@ -138,13 +138,13 @@ async function requestHandler(
       dir: pageRouteModule.relativeProjectDir,
       botType,
       isDraftMode: false,
-      isRevalidate: false,
       isOnDemandRevalidate,
       isPossibleServerAction,
       assetPrefix: nextConfig.assetPrefix,
       nextConfigOutput: nextConfig.output,
       crossOrigin: nextConfig.crossOrigin,
       trailingSlash: nextConfig.trailingSlash,
+      images: nextConfig.images,
       previewProps: prerenderManifest.preview,
       deploymentId: nextConfig.deploymentId,
       enableTainting: nextConfig.experimental.taint,
@@ -162,7 +162,6 @@ async function requestHandler(
         staleTimes: nextConfig.experimental.staleTimes,
         cacheComponents: Boolean(nextConfig.experimental.cacheComponents),
         clientSegmentCache: Boolean(nextConfig.experimental.clientSegmentCache),
-        clientParamParsing: Boolean(nextConfig.experimental.clientParamParsing),
         dynamicOnHover: Boolean(nextConfig.experimental.dynamicOnHover),
         inlineCss: Boolean(nextConfig.experimental.inlineCss),
         authInterrupts: Boolean(nextConfig.experimental.authInterrupts),
@@ -317,7 +316,7 @@ async function requestHandler(
             })
             span.updateName(name)
           } else {
-            span.updateName(`${req.method} ${relativeUrl}`)
+            span.updateName(`${req.method} ${srcPage}`)
           }
         })
 
@@ -340,7 +339,7 @@ async function requestHandler(
     tracer.trace(
       BaseServerSpan.handleRequest,
       {
-        spanName: `${req.method} ${relativeUrl}`,
+        spanName: `${req.method} ${srcPage}`,
         kind: SpanKind.SERVER,
         attributes: {
           'http.method': req.method,
