@@ -80,10 +80,10 @@ export async function validateSlugForPreview({ slug, contentID }) {
 //Validates whether the incoming preview request is valid
 export async function validatePreview({ agilityPreviewKey, slug, contentID }) {
   //Validate the preview key
-  if (!agilityPreviewKey) {
+  if (typeof agilityPreviewKey !== "string") {
     return {
       error: true,
-      message: `Missing agilitypreviewkey.`,
+      message: `Missing or invalid agilitypreviewkey.`,
     };
   }
 
